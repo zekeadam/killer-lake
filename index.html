@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KILLER LAKE - Online P2P</title>
+    <title>KILLER LAKE</title>
     <link rel="stylesheet" href="style.css">
-    <!-- PeerJS betöltése a WebRTC kapcsolathoz -->
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
 <body>
 
     <div class="container">
         <h1>K̵̃̂Ξ̵̄͠L̵̅͗L̵͊̕Ξ̵̊̕Я̵̽̅ ̵̏̅L̵̚͠Λ̵͋̏K̵͗̅Ξ̵̃͝</h1>
         
-        <!-- LOBBY KÉPERNYŐ -->
         <div id="lobby-screen">
             <div class="lobby-box">
                 <h2>Multiplayer Váróterem</h2>
@@ -36,68 +33,88 @@
             </div>
         </div>
 
-        <!-- JÁTÉKTÉR (Kezdetben rejtett) -->
+        <div id="draft-screen" style="display: none;">
+            <div class="draft-box">
+                <h2>Készítsd elő a csapatod!</h2>
+                <p>Húzd a kártyákat a kívánt sorrendbe! A bal oldali (1.) fog először pályára lépni.</p>
+                
+                <div class="draft-team-container" id="my-draft-team">
+                    </div>
+
+                <div class="draft-actions">
+                    <button id="ready-btn" onclick="confirmTeamOrder()">Harcra fel!</button>
+                    <p id="draft-status" class="hint"></p>
+                </div>
+            </div>
+        </div>
+
         <div id="game-screen" style="display: none;">
             <div id="turn-indicator">Hálózat szinkronizálása...</div>
             
             <div class="arena">
-                <!-- 1. Játékos Kártya -->
-                <div class="card" id="p1-card">
-                    <div class="card-header">
-                        <h2>Lángoló Tok</h2>
-                        <div class="card-stats">
-                            <p class="stat-text">HP: <span id="p1-hp">350</span> / 350</p>
-                            <p class="stat-text">Energia: <span id="p1-ap" class="ap-count">2</span> AP</p>
-                        </div>
-                    </div>
+                <div class="card-container">
+                    <div class="team-roster" id="p1-roster"></div>
                     
-                    <div class="hp-bar"><div class="hp-fill" id="p1-hp-fill" style="width: 100%;"></div></div>
-                    
-                    <div class="card-body">
-                        <img src="card/0.png" alt="Lángoló Tok" class="card-image" onerror="this.style.display='none'">
-                        <div class="status-container">
-                            <div id="p1-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
-                            <div id="p1-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
-                            <div id="p1-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
+                    <div class="card" id="p1-card">
+                        <div class="card-header">
+                            <h2>Betöltés...</h2>
+                            <div class="card-stats">
+                                <p class="stat-text">HP: <span id="p1-hp">---</span> / ---</p>
+                                <p class="stat-text">Energia: <span id="p1-ap" class="ap-count">-</span> AP</p>
+                            </div>
                         </div>
-                    </div>
+                        
+                        <div class="hp-bar"><div class="hp-fill" id="p1-hp-fill" style="width: 100%;"></div></div>
+                        
+                        <div class="card-body">
+                            <img src="" alt="Kártya kép" class="card-image" style="display: none;" onerror="this.style.display='none'">
+                            <div class="status-container">
+                                <div id="p1-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
+                                <div id="p1-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
+                                <div id="p1-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
+                            </div>
+                        </div>
 
-                    <div class="attacks">
-                        <button onclick="executeMove('p1', 0)">Dühös Lángcsapás <span>40 DMG [1 AP]</span></button>
-                        <button onclick="executeMove('p1', 1)">Plazma-Orkán <span>100 DMG [3 AP]</span></button>
-                        <button onclick="executeMove('p1', 2)">Lángpajzs <span>-50% Sebzés [1 AP]</span></button>
-                        <button onclick="executeMove('p1', 3)">Perzselő Tekintet <span>20 DMG + Égés [2 AP]</span></button>
-                        <button class="charge-btn" onclick="executeMove('p1', 'charge')">⚡ Töltődés <span>Kör kihagyása, extra +1 AP</span></button>
+                        <div class="attacks">
+                            <button>Képesség 1 <span>-</span></button>
+                            <button>Képesség 2 <span>-</span></button>
+                            <button>Képesség 3 <span>-</span></button>
+                            <button>Képesség 4 <span>-</span></button>
+                            <button class="charge-btn" onclick="executeMove('p1', 'charge')">⚡ Töltődés <span>Kör kihagyása, extra +1 AP</span></button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2. Játékos Kártya -->
-                <div class="card" id="p2-card">
-                    <div class="card-header">
-                        <h2>Chin-Gaze</h2>
-                        <div class="card-stats">
-                            <p class="stat-text">HP: <span id="p2-hp">350</span> / 350</p>
-                            <p class="stat-text">Energia: <span id="p2-ap" class="ap-count">2</span> AP</p>
-                        </div>
-                    </div>
-                    
-                    <div class="hp-bar"><div class="hp-fill" id="p2-hp-fill" style="width: 100%;"></div></div>
-                    
-                    <div class="card-body">
-                        <img src="card/1.png" alt="Chin-Gaze" class="card-image" onerror="this.style.display='none'">
-                        <div class="status-container">
-                            <div id="p2-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
-                            <div id="p2-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
-                            <div id="p2-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
-                        </div>
-                    </div>
+                <div class="card-container">
+                    <div class="team-roster" id="p2-roster"></div>
 
-                    <div class="attacks">
-                        <button onclick="executeMove('p2', 0)">Kozmikus Sugár <span>45 DMG [1 AP]</span></button>
-                        <button onclick="executeMove('p2', 1)">Duzzogó Arc-ütés <span>30 DMG + Bénítás [2 AP]</span></button>
-                        <button onclick="executeMove('p2', 2)">Pszicho-Menedék <span>+80 HP [2 AP]</span></button>
-                        <button onclick="executeMove('p2', 3)">Kozmikus Pajzs <span>-50% Sebzés [1 AP]</span></button>
-                        <button class="charge-btn" onclick="executeMove('p2', 'charge')">⚡ Töltődés <span>Kör kihagyása, extra +1 AP</span></button>
+                    <div class="card" id="p2-card">
+                        <div class="card-header">
+                            <h2>Betöltés...</h2>
+                            <div class="card-stats">
+                                <p class="stat-text">HP: <span id="p2-hp">---</span> / ---</p>
+                                <p class="stat-text">Energia: <span id="p2-ap" class="ap-count">-</span> AP</p>
+                            </div>
+                        </div>
+                        
+                        <div class="hp-bar"><div class="hp-fill" id="p2-hp-fill" style="width: 100%;"></div></div>
+                        
+                        <div class="card-body">
+                            <img src="" alt="Kártya kép" class="card-image" style="display: none;" onerror="this.style.display='none'">
+                            <div class="status-container">
+                                <div id="p2-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
+                                <div id="p2-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
+                                <div id="p2-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
+                            </div>
+                        </div>
+
+                        <div class="attacks">
+                            <button>Képesség 1 <span>-</span></button>
+                            <button>Képesség 2 <span>-</span></button>
+                            <button>Képesség 3 <span>-</span></button>
+                            <button>Képesség 4 <span>-</span></button>
+                            <button class="charge-btn" onclick="executeMove('p2', 'charge')">⚡ Töltődés <span>Kör kihagyása, extra +1 AP</span></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -107,13 +124,14 @@
             </div>
         </div>
 
-        <!-- Győzelmi képernyő -->
         <div id="victory-screen">
             <div class="victory-text" id="victory-winner-text">GYŐZTES!</div>
             <button onclick="location.reload()">Új Csatlakozás</button>
         </div>
     </div>
 
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="cards.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

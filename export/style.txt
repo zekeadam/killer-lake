@@ -19,7 +19,7 @@ html, body {
 .container {
     width: 100%;
     height: 98vh;
-    max-width: 1200px; 
+    max-width: 1100px; 
     display: flex;
     flex-direction: column;
     padding: 15px;
@@ -30,88 +30,161 @@ html, body {
 
 h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; letter-spacing: 2px; text-shadow: 0 0 10px rgba(233, 69, 96, 0.4); }
 
-/* --- LOBBY (VÁRÓTEREM) --- */
+/* ÚJ: LOBBY (VÁRÓTEREM) STÍLUSOK */
 #lobby-screen {
-    flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .lobby-box {
     background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(16, 16, 36, 0.95) 100%);
-    border: 3px solid #0f3460; border-radius: 16px; padding: 30px; width: 100%; max-width: 450px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.7); text-align: center;
+    border: 3px solid #0f3460;
+    border-radius: 16px;
+    padding: 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    text-align: center;
 }
-.lobby-box h2 { margin-top: 0; margin-bottom: 25px; color: #fff; font-size: 1.4rem; border-bottom: 2px solid #0f3460; padding-bottom: 10px; }
-.lobby-section { margin: 20px 0; }
-.lobby-section p { margin: 0 0 8px 0; font-size: 0.95rem; color: #ccc; }
-.code-display { background-color: rgba(5, 5, 10, 0.8); border: 1px dashed #f39c12; padding: 12px; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #f39c12; border-radius: 6px; letter-spacing: 1px; user-select: all; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-.hint { font-size: 0.75rem !important; color: #888 !important; margin-top: 5px !important; }
-.divider { margin: 25px 0; font-size: 0.8rem; color: #555; font-weight: bold; position: relative; }
-#opponent-id-input { width: 100%; padding: 12px; background-color: rgba(5, 5, 10, 0.8); border: 2px solid #0f3460; border-radius: 6px; color: #fff; font-size: 1rem; box-sizing: border-box; text-align: center; margin-bottom: 12px; transition: border-color 0.2s; }
-#opponent-id-input:focus { outline: none; border-color: #e94560; }
-#connect-btn { width: 100%; padding: 12px; background-color: #e94560; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(233, 69, 96, 0.3); transition: background-color 0.2s; }
+
+.lobby-box h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #fff;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #0f3460;
+    padding-bottom: 10px;
+}
+
+.lobby-section {
+    margin: 20px 0;
+}
+
+.lobby-section p {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: #ccc;
+}
+
+.code-display {
+    background-color: rgba(5, 5, 10, 0.8);
+    border: 1px dashed #f39c12;
+    padding: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #f39c12;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    user-select: all; /* Egy kattintásra kijelöli az egészet a másoláshoz */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.hint {
+    font-size: 0.75rem !important;
+    color: #888 !important;
+    margin-top: 5px !important;
+}
+
+.divider {
+    margin: 25px 0;
+    font-size: 0.8rem;
+    color: #555;
+    font-weight: bold;
+    position: relative;
+}
+
+#opponent-id-input {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(5, 5, 10, 0.8);
+    border: 2px solid #0f3460;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1rem;
+    box-sizing: border-box;
+    text-align: center;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+}
+
+#opponent-id-input:focus {
+    outline: none;
+    border-color: #e94560;
+}
+
+#connect-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #e94560;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(233, 69, 96, 0.3);
+    transition: background-color 0.2s;
+}
+
 #connect-btn:hover { background-color: #ff4757; }
-#connection-status { margin-top: 20px; font-size: 0.85rem; color: #39a2db; font-style: italic; }
 
-/* --- ÚJ: DRAFT KÉPERNYŐ --- */
-#draft-screen {
-    flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
+#connection-status {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #39a2db;
+    font-style: italic;
 }
-.draft-box {
-    background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(16, 16, 36, 0.95) 100%);
-    border: 3px solid #0f3460; border-radius: 16px; padding: 30px; width: 100%; max-width: 850px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.8); text-align: center;
+
+/* JÁTÉKTÉR JELZŐK */
+#turn-indicator {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0 auto 15px auto;
+    padding: 6px 25px;
+    border-radius: 20px;
+    background-color: #0f3460;
+    border: 2px solid #e94560;
+    text-align: center;
+    width: fit-content;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-.draft-box h2 { color: #f1c40f; margin-top: 0; text-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
-.draft-team-container {
-    display: flex; flex-direction: row; justify-content: center; gap: 15px; margin: 30px 0;
-    min-height: 220px; padding: 10px; border-radius: 10px; background: rgba(5,5,15,0.5);
-    border: 1px dashed #333;
+
+.arena { 
+    display: flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    gap: 50px; 
+    flex: 1; 
+    min-height: 0; 
+    align-items: center;
 }
-.draft-card {
-    width: 140px; height: 200px; border: 2px solid #e94560; border-radius: 8px; 
-    background-color: #111; cursor: grab; position: relative; overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    display: flex; flex-direction: column;
-}
-.draft-card:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 10px 25px rgba(233,69,96,0.6); z-index: 10; }
-.draft-card.drag-over { border-color: #2ecc71; transform: scale(1.02); }
-.draft-card img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid #e94560; pointer-events: none;}
-.draft-card .draft-name { font-size: 0.75rem; font-weight: bold; padding: 5px; text-align: center; background: #0f3460; flex: 1; display: flex; align-items: center; justify-content: center; pointer-events: none;}
-.draft-card .order-badge { position: absolute; top: 5px; left: 5px; background: #e94560; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); pointer-events: none;}
 
-.draft-actions { margin-top: 20px; }
-#ready-btn { padding: 12px 30px; background-color: #2ecc71; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4); transition: transform 0.2s; }
-#ready-btn:hover { transform: scale(1.05); }
-#ready-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
-
-/* --- JÁTÉKTÉR --- */
-#turn-indicator { font-size: 1.1rem; font-weight: bold; margin: 0 auto 15px auto; padding: 6px 25px; border-radius: 20px; background-color: #0f3460; border: 2px solid #e94560; text-align: center; width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-.arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; }
-
-/* ÚJ: Kártya konténer és Csapatjelző (Roster) */
-.card-container { display: flex; flex-direction: column; align-items: center; }
-
-.team-roster {
-    display: flex; gap: 8px; margin-bottom: 12px; background: rgba(15, 52, 96, 0.5); 
-    padding: 6px 12px; border-radius: 20px; border: 1px solid #16213e;
-}
-.roster-dot {
-    width: 14px; height: 14px; border-radius: 50%; background-color: #333; 
-    border: 2px solid #111; transition: all 0.3s;
-}
-.roster-dot.alive { background-color: #39a2db; border-color: #fff; box-shadow: 0 0 8px #39a2db; }
-.roster-dot.active-battler { background-color: #2ecc71; border-color: #fff; transform: scale(1.3); box-shadow: 0 0 12px #2ecc71; }
-.roster-dot.ko { background-color: #e74c3c; border-color: #555; opacity: 0.4; }
-
+/* VERTIKÁLIS KÁRTYA FORMÁTUM */
 .card { 
-    border: 3px solid #0f3460; border-radius: 16px; padding: 15px; 
+    border: 3px solid #0f3460; 
+    border-radius: 16px; 
+    padding: 15px; 
     background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
-    display: flex; flex-direction: column; width: 330px; height: 560px; box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 330px; 
+    height: 560px; 
+    box-sizing: border-box;
     transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s, filter 0.3s;
-    position: relative; z-index: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
 }
-.card.active-card { border-color: #e94560; box-shadow: 0 0 20px rgba(233, 69, 96, 0.6); transform: translateY(-5px); }
+
+.card.active-card { 
+    border-color: #e94560; 
+    box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+    transform: translateY(-5px);
+}
 
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .card h2 { margin: 0; font-size: 1.2rem; color: #fff; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
