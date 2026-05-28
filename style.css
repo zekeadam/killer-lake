@@ -187,7 +187,7 @@ h1 { display: none; }
 .arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; margin-top: 40px; }
 
 /* ÚJ: Kártya konténer és Csapatjelző (Roster) */
-.card-container { display: flex; flex-direction: column; align-items: center; }
+.card-container { display: flex; flex-direction: row; align-items: center; gap: 20px; }
 
 .team-roster {
     display: flex; 
@@ -259,11 +259,14 @@ h1 { display: none; }
 /* ITEM ÉS SUPPORTER KÁRTYÁK */
 .item-container {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 0;
     justify-content: center;
-    width: 100%;
 }
+#p1-items { order: -1; }
+#p2-items { order: 2; }
+
 .item-btn {
     background: rgba(10, 10, 20, 0.6);
     border: 1px solid rgba(197, 160, 89, 0.4);
@@ -282,7 +285,7 @@ h1 { display: none; }
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 .item-btn:hover:not(:disabled) {
-    transform: translateY(-5px);
+    transform: scale(1.05);
     box-shadow: 0 8px 15px rgba(197, 160, 89, 0.6);
     border-color: #f1c40f;
 }
@@ -434,9 +437,9 @@ h1 { display: none; }
 /* LOG */
 #log-container { 
     width: 100%; 
+    max-width: 770px;
     height: 120px; 
-    margin-top: 15px; 
-    padding-bottom: 5px;
+    margin: 15px auto 5px auto;
 }
 
 #log { 

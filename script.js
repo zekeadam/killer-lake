@@ -232,18 +232,22 @@ function renderDraft() {
 
 function confirmTeamOrder() {
     const nickInput = document.getElementById('nickname-input').value.trim();
-    if (!nickInput) {
+    if (!nickInput && !isPvEMode) {
         alert("PVP módban kötelező megadni egy nicknevet!");
         return;
     }
-    myNickname = nickInput;
+    myNickname = nickInput || "Játékos";
     iAmReady = true;
     document.getElementById('ready-btn').disabled = true;
     document.getElementById('ready-btn').innerText = "Készen állsz!";
-    document.getElementById('draft-status').innerText = "Várakozás az ellenfélre...";
     
-    conn.send({ type: 'READY', team: myDraftTeam, items: myItemIds, name: myNickname });
-    checkStartGame();
+    if (isPvEMode) {
+        checkStartGame();
+    } else {
+        document.getElementById('draft-status').innerText = "Várakozás az ellenfélre...";
+        if (conn) conn.send({ type: 'READY', team: myDraftTeam, items: myItemIds, name: myNickname });
+        checkStartGame();
+    }
 }
 
 function checkStartGame() {
@@ -885,16 +889,17 @@ function startPvEMode() {
     myNickname = "Játékos"; 
     oppNickname = "Gonosz AI";
     
-    document.getElementById('lobby-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'block';
-    
     const p1Team = getRandomTeam();
-    const p2Team = getRandomTeam();
+    oppDraftTeam = getRandomTeam(); // Az AI csapata előre legenerálva
     const p1Items = getRandomItems();
-    const p2Items = getRandomItems();
+    oppItemIds = getRandomItems();  // Az AI tárgyai előre legenerálva
     
-    initGame(p1Team, p2Team, p1Items, p2Items);
-    logMessage("--- PVE MÓD AKTIVÁLVA: Játék az AI ellen ---", "log-system");
+    oppIsReady = true; // Az AI azonnal "készen áll"
+    
+    // Nem a játékot indítjuk, hanem a draft (sorrendező) képernyőt
+    setupDraft(p1Team, p1Items);
+    
+    logMessage("--- PVE MÓD: Állítsd be a kezdőcsapatod sorrendjét! ---", "log-system");
     // P1 kezd, így nem indítjuk el azonnal az AI-t
 }
 
