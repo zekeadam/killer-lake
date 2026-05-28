@@ -9,6 +9,37 @@ let isActionLocked = false; // Spam-védelem az auto-clicker ellen
 let myNickname = "Játékos 1";
 let oppNickname = "Játékos 2";
 
+// --- ÚJ: HANG RENDSZER (Online MP3 streamelés) ---
+// Ide bármilyen weben található hang linkjét berakhatod! (Nem kell letölteni fájlokat)
+const soundURLs = {
+    click: "https://s3.amazonaws.com/freecodecamp/drums/side_stick_1.mp3",  // MEGSZÓLAL: Bármilyen interaktív gomb megnyomásakor.
+    attack_normal: "https://s3.amazonaws.com/freecodecamp/drums/Brk_Snr.mp3", // MEGSZÓLAL: Sima sebző támadás indításakor.
+    attack_burn: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
+    attack_paralyze: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3",// MEGSZÓLAL: Bénító (Paralyze) támadás indításakor (éles, elektromos hang).
+    damage: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3",   // MEGSZÓLAL: Ha az ellenfél ténylegesen sérül, betörik egy pajzsa, vagy kör végén megégetik.
+    shield: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
+    heal: "https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
+    charge: "https://s3.amazonaws.com/freecodecamp/drums/Chord_2.mp3"       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
+};
+
+const audioCache = {};
+// Előre betöltjük a böngészőbe a linkeket, hogy azonnal szóljanak
+for (const [key, url] of Object.entries(soundURLs)) {
+    audioCache[key] = new Audio(url);
+    audioCache[key].volume = 0.5; // Hangerő 50%
+}
+
+function playSound(type) {
+    if (audioCache[type]) {
+        // A cloneNode() teszi lehetővé, hogy a hang akár átfedésben is megszólaljon (gyors kattintásnál)
+        const soundClone = audioCache[type].cloneNode();
+        soundClone.volume = audioCache[type].volume;
+        soundClone.play().catch(e => {
+            // A böngészők blokkolhatják az első kattintás előtti lejátszást
+        });
+    }
+}
+
 // --- DRAFT VÁLTOZÓK ---
 let myDraftTeam = [];
 let oppDraftTeam = [];
@@ -693,6 +724,7 @@ function executeMove(playerId, attackIndex) {
 
     // Akció lezárása és UI azonnali letiltása
     isActionLocked = true;
+    playSound('click');
     updateUI();
 
     let payload = {
@@ -733,6 +765,7 @@ function applyMove(playerId, data) {
         attackerState.ap = Math.min(10, attackerState.ap + 1);
         logMessage(`⚡ <b>${attackerCard.name}</b> erőt gyűjt! (Kör kihagyása, extra AP)`, "log-ap");
         triggerAnimation(`${playerId}-card`, 'anim-charge', 600);
+        playSound('charge');
         endTurnPhase(playerId);
         return;
     }
@@ -744,6 +777,9 @@ function applyMove(playerId, data) {
     triggerAnimation(`${playerId}-card`, 'anim-attack', 300);
 
     if (move.type === "dmg") {
+        if (move.effect === "burn") playSound('attack_burn');
+        else if (move.effect === "paralyze") playSound('attack_paralyze');
+        else playSound('attack_normal');
         createProjectile(`${playerId}-card`, `${oppId}-card`, move.effect, move.hits || 1);
     }
 
@@ -790,6 +826,7 @@ function applyMove(playerId, data) {
 
                 const totalDamage = hitsLanded * dmgPerHit;
                 triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
+                if (hitsLanded > 0 || shieldsBroken > 0) playSound('damage');
 
                 let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
                 if (hitsLanded > 0) {
@@ -819,10 +856,12 @@ function applyMove(playerId, data) {
             const rect = document.getElementById(`${playerId}-card`).getBoundingClientRect();
             spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, "#2ecc71", 45, 150);
             triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+            playSound('heal');
             logMessage(`> ${attackerCard.name} visszatöltött ${move.healAmount} Életerőt!`, "log-heal");
         } else if (move.type === "shield") {
             attackerCard.shields = Math.min(2, attackerCard.shields + 1);
             triggerShieldScan(playerId);
+            playSound('shield');
             const rect = document.getElementById(`${playerId}-card`).getBoundingClientRect();
             spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, "#3498db", 45, 150);
             logMessage(`> ${attackerCard.name} felhúzott egy pajzsot.`, "log-shield");
@@ -842,6 +881,7 @@ function endTurnPhase(currentPlayerId) {
         pCard.hp -= 20;
         pCard.burnTurns--;
         triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
+        playSound('damage');
         logMessage(`${pCard.name} égési sérülést szenvedett (20 DMG).`, "crit");
         
         if (pCard.hp <= 0) {
@@ -885,6 +925,7 @@ function executeItem(playerId, itemIndex) {
     if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked) return;
 
     isActionLocked = true;
+    playSound('click');
     updateUI();
 
     let payload = {
@@ -915,6 +956,7 @@ function applyItem(playerId, data) {
         oppCard.hp -= action.dmg;
         logMessage(`> ${cardData.name} sebzett ${action.dmg}-t!`, "log-dmg");
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
+        playSound('damage');
         if (action.effect === 'paralyze') {
             oppCard.isParalyzed = true;
             logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
@@ -923,11 +965,13 @@ function applyItem(playerId, data) {
         myCard.hp = Math.min(myCard.maxHp, myCard.hp + action.healAmount);
         logMessage(`> ${myCard.name} visszatöltött ${action.healAmount} HP-t!`, "log-heal");
         triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+        playSound('heal');
     } else if (action.type === 'shield') {
         const gained = Math.min(action.amount, 2 - myCard.shields);
         myCard.shields += gained;
         logMessage(`> ${myCard.name} kapott ${gained} pajzsot!`, "log-shield");
         triggerShieldScan(playerId);
+        playSound('shield');
     } else if (action.type === 'status') {
         if (action.effect === 'burn') {
             oppCard.burnTurns = 3;
