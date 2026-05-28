@@ -1,4 +1,4 @@
-// A játékban szereplő összes Pokémon / Karakter kártya adatbázisa
+// A játékban szereplő összes karakter kártya adatbázisa
 const cardDatabase = [
     {
         id: "langolo_tok",
