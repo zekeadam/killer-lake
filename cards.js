@@ -137,6 +137,8 @@ const cardDatabase = [
         name: "Medve Riasztás",
         image: "card/11.png",
         type: "supporter",
+        description: "Megriasztja az ellenfelet: 30 sebzés és bénítás.",
+        action: { type: "dmg", dmg: 30, effect: "paralyze" },
         maxHp: 50,
         attacks: []
     },
@@ -145,6 +147,8 @@ const cardDatabase = [
         name: "Gyermekláncfű Mező",
         image: "card/12.png",
         type: "supporter",
+        description: "Visszatölt 60 Életerőt az aktív karakternek.",
+        action: { type: "heal", healAmount: 60 },
         maxHp: 50,
         attacks: []
     },
@@ -165,14 +169,18 @@ const cardDatabase = [
         name: "Via Ferrata",
         image: "card/14.png",
         type: "supporter",
+        description: "Ad 2 Pajzsot az aktív karakternek.",
+        action: { type: "shield", amount: 2 },
         maxHp: 50,
         attacks: []
     },
     {
         id: "card_15",
-        name: "Nincs Víz Ezért Nem Lehet Lehúni A WC-t",
+        name: "Nincs Víz Ezért Nem Lehet Lehúzni A WC-t",
         image: "card/15.png",
         type: "supporter",
+        description: "Meggyújtja az ellenfelet (Égés).",
+        action: { type: "status", effect: "burn" },
         maxHp: 50,
         attacks: []
     },
@@ -181,6 +189,8 @@ const cardDatabase = [
         name: "Kutya Kula Csapda",
         image: "card/16.png",
         type: "item",
+        description: "Elvesz 2 AP-t az ellenféltől.",
+        action: { type: "ap_drain", amount: 2 },
         maxHp: 50,
         attacks: []
     },

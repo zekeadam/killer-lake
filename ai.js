@@ -24,6 +24,11 @@ function getAIMove(aiPlayerState, opponentPlayerState) {
         return null; 
     }
 
+    // Ha van item a kezében, az AI mindig elhasználja az elsőt a körében, mint egy ingyenes akció
+    if (aiPlayerState.items && aiPlayerState.items.length > 0) {
+        return { type: 'item', itemIndex: 0 };
+    }
+
     // Stratégia:
     // 1. Ha kevés az AP, és van még mit tölteni, akkor töltsön.
     // 2. Ha az AI kártyája nagyon alacsony HP-n van, és van gyógyító képessége, használja azt.

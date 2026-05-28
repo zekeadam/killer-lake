@@ -11,6 +11,8 @@ let oppNickname = "Játékos 2";
 // --- DRAFT VÁLTOZÓK ---
 let myDraftTeam = [];
 let oppDraftTeam = [];
+let myItemIds = [];
+let oppItemIds = [];
 let iAmReady = false;
 let oppIsReady = false;
 let draggedIndex = null;
@@ -101,11 +103,24 @@ function connectToPeer() {
 
 function getRandomTeam() {
     let team = [];
+    const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
     for (let i = 0; i < 5; i++) {
-        const randomCard = cardDatabase[Math.floor(Math.random() * cardDatabase.length)];
+        const randomCard = charCards[Math.floor(Math.random() * charCards.length)];
         team.push(randomCard.id);
     }
     return team;
+}
+
+function getRandomItems() {
+    let items = [];
+    const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
+    if (itemCards.length > 0) {
+        for (let i = 0; i < 3; i++) {
+            const randomCard = itemCards[Math.floor(Math.random() * itemCards.length)];
+            items.push(randomCard.id);
+        }
+    }
+    return items;
 }
 
 function setupConnection() {
@@ -114,9 +129,11 @@ function setupConnection() {
             // A Host generál két teljesen különálló ID listát
             const p1TeamIds = getRandomTeam();
             const p2TeamIds = getRandomTeam();
+            const p1ItemIds = getRandomItems();
+            const p2ItemIds = getRandomItems();
             
-            conn.send({ type: 'INIT', p1TeamIds: p1TeamIds, p2TeamIds: p2TeamIds });
-            setupDraft(p1TeamIds); 
+            conn.send({ type: 'INIT', p1TeamIds: p1TeamIds, p2TeamIds: p2TeamIds, p1ItemIds: p1ItemIds, p2ItemIds: p2ItemIds });
+            setupDraft(p1TeamIds, p1ItemIds); 
         } else {
             document.getElementById('connection-status').innerText = "Várakozás a kártyákra...";
         }
@@ -130,14 +147,18 @@ function setupConnection() {
 
     conn.on('data', (data) => {
         if (data.type === 'INIT') {
-            setupDraft(data.p2TeamIds);
+            setupDraft(data.p2TeamIds, data.p2ItemIds);
         } else if (data.type === 'READY') {
             oppIsReady = true;
             oppDraftTeam = data.team;
+            oppItemIds = data.items;
             oppNickname = data.name || (myRole === 'p1' ? "Játékos 2" : "Játékos 1");
             checkStartGame();
         } else if (data.type === 'MOVE') {
             receiveMove(data);
+        } else if (data.type === 'USE_ITEM') {
+            const oppId = myRole === 'p1' ? 'p2' : 'p1';
+            applyItem(oppId, data);
         }
     });
 
@@ -149,8 +170,9 @@ function setupConnection() {
 
 // --- 2. DRAFT (CSAPATÖSSZEÁLLÍTÓ) FÁZIS ---
 
-function setupDraft(teamIds) {
+function setupDraft(teamIds, itemIds) {
     myDraftTeam = teamIds;
+    myItemIds = itemIds || [];
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
     renderDraft();
@@ -220,7 +242,7 @@ function confirmTeamOrder() {
     document.getElementById('ready-btn').innerText = "Készen állsz!";
     document.getElementById('draft-status').innerText = "Várakozás az ellenfélre...";
     
-    conn.send({ type: 'READY', team: myDraftTeam, name: myNickname });
+    conn.send({ type: 'READY', team: myDraftTeam, items: myItemIds, name: myNickname });
     checkStartGame();
 }
 
@@ -229,18 +251,22 @@ function checkStartGame() {
         document.getElementById('draft-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'block';
         
-        let finalP1, finalP2;
+        let finalP1, finalP2, itemsP1, itemsP2;
 
         // Explicit meghatározás: ki az egyes és ki a kettes játékos
         if (myRole === 'p1') {
             finalP1 = [...myDraftTeam];  // Én vagyok a Host (p1)
             finalP2 = [...oppDraftTeam]; // Az ellenfél a Guest (p2)
+            itemsP1 = [...myItemIds];
+            itemsP2 = [...oppItemIds];
         } else {
             finalP1 = [...oppDraftTeam]; // Az ellenfél a Host (p1)
             finalP2 = [...myDraftTeam];  // Én vagyok a Guest (p2)
+            itemsP1 = [...oppItemIds];
+            itemsP2 = [...myItemIds];
         }
 
-        initGame(finalP1, finalP2);
+        initGame(finalP1, finalP2, itemsP1, itemsP2);
     }
 }
 
@@ -258,12 +284,12 @@ function buildTeamObjects(teamIds) {
     });
 }
 
-function initGame(p1TeamIds, p2TeamIds) {
+function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
     gameState = {
         activePlayer: 'p1',
         gameOver: false,
-        p1: { team: buildTeamObjects(p1TeamIds), activeIndex: 0, ap: 2 },
-        p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2 }
+        p1: { team: buildTeamObjects(p1TeamIds), activeIndex: 0, ap: 2, items: p1ItemIds || [] },
+        p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2, items: p2ItemIds || [] }
     };
     
     document.getElementById('log').innerHTML = "";
@@ -525,6 +551,26 @@ function updateUI() {
                 attackBtnIdx++;
             }
         });
+
+        // Elemek (Items/Supporters) megjelenítése
+        const itemContainerId = `${player}-items`;
+        let itemContainer = document.getElementById(itemContainerId);
+        if (!itemContainer) {
+            itemContainer = document.createElement('div');
+            itemContainer.id = itemContainerId;
+            itemContainer.className = 'item-container';
+            document.getElementById(`${player}-card`).parentElement.appendChild(itemContainer);
+        }
+        itemContainer.innerHTML = '';
+        pState.items.forEach((itemId, idx) => {
+            const cardData = cardDatabase.find(c => c.id === itemId);
+            const btn = document.createElement('button');
+            btn.className = 'item-btn';
+            btn.innerHTML = `<img src="${cardData.image}" class="item-img" title="${cardData.description}"> <span>${cardData.name}</span>`;
+            btn.disabled = (!isMyTurn || gameState.gameOver);
+            btn.onclick = () => executeItem(player, idx);
+            itemContainer.appendChild(btn);
+        });
     });
 
     if (!gameState.gameOver) {
@@ -742,6 +788,75 @@ function endTurnPhase(currentPlayerId) {
     }
 }
 
+function executeItem(playerId, itemIndex) {
+    if (gameState.gameOver || myRole !== playerId) return;
+
+    let payload = {
+        type: 'USE_ITEM',
+        itemIndex: itemIndex
+    };
+
+    if (conn) conn.send(payload);
+    applyItem(playerId, payload);
+}
+
+function applyItem(playerId, data) {
+    const pState = gameState[playerId];
+    const itemId = pState.items[data.itemIndex];
+    if (!itemId) return;
+
+    const cardData = cardDatabase.find(c => c.id === itemId);
+    const action = cardData.action;
+
+    const oppId = playerId === 'p1' ? 'p2' : 'p1';
+    const oppState = gameState[oppId];
+    const oppCard = oppState.team[oppState.activeIndex];
+    const myCard = pState.team[pState.activeIndex];
+
+    logMessage(`🎴 <b>${cardData.name}</b> kijátszva!`, "log-system");
+
+    if (action.type === 'dmg') {
+        oppCard.hp -= action.dmg;
+        logMessage(`> ${cardData.name} sebzett ${action.dmg}-t!`, "log-dmg");
+        triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
+        if (action.effect === 'paralyze') {
+            oppCard.isParalyzed = true;
+            logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+        }
+    } else if (action.type === 'heal') {
+        myCard.hp = Math.min(myCard.maxHp, myCard.hp + action.healAmount);
+        logMessage(`> ${myCard.name} visszatöltött ${action.healAmount} HP-t!`, "log-heal");
+        triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+    } else if (action.type === 'shield') {
+        myCard.shields += action.amount;
+        logMessage(`> ${myCard.name} kapott ${action.amount} pajzsot!`, "log-shield");
+        triggerShieldScan(playerId);
+    } else if (action.type === 'status') {
+        if (action.effect === 'burn') {
+            oppCard.burnTurns = 3;
+            logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+        }
+    } else if (action.type === 'ap_drain') {
+        oppState.ap = Math.max(0, oppState.ap - action.amount);
+        logMessage(`> ${cardData.name} elszívott ${action.amount} AP-t!`, "status-effect");
+    }
+
+    pState.items.splice(data.itemIndex, 1);
+    
+    if (oppCard.hp <= 0) {
+        logMessage(`> ${oppCard.name} elájult az itemtől (K.O.)!`, "crit");
+        oppState.activeIndex++;
+        if (oppState.activeIndex < 5) {
+            const nextCard = oppState.team[oppState.activeIndex];
+            logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
+            triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
+        }
+    }
+
+    if (checkWin()) return;
+    updateUI();
+}
+
 // --- 5. TEST MÓD (AI vs AI) ---
 
 function startTestMode() {
@@ -755,8 +870,10 @@ function startTestMode() {
     
     const p1Team = getRandomTeam();
     const p2Team = getRandomTeam();
+    const p1Items = getRandomItems();
+    const p2Items = getRandomItems();
     
-    initGame(p1Team, p2Team);
+    initGame(p1Team, p2Team, p1Items, p2Items);
     logMessage("--- TEST MÓD AKTIVÁLVA: AI vs AI ---", "log-system");
     
     setTimeout(runAITestMove, 1000);
@@ -773,8 +890,10 @@ function startPvEMode() {
     
     const p1Team = getRandomTeam();
     const p2Team = getRandomTeam();
+    const p1Items = getRandomItems();
+    const p2Items = getRandomItems();
     
-    initGame(p1Team, p2Team);
+    initGame(p1Team, p2Team, p1Items, p2Items);
     logMessage("--- PVE MÓD AKTIVÁLVA: Játék az AI ellen ---", "log-system");
     // P1 kezd, így nem indítjuk el azonnal az AI-t
 }
@@ -790,14 +909,24 @@ function runAITestMove() {
     
     const pId = gameState.activePlayer;
     const oppId = pId === 'p1' ? 'p2' : 'p1';
-    const moveIdx = getAIMove(gameState[pId], gameState[oppId]);
+    const moveResult = getAIMove(gameState[pId], gameState[oppId]);
 
-    // Ha az AI null-t ad vissza (pl. bénult), kényszerítsük a kör váltást, hogy ne álljon meg a játék
-    if (moveIdx === null) {
+    if (moveResult === null) {
         endTurnPhase(pId);
         return;
     }
+
+    if (typeof moveResult === 'object' && moveResult.type === 'item') {
+        const payload = {
+            type: 'USE_ITEM',
+            itemIndex: moveResult.itemIndex
+        };
+        applyItem(pId, payload);
+        setTimeout(runAITestMove, 1500); 
+        return;
+    }
     
+    const moveIdx = moveResult;
     const attackerCard = gameState[pId].team[gameState[pId].activeIndex];
     const move = moveIdx !== 'charge' ? attackerCard.attacks[moveIdx] : null;
     

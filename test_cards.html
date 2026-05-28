@@ -176,7 +176,9 @@
                 cardEl.style.position = 'relative';
 
                 let attacksHtml = '';
-                if (card.attacks && card.attacks.length > 0) {
+                if (card.type === 'item' || card.type === 'supporter') {
+                    attacksHtml = `<div class="attacks-list" style="padding: 10px; color: #f1c40f; text-align: center; font-size: 0.9rem;">${card.description || 'Különleges lap'}</div>`;
+                } else if (card.attacks && card.attacks.length > 0) {
                     attacksHtml = '<div class="attacks-list"><ul>';
                     card.attacks.forEach(attack => {
                         let icon = "⚔️";
@@ -215,7 +217,7 @@
                     <img src="${card.image}" alt="${card.name}">
                     <div class="card-header-row">
                         <h3>${card.name}</h3>
-                        <span class="hp-label-mini">❤️ ${card.maxHp} HP</span>
+                        ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${card.maxHp} HP</span>`}
                     </div>
                     ${attacksHtml}
                 `;
