@@ -568,9 +568,48 @@ function updateUI() {
         itemContainer.innerHTML = '';
         pState.items.forEach((itemId, idx) => {
             const cardData = cardDatabase.find(c => c.id === itemId);
+            const action = cardData.action || {};
             const btn = document.createElement('button');
             btn.className = 'item-btn';
-            btn.innerHTML = `<img src="${cardData.image}" class="item-img" title="${cardData.description}"> <span>${cardData.name}</span>`;
+            
+            let icon = "🎴";
+            let dmgText = "---";
+            let hitText = "---";
+            let effectText = "";
+
+            if (action.type === "dmg") {
+                icon = action.effect === "paralyze" ? "⚡" : "⚔️";
+                dmgText = `💥${action.dmg} DMG`;
+                hitText = `🎯ITEM`;
+                effectText = action.effect === "paralyze" ? "⚡ BÉNÍT" : "";
+            } else if (action.type === "heal") {
+                icon = "🧪";
+                dmgText = `💚+${action.healAmount} HP`;
+                hitText = "🧪 REGEN";
+                effectText = "🧪 GYÓGYUL";
+            } else if (action.type === "shield") {
+                icon = "🛡️";
+                dmgText = "🛡️ VÉD";
+                hitText = `🛡️+${action.amount}`;
+                effectText = "🛡️ PAJZS";
+            } else if (action.type === "status") {
+                icon = "🔥";
+                dmgText = "🔥 ÉGÉS";
+                hitText = "☣️ STÁTUSZ";
+                effectText = "🔥 ÉGÉS";
+            } else if (action.type === "ap_drain") {
+                icon = "⚡";
+                dmgText = `⚡-${action.amount} AP`;
+                hitText = "⚡ ELVONÁS";
+                effectText = "⚡ DRAIN";
+            }
+
+            btn.innerHTML = `
+                <img src="${cardData.image}" class="item-img"> 
+                <div class="btn-title">${icon}${cardData.name}</div>
+                <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
+                <div class="btn-row"><span>✨ INGYENES</span><span class="btn-eff">${effectText}</span></div>
+            `;
             btn.disabled = (!isMyTurn || gameState.gameOver);
             btn.onclick = () => executeItem(player, idx);
             itemContainer.appendChild(btn);
