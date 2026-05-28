@@ -172,17 +172,31 @@ h1 { display: none; }
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-.arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; }
+.arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; margin-top: 40px; }
 
 /* ÚJ: Kártya konténer és Csapatjelző (Roster) */
 .card-container { display: flex; flex-direction: column; align-items: center; }
 
 .team-roster {
-    display: flex; gap: 12px; margin-bottom: 12px; background: rgba(15, 52, 96, 0.5); 
-    padding: 8px 16px; border-radius: 30px; border: 1px solid #16213e;
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    background: rgba(10, 10, 20, 0.5); 
+    backdrop-filter: blur(15px);
+    padding: 20px 10px; 
+    border-radius: 40px; 
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
+#p1-roster { left: 15px; }
+#p2-roster { right: 15px; }
+
 .roster-dot {
-    width: 36px; height: 36px; border-radius: 50%; background-color: #333; 
+    width: 72px; height: 72px; border-radius: 50%; background-color: #333; 
     border: 2px solid #111; transition: all 0.3s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     position: relative;
@@ -204,8 +218,8 @@ h1 { display: none; }
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 26px;
-    height: 4px;
+    width: 52px;
+    height: 8px;
     background-color: #e74c3c;
     border-radius: 2px;
     box-shadow: 0 0 5px rgba(0,0,0,0.8);
