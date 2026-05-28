@@ -223,7 +223,7 @@ h1 { display: none; }
     border-top: 2px solid rgba(197, 160, 89, 0.6);
     border-left: 2px solid rgba(197, 160, 89, 0.4);
     border-radius: 16px; padding: 15px; 
-    display: flex; flex-direction: column; width: 360px; height: 750px; box-sizing: border-box; gap: 5px;
+    display: flex; flex-direction: column; width: 360px; height: auto; min-height: 600px; box-sizing: border-box; gap: 5px;
     transition: transform 0.2s ease, box-shadow 0.2s, filter 0.3s;
     position: relative; z-index: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     overflow: visible; /* Engedi, hogy a körök kilógjanak a sarkokon */
@@ -281,7 +281,7 @@ h1 { display: none; }
 .hp-bar { width: 100%; height: 14px; background-color: #222; border-radius: 7px; margin: 2px 0; overflow: hidden; border: 1px solid #444; order: 3; flex-shrink: 0; }
 .hp-fill { height: 100%; background-color: #2ecc71; transition: width 0.4s ease-in-out, background-color 0.4s; }
 
-.card-body { width: 90%; aspect-ratio: 2 / 3; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; order: 2; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); overflow: visible; align-self: center; }
+.card-body { width: 80%; aspect-ratio: 2 / 3; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; order: 2; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); overflow: visible; align-self: center; }
 .card-image { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
 
 .status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; display: block; margin-top: 0; }
@@ -320,9 +320,9 @@ h1 { display: none; }
 }
 
 /* KÉPESSÉG RÁCS */
-.attacks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; order: 4; }
+.attacks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; order: 4; width: 100%; box-sizing: border-box; }
 .attacks button { 
-    min-height: 58px; height: auto; padding: 5px; 
+    width: 100%; min-width: 0; min-height: 58px; height: auto; padding: 5px 8px; 
     background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%); 
     color: white; border: 1px solid #2a4a7a; border-radius: 10px; 
     cursor: pointer; font-weight: 800; font-size: 0.7rem; 
@@ -355,12 +355,15 @@ h1 { display: none; }
 
 .attacks .charge-btn { 
     grid-column: span 2; background: linear-gradient(90deg, #d35400 0%, #e67e22 100%); 
-    color: #fff; padding: 12px 5px; font-size: 0.8rem; border: 1px solid #ff9f43; 
+    color: #fff; padding: 8px 5px; font-size: 0.8rem; border: 1px solid #ff9f43; 
     box-shadow: 0 4px 12px rgba(211, 84, 0, 0.4);
     line-height: 1.3;
-    min-height: 85px;
+    min-height: 48px;
+    display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 8px;
 }
 .attacks .charge-btn span { color: #fff; opacity: 1; font-weight: 900; font-size: 0.7rem; margin-top: 4px; }
 .attacks .charge-btn:disabled { background: #222; border-color: #333; color: #555; }
@@ -473,6 +476,7 @@ h1 { display: none; }
     justify-content: center;
     font-size: 2.5rem;
     transition: transform 0.45s linear;
+    transform: translate(0, 0) rotate(0deg);
     filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
 }
 

@@ -348,6 +348,7 @@ function createProjectile(fromId, toId, effectType, hitCount = 1) {
             proj.style.fontSize = (isMulti ? 1.5 + Math.random() * 0.5 : 3.5 + Math.random() * 0.5) + "rem";
             
             document.body.appendChild(proj);
+            void proj.offsetWidth; // Kényszerített újrarajzolás a kezdőpozíció rögzítéséhez
 
             const trailInterval = setInterval(() => {
                 const r = proj.getBoundingClientRect();
@@ -357,7 +358,7 @@ function createProjectile(fromId, toId, effectType, hitCount = 1) {
 
             setTimeout(() => {
                 proj.style.transform = `translate(${targetX - startX}px, ${targetY - startY}px) rotate(${360 + Math.random() * 360}deg)`;
-            }, 10);
+            }, 20);
 
             setTimeout(() => {
                 clearInterval(trailInterval);
@@ -443,7 +444,7 @@ function updateUI() {
         let attackBtnIdx = 0;
         buttons.forEach((btn) => {
             if (btn.classList.contains('charge-btn')) {
-                btn.innerHTML = `🔋 ENERGIA TÖLTÉS <span>+1 AP</span>`;
+                btn.innerHTML = `🔋 ENERGIA TÖLTÉS (+1 AP)`;
                 btn.disabled = (!isMyTurn || gameState.gameOver);
                 btn.onclick = () => executeMove(player, 'charge');
             } else {
@@ -479,11 +480,7 @@ function updateUI() {
                     icon = "🛡️";
                 }
 
-                btn.innerHTML = `
-                    <div class="btn-title">${icon} ${move.name}</div>
-                    <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
-                    <div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>
-                `;
+                btn.innerHTML = `<div class="btn-title">${icon}${move.name}</div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>`;
 
                 btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver);
                 btn.onclick = () => executeMove(player, currentAttackIdx);
