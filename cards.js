@@ -84,18 +84,17 @@ const cardDatabase = [
             { name: "Villám-Feltöltés", type: "heal", healAmount: 40, cost: 2 }
         ]
     },
-    {
-        id: "card_7",
-        name: "Thievery Corp",
-        image: "card/7.png",
-        maxHp: 130,
-        attacks: [
-            { name: "Tűzvihar-lehelet", type: "dmg", dmg: 40, cost: 1, effect: "burn" },
-            { name: "Kemence-harag", type: "dmg", dmg: 240, cost: 4 },
-            { name: "VMAX Szabály", type: "shield", cost: 1 },
-            { name: "Tűz-regeneráció", type: "heal", healAmount: 50, cost: 2 }
-        ]
-    },
+{
+    id: "card_7",
+    name: "Thievery Corp",
+    image: "card/7.png",
+    maxHp: 130,
+    attacks: [
+        { name: "Halk Tolvajlás", type: "ability", cost: 0 },
+        { name: "Visító Szendvics", type: "dmg", dmg: 60, cost: 2, effect: "paralyze" },
+        { name: "Szonikus Hangrobbanás", type: "dmg", dmg: 120, cost: 4 }
+    ]
+}
     {
         id: "card_8",
         name: "Éjszakai Vadász",
