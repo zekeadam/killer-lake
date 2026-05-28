@@ -30,7 +30,7 @@ const cardDatabase = [
         image: "card/2.png",
         maxHp: 70,
         attacks: [
-            { name: "Tok-gúnyos", type: "ability", cost: 0 },
+            { name: "Tok-gúnyos", type: "shield", cost: 1 },
             { name: "Pszicho-tokos-sugár", type: "dmg", dmg: 50, cost: 2 },
             { name: "Grimasz-Suhintás", type: "dmg", dmg: 10, cost: 1, effect: "paralyze" },
             { name: "Pszicho-Menedék", type: "heal", healAmount: 40, cost: 2 }
@@ -78,7 +78,7 @@ const cardDatabase = [
         image: "card/6.png",
         maxHp: 130,
         attacks: [
-            { name: "Tervezett Túlfeszültség", type: "ability", cost: 0 },
+            { name: "Tervezett Túlfeszültség", type: "shield", cost: 1 },
             { name: "Vakító Lézer", type: "dmg", dmg: 30, cost: 2, effect: "paralyze" },
             { name: "Kozmikus Villám-vihar", type: "dmg", dmg: 110, cost: 4 },
             { name: "Villám-Feltöltés", type: "heal", healAmount: 40, cost: 2 }
@@ -90,7 +90,7 @@ const cardDatabase = [
         image: "card/7.png",
         maxHp: 130,
         attacks: [
-            { name: "Halk Tolvajlás", type: "ability", cost: 0 },
+            { name: "Halk Tolvajlás", type: "heal", healAmount: 30, cost: 1 },
             { name: "Visító Szendvics", type: "dmg", dmg: 60, cost: 2, effect: "paralyze" },
             { name: "Szonikus Hangrobbanás", type: "dmg", dmg: 120, cost: 4 },
             { name: "Zsebtolvajlás", type: "shield", cost: 1 }
@@ -114,7 +114,7 @@ const cardDatabase = [
         image: "card/9.png",
         maxHp: 50,
         attacks: [
-            { name: "Kezességi Csere", type: "ability", cost: 0 },
+            { name: "Kezességi Csere", type: "dmg", dmg: 20, cost: 1 },
             { name: "Kezességi Pofon", type: "dmg", dmg: 10, cost: 2 },
             { name: "Trükkös Pajzs", type: "shield", cost: 1 },
             { name: "Gyors Gyógyulás", type: "heal", healAmount: 20, cost: 1 }
@@ -136,13 +136,17 @@ const cardDatabase = [
         id: "card_11",
         name: "Medve Riasztás",
         image: "card/11.png",
-        type: "supporter"
+        type: "supporter",
+        maxHp: 50,
+        attacks: []
     },
     {
         id: "card_12",
         name: "Gyermekláncfű Mező",
         image: "card/12.png",
-        type: "supporter"
+        type: "supporter",
+        maxHp: 50,
+        attacks: []
     },
     {
         id: "card_13",
@@ -160,27 +164,33 @@ const cardDatabase = [
         id: "card_14",
         name: "Via Ferrata",
         image: "card/14.png",
-        type: "supporter"
+        type: "supporter",
+        maxHp: 50,
+        attacks: []
     },
     {
         id: "card_15",
         name: "Nincs Víz Ezért Nem Lehet Lehúni A WC-t",
         image: "card/15.png",
-        type: "supporter"
+        type: "supporter",
+        maxHp: 50,
+        attacks: []
     },
     {
-    id: "card_16",
-    name: "Kutya Kula Csapda",
-    image: "card/16.png",
-    type: "item"
-},
+        id: "card_16",
+        name: "Kutya Kula Csapda",
+        image: "card/16.png",
+        type: "item",
+        maxHp: 50,
+        attacks: []
+    },
     {
         id: "card_17",
         name: "Nicili Fusion",
         image: "card/17.png",
         maxHp: 330,
         attacks: [
-            { name: "Fúziós Adrenalin", type: "ability", cost: 0 },
+            { name: "Fúziós Adrenalin", type: "heal", healAmount: 60, cost: 2 },
             { name: "Gigabob-Roham", type: "dmg", dmg: 180, cost: 3 },
             { name: "Kozmikus Gál-zuhatag", type: "dmg", dmg: 260, cost: 3 },
             { name: "Fúziós Pajzs", type: "shield", cost: 1 }
@@ -216,7 +226,7 @@ const cardDatabase = [
         image: "card/20.png",
         maxHp: 169,
         attacks: [
-            { name: "Dézsa-Gőz Sokk", type: "ability", cost: 0 },
+            { name: "Dézsa-Gőz Sokk", type: "shield", cost: 1 },
             { name: "Sokkos Tekintet", type: "dmg", dmg: 20, cost: 1 },
             { name: "Kozmikus Pofon-Zuhany", type: "dmg", dmg: 120, cost: 3 },
             { name: "Gőzös Regeneráció", type: "heal", healAmount: 40, cost: 2 }
@@ -240,7 +250,7 @@ const cardDatabase = [
         image: "card/22.png",
         maxHp: 169,
         attacks: [
-            { name: "Dézsa-Ordítás", type: "ability", cost: 0 },
+            { name: "Dézsa-Ordítás", type: "dmg", dmg: 40, cost: 1, effect: "paralyze" },
             { name: "Kozmikus Dézsa-Tsunami", type: "dmg", dmg: 100, cost: 3 },
             { name: "Dézsa-Pajzs", type: "shield", cost: 1 },
             { name: "Vizes Tisztulás", type: "heal", healAmount: 30, cost: 2 }
@@ -276,7 +286,7 @@ const cardDatabase = [
         image: "card/25.png",
         maxHp: 220,
         attacks: [
-            { name: "Összefogás", type: "ability", cost: 0 },
+            { name: "Összefogás", type: "heal", healAmount: 50, cost: 2 },
             { name: "Szilárd Váll", type: "dmg", dmg: 90, cost: 3 },
             { name: "Örök Barátság", type: "dmg", dmg: 180, cost: 4 },
             { name: "Egymásért Pajzs", type: "shield", cost: 1 }
@@ -288,7 +298,7 @@ const cardDatabase = [
         image: "card/26.png",
         maxHp: 160,
         attacks: [
-            { name: "Zseniális Hálózat", type: "ability", cost: 3 },
+            { name: "Zseniális Hálózat", type: "heal", healAmount: 60, cost: 3 },
             { name: "Szikla-Szcramble", type: "dmg", dmg: 50, cost: 2 },
             { name: "Háló-Betiprás", type: "dmg", dmg: 130, cost: 4 },
             { name: "Háló-Pajzs", type: "shield", cost: 1 }
@@ -384,7 +394,7 @@ const cardDatabase = [
         image: "card/34.png",
         maxHp: 300,
         attacks: [
-            { name: "Álner Védő", type: "ability", cost: 0 },
+            { name: "Álner Védő", type: "shield", cost: 1 },
             { name: "Brigád Támadás", type: "dmg", dmg: 160, cost: 3 },
             { name: "Gengszter Csapás", type: "dmg", dmg: 240, cost: 3 },
             { name: "Brigád Segély", type: "heal", healAmount: 50, cost: 2 }
@@ -396,7 +406,7 @@ const cardDatabase = [
         image: "card/35.png",
         maxHp: 300,
         attacks: [
-            { name: "Gyűjtői Szenvedély", type: "ability", cost: 0 },
+            { name: "Gyűjtői Szenvedély", type: "shield", cost: 1 },
             { name: "Ritkaság Változás", type: "dmg", dmg: 160, cost: 4 },
             { name: "Amisz Csapás", type: "dmg", dmg: 240, cost: 4 },
             { name: "Ritka Gyógyír", type: "heal", healAmount: 60, cost: 2 }
@@ -408,7 +418,7 @@ const cardDatabase = [
         image: "card/36.png",
         maxHp: 160,
         attacks: [
-            { name: "Kedves De Erős", type: "ability", cost: 0 },
+            { name: "Kedves De Erős", type: "dmg", dmg: 50, cost: 1 },
             { name: "Brigád Támadás Gengszter Csapás", type: "dmg", dmg: 240, cost: 4 },
             { name: "Kedves Pajzs", type: "shield", cost: 1 },
             { name: "Segítő Kéz", type: "heal", healAmount: 40, cost: 2 }
