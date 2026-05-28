@@ -231,7 +231,7 @@ function updateUI() {
         
         document.querySelector(`#${player}-card h2`).innerText = activeCard.name;
         document.querySelector(`#${player}-card .card-image`).src = activeCard.image;
-        document.querySelector(`#${player}-card .card-image').style.display = 'block';
+        document.querySelector(`#${player}-card .card-image`).style.display = 'block';
 
         document.getElementById(`${player}-hp`).innerText = Math.max(0, activeCard.hp);
         document.getElementById(`${player}-ap`).innerText = pState.ap;
