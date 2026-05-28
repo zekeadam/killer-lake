@@ -1,7 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
     background-color: #0d0d1a; 
     background-image: url('bg.png'); 
@@ -18,17 +18,17 @@ html, body {
 
 .container {
     width: 100%;
-    height: 98vh;
+    height: 100vh;
     max-width: 1200px; 
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    padding: 10px 60px; /* Növelve, hogy a kilógó ikonok ne vágódjanak le */
     box-sizing: border-box;
     position: relative;
     transition: transform 0.1s;
 }
 
-h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; letter-spacing: 2px; text-shadow: 0 0 10px rgba(233, 69, 96, 0.4); }
+h1 { display: none; }
 
 /* --- LOBBY (VÁRÓTEREM) --- */
 #lobby-screen {
@@ -36,20 +36,76 @@ h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; 
 }
 
 .lobby-box {
-    background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(16, 16, 36, 0.95) 100%);
-    border: 3px solid #0f3460; border-radius: 16px; padding: 30px; width: 100%; max-width: 450px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.7); text-align: center;
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4); /* Átlátszóbb háttér */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6); /* Aranyozott díszítés */
+    border-left: 2px solid rgba(197, 160, 89, 0.4);
+    border-radius: 20px; padding: 30px; width: 100%; max-width: 450px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.9), 
+                inset 0 0 30px rgba(57, 162, 219, 0.05);
+    text-align: center;
+    position: relative;
 }
 .lobby-box h2 { margin-top: 0; margin-bottom: 25px; color: #fff; font-size: 1.4rem; border-bottom: 2px solid #0f3460; padding-bottom: 10px; }
 .lobby-section { margin: 20px 0; }
 .lobby-section p { margin: 0 0 8px 0; font-size: 0.95rem; color: #ccc; }
-.code-display { background-color: rgba(5, 5, 10, 0.8); border: 1px dashed #f39c12; padding: 12px; font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #f39c12; border-radius: 6px; letter-spacing: 1px; user-select: all; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+.code-display { 
+    background-color: rgba(0, 20, 10, 0.9); border: 1px solid #2ecc71; padding: 12px; 
+    font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; 
+    color: #2ecc71; border-radius: 6px; letter-spacing: 2px; user-select: all; 
+    box-shadow: inset 0 0 15px rgba(46, 204, 113, 0.3), 0 0 10px rgba(46, 204, 113, 0.2);
+    text-shadow: 0 0 5px #2ecc71;
+}
 .hint { font-size: 0.75rem !important; color: #888 !important; margin-top: 5px !important; }
 .divider { margin: 25px 0; font-size: 0.8rem; color: #555; font-weight: bold; position: relative; }
 #opponent-id-input { width: 100%; padding: 12px; background-color: rgba(5, 5, 10, 0.8); border: 2px solid #0f3460; border-radius: 6px; color: #fff; font-size: 1rem; box-sizing: border-box; text-align: center; margin-bottom: 12px; transition: border-color 0.2s; }
 #opponent-id-input:focus { outline: none; border-color: #e94560; }
 #connect-btn { width: 100%; padding: 12px; background-color: #e94560; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(233, 69, 96, 0.3); transition: background-color 0.2s; }
 #connect-btn:hover { background-color: #ff4757; }
+#pve-btn { width: 100%; padding: 12px; background-color: #3498db; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); transition: background-color 0.2s; }
+#pve-btn:hover { background-color: #2980b9; }
+#copy-link-btn { width: 100%; padding: 12px; background-color: #9b59b6; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3); transition: background-color 0.2s; margin-top: 10px; }
+#copy-link-btn:hover { background-color: #8e44ad; }
+
+#nickname-input {
+    width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid #0f3460;
+    border-radius: 6px; color: #fff; text-align: center; box-sizing: border-box;
+}
+
+.player-names-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 40px;
+    box-sizing: border-box;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+.player-name {
+    font-size: 1rem; font-weight: 900; color: #fff;
+    text-shadow: 0 2px 4px #000;
+    text-transform: uppercase; letter-spacing: 1px;
+    background: rgba(10, 10, 20, 0.4);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6);
+    border-left: 1.5px solid rgba(197, 160, 89, 0.4);
+    padding: 4px 12px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 0 10px rgba(197, 160, 89, 0.15);
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 #connection-status { margin-top: 20px; font-size: 0.85rem; color: #39a2db; font-style: italic; }
 
 /* --- ÚJ: DRAFT KÉPERNYŐ --- */
@@ -57,25 +113,42 @@ h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; 
     flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
 }
 .draft-box {
-    background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(16, 16, 36, 0.95) 100%);
-    border: 3px solid #0f3460; border-radius: 16px; padding: 30px; width: 100%; max-width: 850px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.8); text-align: center;
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4); /* Most már megegyezik a connect menüvel */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6);
+    border-left: 2px solid rgba(197, 160, 89, 0.4);
+    border-radius: 24px; padding: 30px; width: 100%; max-width: 850px;
+    box-shadow: 0 40px 100px rgba(0,0,0,1),
+                inset 0 0 30px rgba(57, 162, 219, 0.05);
+    text-align: center;
 }
 .draft-box h2 { color: #f1c40f; margin-top: 0; text-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
 .draft-team-container {
     display: flex; flex-direction: row; justify-content: center; gap: 15px; margin: 30px 0;
-    min-height: 220px; padding: 10px; border-radius: 10px; background: rgba(5,5,15,0.5);
-    border: 1px dashed #333;
+    min-height: 220px; padding: 10px; border-radius: 12px; 
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(197, 160, 89, 0.2);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
 .draft-card {
-    width: 140px; height: 200px; border: 2px solid #e94560; border-radius: 8px; 
-    background-color: #111; cursor: grab; position: relative; overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    width: 140px; height: 200px; 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    border-top: 1.5px solid rgba(197, 160, 89, 0.5);
+    border-radius: 8px; 
+    background: rgba(10, 10, 20, 0.4); 
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    cursor: grab; position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
     display: flex; flex-direction: column;
 }
 .draft-card:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 10px 25px rgba(233,69,96,0.6); z-index: 10; }
 .draft-card.drag-over { border-color: #2ecc71; transform: scale(1.02); }
-.draft-card img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid #e94560; pointer-events: none;}
+.draft-card img { width: 100%; height: 75%; object-fit: cover; border-bottom: 1px solid rgba(197, 160, 89, 0.3); pointer-events: none;}
 .draft-card .draft-name { font-size: 0.75rem; font-weight: bold; padding: 5px; text-align: center; background: #0f3460; flex: 1; display: flex; align-items: center; justify-content: center; pointer-events: none;}
 .draft-card .order-badge { position: absolute; top: 5px; left: 5px; background: #e94560; color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5); pointer-events: none;}
 
@@ -85,7 +158,19 @@ h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; 
 #ready-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
 
 /* --- JÁTÉKTÉR --- */
-#turn-indicator { font-size: 1.1rem; font-weight: bold; margin: 0 auto 15px auto; padding: 6px 25px; border-radius: 20px; background-color: #0f3460; border: 2px solid #e94560; text-align: center; width: fit-content; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+#turn-indicator { 
+    font-size: 1.1rem; font-weight: bold; margin: 0 auto 15px auto; padding: 6px 25px; 
+    border-radius: 20px; 
+    background: rgba(10, 10, 20, 0.4); 
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6);
+    border-left: 1.5px solid rgba(197, 160, 89, 0.4);
+    text-align: center; width: fit-content; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(197, 160, 89, 0.2); 
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
 
 .arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; }
 
@@ -93,83 +178,264 @@ h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; 
 .card-container { display: flex; flex-direction: column; align-items: center; }
 
 .team-roster {
-    display: flex; gap: 8px; margin-bottom: 12px; background: rgba(15, 52, 96, 0.5); 
-    padding: 6px 12px; border-radius: 20px; border: 1px solid #16213e;
+    display: flex; gap: 12px; margin-bottom: 12px; background: rgba(15, 52, 96, 0.5); 
+    padding: 8px 16px; border-radius: 30px; border: 1px solid #16213e;
 }
 .roster-dot {
-    width: 14px; height: 14px; border-radius: 50%; background-color: #333; 
+    width: 36px; height: 36px; border-radius: 50%; background-color: #333; 
     border: 2px solid #111; transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
 }
+.roster-img {
+    width: 100%; height: 100%; border-radius: 50%;
+    background-size: 160%; background-position: center top;
+    transition: filter 0.3s;
+}
+
 .roster-dot.alive { background-color: #39a2db; border-color: #fff; box-shadow: 0 0 8px #39a2db; }
 .roster-dot.active-battler { background-color: #2ecc71; border-color: #fff; transform: scale(1.3); box-shadow: 0 0 12px #2ecc71; }
-.roster-dot.ko { background-color: #e74c3c; border-color: #555; opacity: 0.4; }
+.roster-dot.ko { border-color: #e74c3c; opacity: 0.8; }
+.roster-dot.ko .roster-img { filter: grayscale(100%) brightness(0.9); }
+
+.roster-dot.ko::before, .roster-dot.ko::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 26px;
+    height: 4px;
+    background-color: #e74c3c;
+    border-radius: 2px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+.roster-dot.ko::before { transform: translate(-50%, -50%) rotate(45deg); }
+.roster-dot.ko::after { transform: translate(-50%, -50%) rotate(-45deg); }
 
 .card { 
-    border: 3px solid #0f3460; border-radius: 16px; padding: 15px; 
-    background: linear-gradient(135deg, rgba(22, 33, 62, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%);
-    display: flex; flex-direction: column; width: 330px; height: 560px; box-sizing: border-box;
-    transition: transform 0.2s ease, border-color 0.2s, box-shadow 0.2s, filter 0.3s;
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6);
+    border-left: 2px solid rgba(197, 160, 89, 0.4);
+    border-radius: 16px; padding: 15px; 
+    display: flex; flex-direction: column; width: 360px; height: 750px; box-sizing: border-box; gap: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s, filter 0.3s;
     position: relative; z-index: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    overflow: visible; /* Engedi, hogy a körök kilógjanak a sarkokon */
 }
-.card.active-card { border-color: #e94560; box-shadow: 0 0 20px rgba(233, 69, 96, 0.6); transform: translateY(-5px); }
+.card.active-card { box-shadow: 0 0 30px rgba(197, 160, 89, 0.3), 0 10px 40px rgba(0,0,0,0.8); transform: translateY(-5px); }
 
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.card h2 { margin: 0; font-size: 1.2rem; color: #fff; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.card-stats { text-align: right; }
+.card-header { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    margin: -15px -15px 8px -15px; 
+    padding: 10px 5px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+    box-shadow: inset 0 0 15px rgba(197, 160, 89, 0.15);
+    border-radius: 16px 16px 0 0;
+    order: 1; 
+    height: auto; 
+}
+.card h2 { margin: 0; font-size: 1rem; color: #fff; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px; border-bottom: none; width: 100%; text-align: center; }
+.card-stats { font-size: 0; color: transparent; position: static; } 
 
-.hp-bar { width: 100%; height: 12px; background-color: #222; border-radius: 6px; margin-bottom: 12px; overflow: hidden; border: 1px solid #444; }
+/* --- ÚJ: Látványos sarok körök a HP és AP számára --- */
+#p1-hp, #p2-hp, #p1-ap, #p2-ap {
+    position: absolute; top: -25px; width: 64px; height: 64px;
+    border: 2px solid rgba(197, 160, 89, 0.7); border-radius: 50%; display: flex !important;
+    flex-direction: column; align-items: center; justify-content: center;
+    font-weight: 900; z-index: 20; box-shadow: 0 6px 15px rgba(0,0,0,0.7);
+    color: #fff !important; font-size: 1.3rem; visibility: visible !important;
+    line-height: 1; padding-bottom: 8px; box-sizing: border-box;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+#p1-hp, #p2-hp { 
+    left: -25px; 
+    background: rgba(20, 50, 30, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2);
+}
+#p1-hp::after, #p2-hp::after { 
+    content: 'HP'; position: absolute; bottom: 8px; font-size: 0.6rem; font-weight: bold; opacity: 0.9; 
+}
+
+#p1-ap, #p2-ap { 
+    right: -25px; 
+    background: rgba(20, 40, 60, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2);
+}
+#p1-ap::after, #p2-ap::after { 
+    content: 'AP'; position: absolute; bottom: 8px; font-size: 0.6rem; font-weight: bold; opacity: 0.9; 
+}
+
+.hp-bar { width: 100%; height: 14px; background-color: #222; border-radius: 7px; margin: 2px 0; overflow: hidden; border: 1px solid #444; order: 3; flex-shrink: 0; }
 .hp-fill { height: 100%; background-color: #2ecc71; transition: width 0.4s ease-in-out, background-color 0.4s; }
 
-.card-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; min-height: 0; }
-.card-image { width: 100%; height: 100%; max-height: 230px; object-fit: cover; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); }
+.card-body { width: 90%; aspect-ratio: 2 / 3; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; order: 2; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); overflow: visible; align-self: center; }
+.card-image { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
 
-.status-container { display: flex; gap: 6px; justify-content: center; margin-top: 8px; position: absolute; bottom: 5px; }
-.status-badge { color: #000; font-weight: bold; font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-.badge-para { background-color: #f1c40f; }
-.badge-burn { background-color: #e74c3c; color: white; }
-.badge-shield { background-color: #3498db; color: white; }
+.status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; display: block; margin-top: 0; }
+.status-badge { 
+    color: #000; 
+    font-weight: bold; 
+    font-size: 1.2rem; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
+    border: 2px solid rgba(255,255,255,0.8); 
+    pointer-events: auto;
+    display: none; /* Alapértelmezésben rejtve, a JS váltja 'flex'-re */
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
+}
 
-.stat-text { margin: 1px 0; font-size: 0.85rem; font-weight: bold; color: #ccc; }
-.ap-count { color: #4db8ff; font-size: 0.95rem; }
+/* A korábbi [style*="..."] szelektorokat eltávolítottuk a stabilitás érdekében */
+
+.badge-para, .badge-burn { 
+    width: 38px; height: 38px; border-radius: 50%; position: absolute; right: -20px; 
+}
+.badge-para { background-color: #f1c40f; top: 60px; }
+
+.badge-burn { background-color: #e74c3c; color: white; top: 110px; }
+
+.badge-shield { 
+    background-color: transparent; 
+    position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    padding: 0; border-radius: 0;
+    min-width: unset; gap: 3px;
+    box-shadow: none;
+    border: none;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.8));
+    z-index: 30;
+}
 
 /* KÉPESSÉG RÁCS */
-.attacks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.attacks button { padding: 10px 5px; background-color: #0f3460; color: white; border: 1px solid #16213e; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; transition: background-color 0.2s, transform 0.1s; }
-.attacks button:hover:not(:disabled) { background-color: #1a4f8a; transform: translateY(-1px); }
-.attacks button:active:not(:disabled) { transform: translateY(1px); }
-.attacks button span { font-size: 0.6rem; color: #39a2db; margin-top: 2px; font-weight: normal; }
-.attacks button:disabled { background-color: #222533; color: #555; border-color: #222; cursor: not-allowed; }
+.attacks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; order: 4; }
+.attacks button { 
+    min-height: 58px; height: auto; padding: 5px; 
+    background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%); 
+    color: white; border: 1px solid #2a4a7a; border-radius: 10px; 
+    cursor: pointer; font-weight: 800; font-size: 0.7rem; 
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; 
+    line-height: 1.2; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-sizing: border-box; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    word-break: break-word;
+    flex-shrink: 0;
+}
+.btn-title { width: 100%; text-align: left; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.6rem; color: #4cc9f0; font-weight: 700; }
+.btn-row span { flex: 1; }
+.btn-row span:last-child { text-align: right; }
+.btn-eff { color: #f1c40f !important; font-style: italic; }
 
-.attacks .charge-btn { grid-column: span 2; background: linear-gradient(90deg, #d35400 0%, #f39c12 100%); color: #fff; padding: 10px; font-size: 0.8rem; border: none; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-.attacks .charge-btn span { color: #fff; opacity: 0.8; }
-.attacks .charge-btn:disabled { background: #333; color: #555; }
+.attacks button:hover:not(:disabled) { 
+    background: linear-gradient(180deg, #253d66 0%, #1a2a4a 100%); 
+    border-color: #e94560; transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(233, 69, 96, 0.4);
+}
+.attacks button:active:not(:disabled) { transform: translateY(0); }
+.attacks button span { font-size: 0.6rem; color: #4cc9f0; margin-top: 4px; font-weight: 700; opacity: 0.9; display: block; width: 100%; }
+.attacks button:disabled { 
+    background: #1a1a2e; color: #444; border: 1px solid #111; 
+    cursor: not-allowed; box-shadow: none; filter: grayscale(0.8); 
+}
+
+.attacks .charge-btn { 
+    grid-column: span 2; background: linear-gradient(90deg, #d35400 0%, #e67e22 100%); 
+    color: #fff; padding: 12px 5px; font-size: 0.8rem; border: 1px solid #ff9f43; 
+    box-shadow: 0 4px 12px rgba(211, 84, 0, 0.4);
+    line-height: 1.3;
+    min-height: 85px;
+    align-items: center;
+    justify-content: center;
+}
+.attacks .charge-btn span { color: #fff; opacity: 1; font-weight: 900; font-size: 0.7rem; margin-top: 4px; }
+.attacks .charge-btn:disabled { background: #222; border-color: #333; color: #555; }
 
 /* LOG */
-#log-container { width: 100%; height: 140px; margin-top: 20px; }
-#log { width: 100%; height: 100%; border: 2px solid #0f3460; padding: 12px; overflow-y: auto; background-color: rgba(5, 5, 10, 0.9); border-radius: 10px; box-sizing: border-box; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
-.log-entry { margin: 5px 0; font-size: 0.85rem; border-bottom: 1px solid #111; padding-bottom: 3px; }
+#log-container { 
+    width: 100%; 
+    height: 120px; 
+    margin-top: 15px; 
+    padding-bottom: 5px;
+}
+
+#log { 
+    width: 100%; 
+    height: 100%; 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    padding: 10px 18px; 
+    overflow-y: auto; 
+    background: rgba(10, 10, 15, 0.7); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px; 
+    box-sizing: border-box; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.3);
+}
+
+#log::-webkit-scrollbar { width: 6px; }
+#log::-webkit-scrollbar-track { background: transparent; }
+#log::-webkit-scrollbar-thumb { background: rgba(233, 69, 96, 0.3); border-radius: 10px; }
+#log::-webkit-scrollbar-thumb:hover { background: rgba(233, 69, 96, 0.6); }
+
+.log-entry { 
+    margin-bottom: 2px; 
+    font-size: 0.85rem; 
+    line-height: 1.25; 
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom: none;
+    padding-bottom: 0px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 .highlight { color: #e94560; font-weight: bold; }
 .status-effect { color: #f39c12; font-weight: bold; }
 .success { color: #2ecc71; font-weight: bold; }
 .crit { color: #e74c3c; font-weight: bold; font-style: italic; }
 .heal { color: #2ecc71; font-weight: bold; }
 
-.card.status-shield { border-color: #3498db !important; box-shadow: 0 0 20px rgba(52, 152, 219, 0.6) !important; }
-.card.status-burn { animation: burnPulse 1.5s infinite alternate !important; }
-.card.status-para { filter: grayscale(60%) brightness(0.7); }
+/* Napló specifikus színek */
+.log-dmg { color: #e74c3c; }
+.log-heal { color: #2ecc71; }
+.log-shield { color: #3498db; }
+.log-ap { color: #f1c40f; }
+.log-system { color: #39a2db; }
+
+/* --- STÁTUSZ AURÁK --- */
+.card.status-shield { 
+    border-color: #3498db !important; 
+    box-shadow: 0 0 30px rgba(52, 152, 219, 0.9), inset 0 0 20px rgba(52, 152, 219, 0.5) !important; 
+}
+.card.status-burn { animation: auraBurn 1s infinite alternate !important; }
+.card.status-para { animation: auraPara 0.15s infinite alternate !important; }
 
 /* ANIMÁCIÓK */
 .anim-attack { animation: lungePC 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; z-index: 10 !important; }
 .anim-damage { animation: shakePC 0.4s ease-in-out; border-color: #ff4757 !important; box-shadow: 0 0 25px #ff4757 !important; }
 .anim-heal { animation: healPulse 0.6s ease-out; }
 .anim-charge { animation: chargePulse 0.6s ease-out; }
-.screen-shake { animation: globalShake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+.screen-shake { animation: globalShake 0.3s cubic-bezier(.36,.07,.19,.97) both; transition: none !important; }
 
 @keyframes lungePC { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(-10px); } 100% { transform: scale(1); } }
 @keyframes shakePC { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
 @keyframes healPulse { 50% { box-shadow: 0 0 30px rgba(46, 204, 113, 0.8); border-color: #2ecc71 !important; } }
 @keyframes chargePulse { 50% { box-shadow: 0 0 30px rgba(243, 156, 18, 0.8); border-color: #f39c12 !important; } }
-@keyframes burnPulse { from { border-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.4); } to { border-color: #e67e22; box-shadow: 0 0 25px rgba(230, 126, 34, 0.7); } }
+@keyframes auraBurn { from { border-color: #e67e22; box-shadow: 0 0 15px #e67e22, 0 0 30px #e74c3c; } to { border-color: #ff4d4d; box-shadow: 0 0 25px #ff4d4d, 0 0 55px #ff944d; } }
+@keyframes auraPara { 0%, 100% { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; } 50% { border-color: #fff; box-shadow: 0 0 35px #f1c40f, 0 0 10px #fff; filter: brightness(1.2); } }
 @keyframes globalShake { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-8px, 5px); } 40% { transform: translate(8px, -5px); } 60% { transform: translate(-5px, -3px); } 80% { transform: translate(5px, 3px); } }
 
 #victory-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 15, 0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; animation: fadeIn 0.5s ease-in-out; }
@@ -179,3 +445,94 @@ h1 { margin: 0 0 10px 0; color: #e94560; text-align: center; font-size: 1.8rem; 
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.03); } }
+
+/* TEST GOMB STÍLUS */
+.test-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.1);
+    font-size: 0.7rem;
+    cursor: pointer;
+    z-index: 9999;
+    transition: color 0.3s;
+}
+.test-btn:hover { color: rgba(255, 255, 255, 0.6); }
+
+/* --- LÖVEDÉK EFFEKTEK --- */
+.projectile {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    z-index: 9999;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    transition: transform 0.45s linear;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+}
+
+/* --- RÉSZECSKE ÉS BECSAPÓDÁS --- */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    border-radius: 50%;
+    animation: particle-fly 0.6s ease-out forwards;
+}
+
+@keyframes particle-fly {
+    0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0) rotate(360deg); opacity: 0; }
+}
+
+.impact-effect {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid white;
+    z-index: 10001;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: impact-ripple 0.4s ease-out forwards;
+}
+
+@keyframes impact-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 10px; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; }
+}
+
+/* --- PAJZS SCANLINE EFFEKT --- */
+.shield-scanline {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to top, transparent, rgba(52, 152, 219, 0.8), transparent);
+    background-size: 100% 50px;
+    background-repeat: no-repeat;
+    z-index: 26;
+    pointer-events: none;
+    animation: shield-scan 0.7s ease-out forwards;
+}
+@keyframes shield-scan {
+    0% { background-position: 0 100%; opacity: 0; }
+    30% { opacity: 1; }
+    100% { background-position: 0 0; opacity: 0; }
+}
+
+.screen-flash {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10002;
+    opacity: 0;
+    animation: flash-anim 0.2s ease-out;
+}
+@keyframes flash-anim {
+    0% { opacity: 0.5; }
+    100% { opacity: 0; }
+}

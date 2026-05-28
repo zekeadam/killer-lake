@@ -6,9 +6,9 @@ const cardDatabase = [
         image: "card/0.png",
         maxHp: 90,
         attacks: [
-            { name: "Dühös Lángcsapás", type: "dmg", dmg: 40, cost: 1 },
-            { name: "Plazma-Orkán", type: "dmg", dmg: 60, cost: 3 },
-            { name: "Elem-Töltet", type: "dmg", dmg: 20, cost: 2, effect: "burn" },
+            { name: "Dühös Lángcsapás", type: "dmg", dmg: 40, hits: 1, cost: 1 },
+            { name: "Plazma-Orkán", type: "dmg", dmg: 20, hits: 3, cost: 3 },
+            { name: "Elem-Töltet", type: "dmg", dmg: 20, hits: 1, cost: 2, effect: "burn" },
             { name: "Lángpajzs", type: "shield", cost: 1 }
         ]
     },
@@ -30,9 +30,9 @@ const cardDatabase = [
         image: "card/3.png",
         maxHp: 120,
         attacks: [
-            { name: "Plazma-Visítás", type: "dmg", dmg: 60, cost: 2 },
-            { name: "Villantó-Üvöltés", type: "dmg", dmg: 30, cost: 1, effect: "paralyze" },
-            { name: "Hangrobbanás", type: "dmg", dmg: 40, cost: 2 },
+            { name: "Plazma-Visítás", type: "dmg", dmg: 30, hits: 2, cost: 2 },
+            { name: "Villantó-Üvöltés", type: "dmg", dmg: 30, hits: 1, cost: 1, effect: "paralyze" },
+            { name: "Hangrobbanás", type: "dmg", dmg: 10, hits: 4, cost: 2 },
             { name: "Fókuszálás", type: "heal", healAmount: 30, cost: 1 }
         ]
     },
@@ -186,8 +186,8 @@ const cardDatabase = [
         image: "card/32.png",
         maxHp: 160,
         attacks: [
-            { name: "Tudat-törlő Támadás", type: "dmg", dmg: 80, cost: 2, effect: "paralyze" },
-            { name: "Az Árnyék Mestere", type: "dmg", dmg: 80, cost: 2 },
+            { name: "Tudat-törlő Támadás", type: "dmg", dmg: 40, hits: 2, cost: 2, effect: "paralyze" },
+            { name: "Az Árnyék Mestere", type: "dmg", dmg: 80, hits: 1, cost: 2 },
             { name: "Sötét Paktum", type: "heal", healAmount: 50, cost: 2 },
             { name: "Árny-Pajzs", type: "shield", cost: 1 }
         ]

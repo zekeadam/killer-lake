@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="container">
         <h1>K̵̃̂Ξ̵̄͠L̵̅͗L̵͊̕Ξ̵̊̕Я̵̅ ̵̏̅L̵̚͠Λ̵͋̏K̵͗̅Ξ̵̃͝</h1>
         
         <div id="lobby-screen">
@@ -18,7 +18,14 @@
                 <div class="lobby-section">
                     <p>A Te csatlakozási kódod:</p>
                     <div class="code-display" id="my-peer-id">Generálás folyamatban...</div>
-                    <p class="hint">Küldd el ezt a kódot az ellenfelednek!</p>
+                    <button id="copy-link-btn" onclick="copyInviteLink()">Meghívó link másolása</button>
+                    <p class="hint">Küldd el ezt a kódot vagy a linket az ellenfelednek!</p>
+                </div>
+
+                <div class="divider">VAGY</div>
+
+                <div class="lobby-section">
+                    <button id="pve-btn" onclick="startPvEMode()">PVE Mód (AI ellen)</button>
                 </div>
 
                 <div class="divider">VAGY</div>
@@ -42,6 +49,7 @@
                     </div>
 
                 <div class="draft-actions">
+                    <input type="text" id="nickname-input" placeholder="Add meg a Nickneved" maxlength="15" style="margin-bottom: 15px; width: 250px;">
                     <button id="ready-btn" onclick="confirmTeamOrder()">Harcra fel!</button>
                     <p id="draft-status" class="hint"></p>
                 </div>
@@ -49,6 +57,10 @@
         </div>
 
         <div id="game-screen" style="display: none;">
+            <div class="player-names-header">
+                <div id="p1-name-display" class="player-name"></div>
+                <div id="p2-name-display" class="player-name"></div>
+            </div>
             <div id="turn-indicator">Hálózat szinkronizálása...</div>
             
             <div class="arena">
@@ -69,9 +81,9 @@
                         <div class="card-body">
                             <img src="" alt="Kártya kép" class="card-image" style="display: none;" onerror="this.style.display='none'">
                             <div class="status-container">
-                                <div id="p1-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
-                                <div id="p1-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
-                                <div id="p1-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
+                                <div id="p1-para" class="status-badge badge-para" style="display:none;">⚡</div>
+                                <div id="p1-burn" class="status-badge badge-burn" style="display:none;">🔥</div>
+                                <div id="p1-shield" class="status-badge badge-shield" style="display:none;"></div>
                             </div>
                         </div>
 
@@ -102,9 +114,9 @@
                         <div class="card-body">
                             <img src="" alt="Kártya kép" class="card-image" style="display: none;" onerror="this.style.display='none'">
                             <div class="status-container">
-                                <div id="p2-para" class="status-badge badge-para" style="display:none;">BÉNULT</div>
-                                <div id="p2-burn" class="status-badge badge-burn" style="display:none;">ÉGÉS</div>
-                                <div id="p2-shield" class="status-badge badge-shield" style="display:none;">PAJZS</div>
+                                <div id="p2-para" class="status-badge badge-para" style="display:none;">⚡</div>
+                                <div id="p2-burn" class="status-badge badge-burn" style="display:none;">🔥</div>
+                                <div id="p2-shield" class="status-badge badge-shield" style="display:none;"></div>
                             </div>
                         </div>
 
@@ -132,6 +144,7 @@
 
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="cards.js"></script>
+    <script src="ai.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
