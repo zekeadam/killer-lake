@@ -22,7 +22,7 @@ html, body {
     max-width: 1200px; 
     display: flex;
     flex-direction: column;
-    padding: 10px 60px; /* Növelve, hogy a kilógó ikonok ne vágódjanak le */
+    padding: 10px 180px; /* Megnövelt oldalsó margó, hogy az itemek (150px) kényelmesen elférjenek */
     box-sizing: border-box;
     position: relative;
     transition: transform 0.1s;
@@ -190,7 +190,12 @@ h1 { display: none; }
 .arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; margin-top: 40px; }
 
 /* ÚJ: Kártya konténer és Csapatjelző (Roster) */
-.card-container { display: flex; flex-direction: row; align-items: center; gap: 20px; }
+.card-container { 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    position: relative; /* Referencia pont az abszolút pozicionált itemeknek */
+}
 
 .team-roster {
     display: flex; 
@@ -266,9 +271,18 @@ h1 { display: none; }
     gap: 10px;
     margin-top: 0;
     justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 150px;
+    z-index: 5;
 }
-#p1-items { order: -1; }
-#p2-items { order: 2; }
+#p1-items { 
+    right: calc(100% + 30px); /* A P1 kártyától pontosan 30px-re balra */
+}
+#p2-items { 
+    left: calc(100% + 30px); /* A P2 kártyától pontosan 30px-re jobbra */
+}
 
 .item-btn {
     background: rgba(10, 10, 20, 0.6);
