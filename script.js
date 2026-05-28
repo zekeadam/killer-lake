@@ -4,6 +4,7 @@ let myRole = null; // 'p1' (Host) vagy 'p2' (Guest)
 let gameState;
 let isTestMode = false;
 let isPvEMode = false;
+let isActionLocked = false; // Spam-védelem az auto-clicker ellen
 
 let myNickname = "Játékos 1";
 let oppNickname = "Játékos 2";
@@ -537,7 +538,7 @@ function updateUI() {
         const isCurrentTurn = gameState.activePlayer === player;
         cardElem.classList.toggle('active-card', isCurrentTurn);
 
-        const isMyTurn = (myRole === player) && isCurrentTurn;
+        const isMyTurn = (myRole === player) && isCurrentTurn && !isActionLocked;
 
         const buttons = document.querySelectorAll(`#${player}-card .attacks button`);
         let attackBtnIdx = 0;
@@ -678,10 +679,21 @@ function checkWin() {
 // --- 4. AKCIÓK ÉS SZINKRONIZÁCIÓ ---
 
 function executeMove(playerId, attackIndex) {
-    if (gameState.gameOver || myRole !== playerId) return;
+    // Szigorú ellenőrzés: Ne lehessen kattintani, ha nem a te köröd van, vagy már folyamatban van egy akció
+    if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked) return;
 
     const attackerState = gameState[playerId];
     const attackerCard = attackerState.team[attackerState.activeIndex];
+
+    // Dupla védelem a negatív AP ellen
+    if (attackIndex !== 'charge') {
+        const move = attackerCard.attacks[attackIndex];
+        if (attackerState.ap < move.cost) return; 
+    }
+
+    // Akció lezárása és UI azonnali letiltása
+    isActionLocked = true;
+    updateUI();
 
     let payload = {
         type: 'MOVE',
@@ -860,6 +872,7 @@ function endTurnPhase(currentPlayerId) {
 
     gameState.activePlayer = oppId;
     nextPState.ap = Math.min(10, nextPState.ap + 1); 
+    isActionLocked = false; // Akció zár feloldása a következő játékosnak
     updateUI();
 
     if ((isTestMode || (isPvEMode && oppId === 'p2')) && !gameState.gameOver) {
@@ -868,7 +881,11 @@ function endTurnPhase(currentPlayerId) {
 }
 
 function executeItem(playerId, itemIndex) {
-    if (gameState.gameOver || myRole !== playerId) return;
+    // Itt is lezárjuk az akciót, hogy ne lehessen 10ms alatt mind a 3 tárgyat ellőni
+    if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked) return;
+
+    isActionLocked = true;
+    updateUI();
 
     let payload = {
         type: 'USE_ITEM',
@@ -934,6 +951,7 @@ function applyItem(playerId, data) {
     }
 
     if (checkWin()) return;
+    isActionLocked = false; // Item kijátszása után újra lehet kattintani (mivel az item nem fejezi be a kört)
     updateUI();
 }
 
