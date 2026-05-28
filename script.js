@@ -19,6 +19,21 @@ let draggedIndex = null;
 
 // --- 1. HÁLÓZATI ÉS LOBBY LOGIKA ---
 
+/**
+ * Segédfüggvény: Csak akkor ad tooltipet az elemnek, ha a szöveg tényleg csonkolva van.
+ */
+function setTooltipIfOverflows(container, textElement, fullText) {
+    container.classList.remove('has-tooltip');
+    container.removeAttribute('data-tooltip');
+    // Megvárjuk, amíg a böngésző kirajzolja az elemet (layout), így pontosak lesznek a szélességek
+    requestAnimationFrame(() => {
+        if (textElement.scrollWidth > textElement.clientWidth) {
+            container.classList.add('has-tooltip');
+            container.setAttribute('data-tooltip', fullText);
+        }
+    });
+}
+
 peer = new Peer();
 
 // Test gomb létrehozása és injektálása
@@ -186,15 +201,21 @@ function renderDraft() {
         const cardData = cardDatabase.find(c => c.id === id);
         
         const cardEl = document.createElement('div');
-        cardEl.className = 'draft-card';
+        cardEl.className = 'draft-card tooltip-bottom';
         cardEl.draggable = true;
         cardEl.dataset.index = index;
         
         cardEl.innerHTML = `
             <div class="order-badge">${index + 1}.</div>
             <img src="${cardData.image}">
-            <div class="draft-name">${cardData.name}</div>
+            <div class="draft-name"><span class="truncate-text">${cardData.name}</span></div>
         `;
+
+        container.appendChild(cardEl);
+        
+        // Tooltip ellenőrzése
+        const nameSpan = cardEl.querySelector('.truncate-text');
+        setTooltipIfOverflows(cardEl, nameSpan, cardData.name);
 
         cardEl.addEventListener('dragstart', function(e) {
             draggedIndex = parseInt(this.dataset.index);
@@ -225,8 +246,6 @@ function renderDraft() {
                 renderDraft(); 
             }
         });
-
-        container.appendChild(cardEl);
     });
 }
 
@@ -301,8 +320,16 @@ function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
     // Nevek beállítása és megjelenítése a fejlécben
     const name1 = myRole === 'p1' ? myNickname : oppNickname;
     const name2 = myRole === 'p2' ? myNickname : oppNickname;
-    document.getElementById('p1-name-display').innerText = name1;
-    document.getElementById('p2-name-display').innerText = name2;
+    
+    const p1El = document.getElementById('p1-name-display');
+    p1El.innerHTML = `<span class="truncate-text">${name1}</span>`;
+    p1El.className = 'player-name tooltip-bottom';
+    setTooltipIfOverflows(p1El, p1El.querySelector('.truncate-text'), name1);
+
+    const p2El = document.getElementById('p2-name-display');
+    p2El.innerHTML = `<span class="truncate-text">${name2}</span>`;
+    p2El.className = 'player-name tooltip-bottom';
+    setTooltipIfOverflows(p2El, p2El.querySelector('.truncate-text'), name2);
 
     const nameHeader = document.querySelector('.player-names-header');
     if (nameHeader) nameHeader.style.display = 'flex';
@@ -468,7 +495,11 @@ function updateUI() {
         const activeCard = pState.team[pState.activeIndex];
         const cardElem = document.getElementById(`${player}-card`);
         
-        document.querySelector(`#${player}-card h2`).innerText = activeCard.name;
+        const h2Elem = document.querySelector(`#${player}-card h2`);
+        h2Elem.innerHTML = `<span class="truncate-text">${activeCard.name}</span>`;
+        h2Elem.className = 'tooltip-bottom';
+        setTooltipIfOverflows(h2Elem, h2Elem.querySelector('.truncate-text'), activeCard.name);
+        
         document.querySelector(`#${player}-card .card-image`).src = activeCard.image;
         document.querySelector(`#${player}-card .card-image`).style.display = 'block';
 
@@ -548,7 +579,8 @@ function updateUI() {
                     icon = "🛡️";
                 }
 
-                btn.innerHTML = `<div class="btn-title">${icon}${move.name}</div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>`;
+            btn.innerHTML = `<div class="btn-title"><span class="truncate-text">${icon} ${move.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>`;
+            setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), move.name);
 
                 btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver);
                 btn.onclick = () => executeMove(player, currentAttackIdx);
@@ -606,10 +638,12 @@ function updateUI() {
 
             btn.innerHTML = `
                 <img src="${cardData.image}" class="item-img"> 
-                <div class="btn-title">${icon}${cardData.name}</div>
+            <div class="btn-title"><span class="truncate-text">${icon} ${cardData.name}</span></div>
                 <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
                 <div class="btn-row"><span>✨ INGYENES</span><span class="btn-eff">${effectText}</span></div>
             `;
+        setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), cardData.name);
+
             btn.disabled = (!isMyTurn || gameState.gameOver);
             btn.onclick = () => executeItem(player, idx);
             itemContainer.appendChild(btn);

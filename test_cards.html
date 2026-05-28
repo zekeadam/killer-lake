@@ -82,9 +82,6 @@
             color: #fff; /* Fehér név */
             font-size: 1.25rem; /* Kicsit nagyobb név */
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             max-width: 65%;
             display: flex;
             align-items: center;
@@ -129,9 +126,6 @@
             font-size: 0.8rem; /* Nagyobb cím */
             color: #fff;
             font-weight: 800;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             margin-bottom: 2px; /* Csak egy minimális távolság a következő sortól */
             display: flex;
             align-items: center;
@@ -178,6 +172,17 @@
 
     <script src="cards.js"></script>
     <script>
+        // Ugyanaz a logika, mint a fő játékban: csak overflow esetén mutass súgót
+        function setTooltipIfOverflows(container, textElement, fullText) {
+            container.classList.remove('has-tooltip');
+            requestAnimationFrame(() => {
+                if (textElement.scrollWidth > textElement.clientWidth) {
+                    container.classList.add('has-tooltip');
+                    container.setAttribute('data-tooltip', fullText);
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const cardGrid = document.getElementById('card-grid');
 
@@ -214,9 +219,7 @@
                         }
 
                         attacksHtml += `
-                            <li>
-                                <div class="li-title">${icon}${attack.name}</div>
-                            <li class="has-tooltip tooltip-bottom" data-tooltip="${attack.name}">
+                            <li class="tooltip-bottom">
                                 <div class="li-title"><span class="truncate-text">${icon} ${attack.name}</span></div>
                                 <div class="li-row"><span>${statText}</span><span>${hitText}</span></div>
                                 <div class="li-row"><span>⚡${attack.cost} AP</span><span class="li-eff">${effectLabel}</span></div>
@@ -229,13 +232,21 @@
                     <div class="card-index">#${index}</div>
                     <img src="${card.image}" alt="${card.name}">
                     <div class="card-header-row">
-                        <h3>${card.name}</h3>
-                        <h3 class="has-tooltip tooltip-bottom" data-tooltip="${card.name}"><span class="truncate-text">${card.name}</span></h3>
+                        <h3 class="tooltip-bottom"><span class="truncate-text">${card.name}</span></h3>
                         ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${card.maxHp} HP</span>`}
                     </div>
                     ${attacksHtml}
                 `;
                 cardGrid.appendChild(cardEl);
+
+                // Tooltip-ek beállítása az új kártyán belül
+                const h3 = cardEl.querySelector('h3');
+                setTooltipIfOverflows(h3, h3.querySelector('.truncate-text'), card.name);
+
+                cardEl.querySelectorAll('.attacks-list li').forEach((li, idx) => {
+                    const attack = card.attacks[idx];
+                    if (attack) setTooltipIfOverflows(li, li.querySelector('.truncate-text'), attack.name);
+                });
             });
         });
     </script>
