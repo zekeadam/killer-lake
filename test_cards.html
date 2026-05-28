@@ -24,15 +24,6 @@
             justify-content: unset; /* Felülírja a justify-content-t */
         }
 
-        h1 {
-            display: block; /* Felülírja a display: none-t a style.css-ből */
-            color: #f1c40f;
-            text-align: center;
-            margin: 20px auto 30px auto;
-            text-shadow: 0 0 15px rgba(241, 196, 15, 0.6);
-            font-size: 2.5rem;
-        }
-
         .card-grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Reszponzív rács, 25%-kal nagyobb */
@@ -67,85 +58,91 @@
             transition: transform 0.2s ease, box-shadow 0.2s;
         }
         .grid-card:hover {
-            transform: scale(1.03); /* Kicsit nagyobb hover effekt */
-            box-shadow: 0 15px 45px rgba(197, 160, 89, 0.3);
+            transform: scale(1.03);
+            box-shadow: 0 15px 45px rgba(197, 160, 89, 0.4);
         }
         .grid-card img {
-            width: 100%; /* A képek szélessége 100% marad */
-            height: 475px; /* A képek magassága */
+            width: 100%;
+            height: 475px;
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 10px;
             border: 1px solid rgba(197, 160, 89, 0.3);
         }
-        .grid-card h3 {
-            margin: 5px 0;
-            color: #f1c40f;
-            font-size: 1.4rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 0 5px;
         }
-        .grid-card .hp-label {
-            font-size: 1.1rem;
+        .grid-card h3 {
+            margin: 0;
+            color: #fff; /* Fehér név */
+            font-size: 1.25rem; /* Kicsit nagyobb név */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 65%;
+        }
+        .hp-label-mini {
+            font-size: 0.95rem;
             font-weight: bold;
-            color: #2ecc71;
-            margin-bottom: 15px;
-            margin-bottom: 8px; /* Csökkentett margó */
-            background: rgba(46, 204, 113, 0.1);
-            padding: 2px 12px;
-            border-radius: 10px;
+            color: #fff; /* Fehér HP szöveg */
+            background: rgba(46, 204, 113, 0.3); /* Erősebb zöld háttér a fehér szöveghez */
+            padding: 2px 8px;
+            border-radius: 8px;
+            white-space: nowrap;
         }
         .grid-card .attacks-list {
             text-align: left;
             width: 100%;
-            font-size: 0.8rem; /* Betűméret a kompaktabb megjelenésért */
-            margin-top: 5px; /* Csökkentett margó */
-            padding-top: 5px; /* Csökkentett padding */
+            margin-top: 5px;
+            padding-top: 8px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .grid-card .attacks-list strong {
-            color: #fff; /* Támadás nevek fehér színűek */
-            flex-shrink: 0; /* Ne zsugorodjon a név */
-            margin-right: 5px; /* Hely a név után */
-        }
         .grid-card .attacks-list ul {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
             list-style: none;
             padding: 0;
             margin: 0;
         }
         .grid-card .attacks-list li {
-            background: rgba(255, 255, 255, 0.03);
-            margin-bottom: 4px; /* Még kisebb margó */
-            padding: 4px 8px; /* Még kisebb padding */
-            border-radius: 6px;
-            border-left: 3px solid #4cc9f0;
-            display: flex; /* Flex konténer */
-            justify-content: space-between; /* Elosztja az elemeket */
-            align-items: center; /* Vertikálisan középre igazítja az elemeket */
-            flex-wrap: wrap; /* Engedélyezi a tördelést, ha túl hosszú a tartalom */
-            line-height: 1.3; /* Sor magasság beállítása */
+            background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%);
+            border: 1px solid #2a4a7a;
+            border-radius: 8px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Elemek egymás után, üres hely nélkül */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(0,0,0,0.3);
         }
-        .attack-cost {
-            color: #4cc9f0;
-            font-weight: bold;
-            flex-shrink: 0;
-            margin-left: 5px; /* Hely a költség előtt */
-        }
-        .attack-stat-info {
-            color: #ccc;
-            flex-grow: 1; /* Hagyja, hogy a statisztika kitöltse a rendelkezésre álló helyet */
-            text-align: right; /* Jobbra igazítja a statisztikákat */
-            white-space: nowrap; /* Megakadályozza a tördelést */
+        .li-title {
+            font-size: 0.8rem; /* Nagyobb cím */
+            color: #fff;
+            font-weight: 800;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-left: 5px;
+            margin-bottom: 2px; /* Csak egy minimális távolság a következő sortól */
         }
-        .attack-effect-inline {
-            color: #e94560;
+        .li-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.7rem; /* Nagyobb stat szöveg */
+            color: #4cc9f0;
+            font-weight: 700;
+        }
+        .li-eff {
+            color: #f1c40f !important;
             font-style: italic;
-            font-weight: bold;
-            font-size: 0.7rem;
-            flex-shrink: 0; /* Ne zsugorodjon az effekt tag */
-            white-space: nowrap;
         }
         /* Sorszám stílusa */
         .card-index {
@@ -164,7 +161,6 @@
     </style>
 </head>
 <body>
-    <h1>Killer Lake - Kártya Adatbázis</h1>
     <div id="card-grid" class="card-grid-container">
         <!-- A kártyák ide kerülnek beillesztésre JavaScript segítségével -->
     </div>
@@ -183,29 +179,33 @@
                 if (card.attacks && card.attacks.length > 0) {
                     attacksHtml = '<div class="attacks-list"><ul>';
                     card.attacks.forEach(attack => {
-                        let attackLine = `<strong>${attack.name}</strong> <span class="attack-cost">⚡ ${attack.cost} AP</span>`;
+                        let icon = "⚔️";
+                        if (attack.type === 'heal') icon = "🧪";
+                        if (attack.type === 'shield') icon = "🛡️";
                         
-                        let statInfo = '';
+                        let statText = "---";
+                        let hitText = "---";
+                        let effectLabel = attack.effect ? attack.effect.toUpperCase() : "";
+
                         if (attack.type === 'dmg') {
-                            statInfo += `💥 ${attack.dmg} DMG`;
-                            if (attack.hits && attack.hits > 1) {
-                                statInfo += ` 🎯 x${attack.hits}`;
-                            }
+                            statText = `💥${attack.dmg}`;
+                            hitText = `🎯${attack.hits || 1}`;
+                            if (attack.effect === 'burn') icon = "🔥";
+                            if (attack.effect === 'paralyze') icon = "⚡";
                         } else if (attack.type === 'heal') {
-                            statInfo += `💚 +${attack.healAmount} HP`;
+                            statText = `💚+${attack.healAmount}`;
+                            hitText = "REGEN";
                         } else if (attack.type === 'shield') {
-                            statInfo += `🛡️ Pajzs`;
+                            statText = "🛡️VÉD";
+                            hitText = "PAJZS";
                         }
-                        if (statInfo) {
-                            attackLine += ` <span class="attack-stat-info">${statInfo}</span>`;
-                        }
-                        
-                        if (attack.effect) {
-                            const emoji = attack.effect === 'burn' ? '🔥' : '⚡';
-                            attackLine += ` <span class="attack-effect-inline">${emoji} ${attack.effect.toUpperCase()}</span>`;
-                        }
-                        
-                        attacksHtml += `<li>${attackLine}</li>`;
+
+                        attacksHtml += `
+                            <li>
+                                <div class="li-title">${icon}${attack.name}</div>
+                                <div class="li-row"><span>${statText}</span><span>${hitText}</span></div>
+                                <div class="li-row"><span>⚡${attack.cost} AP</span><span class="li-eff">${effectLabel}</span></div>
+                            </li>`;
                     });
                     attacksHtml += '</ul></div>';
                 }
@@ -213,8 +213,10 @@
                 cardEl.innerHTML = `
                     <div class="card-index">#${index}</div>
                     <img src="${card.image}" alt="${card.name}">
-                    <h3>${card.name}</h3>
-                    <div class="hp-label">❤️ ${card.maxHp} HP</div>
+                    <div class="card-header-row">
+                        <h3>${card.name}</h3>
+                        <span class="hp-label-mini">❤️ ${card.maxHp} HP</span>
+                    </div>
                     ${attacksHtml}
                 `;
                 cardGrid.appendChild(cardEl);
