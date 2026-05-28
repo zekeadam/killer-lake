@@ -24,13 +24,51 @@ const testBtn = document.createElement('button');
 testBtn.innerText = 'Test';
 testBtn.className = 'test-btn';
 testBtn.onclick = () => {
-    if (confirm("Indulhat az automatizált AI teszt kör?")) startTestMode();
+    const menu = document.createElement('div');
+    menu.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: rgba(10, 10, 20, 0.95); padding: 30px; border-radius: 20px;
+        border: 2px solid #e94560; z-index: 10001; display: flex; flex-direction: column;
+        gap: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+        min-width: 250px;
+    `;
+
+    const title = document.createElement('div');
+    title.innerText = "DEBUG MENÜ";
+    title.style.cssText = "color: #f1c40f; font-weight: bold; text-align: center; margin-bottom: 10px; letter-spacing: 2px;";
+    menu.appendChild(title);
+
+    const btnAI = document.createElement('button');
+    btnAI.innerText = "🤖 AI vs AI SZIMULÁCIÓ";
+    btnAI.style.cssText = "padding: 12px; background: #e94560; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
+    btnAI.onclick = () => { menu.remove(); startTestMode(); };
+    menu.appendChild(btnAI);
+
+    const btnTable = document.createElement('button');
+    btnTable.innerText = "📊 KÁRTYA TÁBLÁZAT";
+    btnTable.style.cssText = "padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
+    btnTable.onclick = () => { menu.remove(); window.open('test_cards.html', '_blank'); };
+    menu.appendChild(btnTable);
+
+    const btnClose = document.createElement('button');
+    btnClose.innerText = "BEZÁRÁS";
+    btnClose.style.cssText = "padding: 8px; background: transparent; color: #555; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-top: 10px;";
+    btnClose.onclick = () => menu.remove();
+    menu.appendChild(btnClose);
+
+    document.body.appendChild(menu);
 };
 document.body.appendChild(testBtn);
 
 peer.on('open', (id) => {
+    const titleEl = document.querySelector('.lobby-box h2');
+    if (titleEl) {
+        titleEl.innerText = 
+`█▄▀ █ █ █ █▀▀ █▀█  █░░ ▄▀█ █▄▀ █▀▀
+█░█ █ █▄▄ █▄▄ █▄▄ █▀▄  █▄▄ █▀█ █░█ █▄▄`;
+    }
+
     document.getElementById('my-peer-id').innerText = id;
-    document.getElementById('connection-status').innerText = "Várakozás az ellenfélre...";
 
     // Automatikus csatlakozás ha van link
     const urlParams = new URLSearchParams(window.location.search);
@@ -774,7 +812,7 @@ function runAITestMove() {
 
     if (move && move.type === "dmg") {
             let variance = move.dmg * 0.2;
-            payload.finalDmg = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+            payload.damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
     }
 
     applyMove(pId, payload);
