@@ -582,7 +582,8 @@ function updateUI() {
             btn.innerHTML = `<div class="btn-title"><span class="truncate-text">${icon} ${move.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>`;
             setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), move.name);
 
-                btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver);
+            const isShieldFull = move.type === "shield" && activeCard.shields >= 2;
+            btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver || isShieldFull);
                 btn.onclick = () => executeMove(player, currentAttackIdx);
                 attackBtnIdx++;
             }
@@ -644,7 +645,8 @@ function updateUI() {
             `;
         setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), cardData.name);
 
-            btn.disabled = (!isMyTurn || gameState.gameOver);
+        const isItemShieldFull = action.type === "shield" && activeCard.shields >= 2;
+        btn.disabled = (!isMyTurn || gameState.gameOver || isItemShieldFull);
             btn.onclick = () => executeItem(player, idx);
             itemContainer.appendChild(btn);
         });
@@ -807,7 +809,7 @@ function applyMove(playerId, data) {
             triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
             logMessage(`> ${attackerCard.name} visszatöltött ${move.healAmount} Életerőt!`, "log-heal");
         } else if (move.type === "shield") {
-            attackerCard.shields++;
+            attackerCard.shields = Math.min(2, attackerCard.shields + 1);
             triggerShieldScan(playerId);
             const rect = document.getElementById(`${playerId}-card`).getBoundingClientRect();
             spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, "#3498db", 45, 150);
@@ -905,8 +907,9 @@ function applyItem(playerId, data) {
         logMessage(`> ${myCard.name} visszatöltött ${action.healAmount} HP-t!`, "log-heal");
         triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
     } else if (action.type === 'shield') {
-        myCard.shields += action.amount;
-        logMessage(`> ${myCard.name} kapott ${action.amount} pajzsot!`, "log-shield");
+        const gained = Math.min(action.amount, 2 - myCard.shields);
+        myCard.shields += gained;
+        logMessage(`> ${myCard.name} kapott ${gained} pajzsot!`, "log-shield");
         triggerShieldScan(playerId);
     } else if (action.type === 'status') {
         if (action.effect === 'burn') {
