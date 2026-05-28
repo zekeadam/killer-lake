@@ -14,9 +14,10 @@ let oppNickname = "Játékos 2";
 const soundURLs = {
     click: "https://www.myinstants.com/media/sounds/mouse-click-by-ek6_VR0O6PL.mp3",  // MEGSZÓLAL: Bármilyen interaktív gomb megnyomásakor.
     attack_normal: "https://www.myinstants.com/media/sounds/sword-hit-with-blood.mp3", // MEGSZÓLAL: Sima sebző támadás indításakor.
-    attack_burn: "",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
-    attack_paralyze: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3",// MEGSZÓLAL: Bénító (Paralyze) támadás indításakor (éles, elektromos hang).
+    attack_burn: "https://www.myinstants.com/media/sounds/fireball-incoming.mp3",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
+    attack_paralyze: "https://www.myinstants.com/media/sounds/electricity_us849kj.mp3",// MEGSZÓLAL: Bénító (Paralyze) támadás indításakor (éles, elektromos hang).
     damage: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3",   // MEGSZÓLAL: Ha az ellenfél ténylegesen sérül, betörik egy pajzsa, vagy kör végén megégetik.
+    shield_break: "https://www.myinstants.com/media/sounds/glass-break-sound-effect.mp3", // MEGSZÓLAL: Amikor egy pajzs megsemmisül.
     miss: "https://www.myinstants.com/media/sounds/woosh_s21KzKN.mp3",        // MEGSZÓLAL: Amikor a támadás célt téveszt vagy kikerülik.
     shield: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
     heal: "https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
@@ -207,6 +208,10 @@ function setupConnection() {
         } else if (data.type === 'USE_ITEM') {
             const oppId = myRole === 'p1' ? 'p2' : 'p1';
             applyItem(oppId, data);
+        } else if (data.type === 'REMATCH_OFFER') {
+            logMessage("Az ellenfél visszavágót kér!", "log-system");
+            const btn = document.querySelector('#victory-screen button');
+            if (btn) btn.innerText = "Visszavágó elfogadása";
         }
     });
 
@@ -219,9 +224,12 @@ function setupConnection() {
 // --- 2. DRAFT (CSAPATÖSSZEÁLLÍTÓ) FÁZIS ---
 
 function setupDraft(teamIds, itemIds) {
+    iAmReady = false;
+    oppIsReady = false;
     myDraftTeam = teamIds;
     myItemIds = itemIds || [];
     document.getElementById('lobby-screen').style.display = 'none';
+    document.getElementById('victory-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
     renderDraft();
 }
@@ -700,12 +708,48 @@ function checkWin() {
         document.getElementById('turn-indicator').innerText = "Vége";
         
         document.getElementById('victory-winner-text').innerHTML = `CSAPAT MEGSEMMISÍTVE!<br><br><span style="color: #fff;">${winnerText}</span><br>GYŐZÖTT!`;
-        setTimeout(() => { document.getElementById('victory-screen').style.display = 'flex'; }, 800);
+        
+        const victoryBtn = document.querySelector('#victory-screen button');
+        if (victoryBtn) {
+            victoryBtn.innerText = "Visszavágó";
+            victoryBtn.disabled = false;
+            victoryBtn.onclick = handleVictoryButtonClick;
+        }
+
+        setTimeout(() => { 
+            document.getElementById('victory-screen').style.display = 'flex'; 
+        }, 800);
         
         updateUI();
         return true;
     }
     return false;
+}
+
+function handleVictoryButtonClick() {
+    if (isPvEMode || isTestMode) {
+        location.reload();
+        return;
+    }
+
+    if (myRole === 'p1') {
+        // A Host új generálást indít
+        const p1TeamIds = getRandomTeam();
+        const p2TeamIds = getRandomTeam();
+        const p1ItemIds = getRandomItems();
+        const p2ItemIds = getRandomItems();
+        
+        conn.send({ type: 'INIT', p1TeamIds: p1TeamIds, p2TeamIds: p2TeamIds, p1ItemIds: p1ItemIds, p2ItemIds: p2ItemIds });
+        setupDraft(p1TeamIds, p1ItemIds);
+    } else {
+        // A Guest jelzi a visszavágó szándékát a Hostnak
+        conn.send({ type: 'REMATCH_OFFER' });
+        const btn = document.querySelector('#victory-screen button');
+        if (btn) {
+            btn.innerText = "Várakozás...";
+            btn.disabled = true;
+        }
+    }
 }
 
 // --- 4. AKCIÓK ÉS SZINKRONIZÁCIÓ ---
@@ -829,7 +873,8 @@ function applyMove(playerId, data) {
 
                 const totalDamage = hitsLanded * dmgPerHit;
                 triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
-                if (hitsLanded > 0 || shieldsBroken > 0) playSound('damage');
+                if (shieldsBroken > 0) playSound('shield_break');
+                if (hitsLanded > 0) playSound('damage');
 
                 let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
                 if (hitsLanded > 0) {
@@ -849,6 +894,7 @@ function applyMove(playerId, data) {
                         if (oppCard.shields > 0) {
                             oppCard.shields--;
                             logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
+                            playSound('shield_break');
                             triggerShieldScan(oppId);
                         } else {
                             if (move.effect === "paralyze") {
@@ -975,6 +1021,7 @@ function applyItem(playerId, data) {
             if (oppCard.shields > 0) {
                 oppCard.shields--;
                 logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást!`, "log-shield");
+                playSound('shield_break');
                 triggerShieldScan(oppId);
             } else {
                 oppCard.isParalyzed = true;
@@ -997,6 +1044,7 @@ function applyItem(playerId, data) {
             if (oppCard.shields > 0) {
                 oppCard.shields--;
                 logMessage(`> ${oppCard.name} pajzsa kivédte az égést!`, "log-shield");
+                playSound('shield_break');
                 triggerShieldScan(oppId);
             } else {
                 oppCard.burnTurns = 3;
@@ -1058,10 +1106,9 @@ function startPvEMode() {
     const p1Items = getRandomItems();
     oppItemIds = getRandomItems();  // Az AI tárgyai előre legenerálva
     
-    oppIsReady = true; // Az AI azonnal "készen áll"
-    
     // Nem a játékot indítjuk, hanem a draft (sorrendező) képernyőt
     setupDraft(p1Team, p1Items);
+    oppIsReady = true; // Az AI azonnal "készen áll" (setupDraft után, mert az reseteli)
     
     logMessage("--- PVE MÓD: Állítsd be a kezdőcsapatod sorrendjét! ---", "log-system");
     // P1 kezd, így nem indítjuk el azonnal az AI-t
