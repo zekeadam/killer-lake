@@ -1,7 +1,7 @@
 // A játékban szereplő összes karakter kártya adatbázisa
 const cardDatabase = [
     {
-        id: "langolo_tok",
+        id: "card_0",
         name: "Lángoló Tok",
         image: "card/0.png",
         maxHp: 90,
@@ -13,7 +13,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "chin_gaze",
+        id: "card_1",
         name: "Chin-Gaze",
         image: "card/1.png",
         maxHp: 70,
@@ -25,19 +25,19 @@ const cardDatabase = [
         ]
     },
     {
-        id: "gengszter_niki",
-        name: "Gengszter Niki",
+        id: "card_2",
+        name: "Chin-Gaze",
         image: "card/2.png",
-        maxHp: 300,
+        maxHp: 70,
         attacks: [
-            { name: "Brigád Támadás", type: "dmg", dmg: 160, cost: 3 },
-            { name: "Gengsztercsapás", type: "dmg", dmg: 240, cost: 4, effect: "paralyze" },
-            { name: "Alner Védő", type: "shield", cost: 1 },
-            { name: "Brigád Segély", type: "heal", healAmount: 50, cost: 2 }
+            { name: "Pszicho-tokos-sugár", type: "dmg", dmg: 50, cost: 2 },
+            { name: "Grimasz-Suhintás", type: "dmg", dmg: 10, cost: 1, effect: "paralyze" },
+            { name: "Tok-gúnyos", type: "shield", cost: 1 },
+            { name: "Pszicho-Menedék", type: "heal", healAmount: 40, cost: 2 }
         ]
     },
     {
-        id: "uvolto_villam",
+        id: "card_3",
         name: "Üvöltő Villám",
         image: "card/3.png",
         maxHp: 120,
@@ -49,7 +49,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "cskilo_feny_vilag",
+        id: "card_4",
         name: "Cskiló Fény-Világ",
         image: "card/4.png",
         maxHp: 120,
@@ -61,7 +61,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "vakito_orditas",
+        id: "card_5",
         name: "Vakító Ordítás",
         image: "card/5.png",
         maxHp: 130,
@@ -73,31 +73,31 @@ const cardDatabase = [
         ]
     },
     {
-        id: "csere_geza",
-        name: "Csere Géza",
+        id: "card_6",
+        name: "Tudó Villám",
         image: "card/6.png",
-        maxHp: 300,
+        maxHp: 130,
         attacks: [
-            { name: "Amisz Csapás", type: "dmg", dmg: 160, cost: 3 },
-            { name: "Ritkaság Változás", type: "dmg", dmg: 240, cost: 4, effect: "paralyze" },
-            { name: "Gyűjtői Szenvedély", type: "shield", cost: 1 },
-            { name: "Ritka Gyógyír", type: "heal", healAmount: 60, cost: 2 }
+            { name: "Vakító Lézer", type: "dmg", dmg: 30, cost: 1, effect: "paralyze" },
+            { name: "Kozmikus Villám-vihar", type: "dmg", dmg: 110, cost: 3 },
+            { name: "Tervezett Túlfeszültség", type: "shield", cost: 1 },
+            { name: "Villám-Feltöltés", type: "heal", healAmount: 40, cost: 2 }
         ]
     },
     {
-        id: "tuzes_cserebogar_vmax",
-        name: "Tüzes Cserebogár VMAX",
+        id: "card_7",
+        name: "Thievery Corp",
         image: "card/7.png",
-        maxHp: 330,
+        maxHp: 130,
         attacks: [
-            { name: "Kemence-harag", type: "dmg", dmg: 240, cost: 4 },
             { name: "Tűzvihar-lehelet", type: "dmg", dmg: 40, cost: 1, effect: "burn" },
+            { name: "Kemence-harag", type: "dmg", dmg: 240, cost: 4 },
             { name: "VMAX Szabály", type: "shield", cost: 1 },
-            { name: "Parázs-eső", type: "dmg", dmg: 30, hits: 3, cost: 2 }
+            { name: "Tűz-regeneráció", type: "heal", healAmount: 50, cost: 2 }
         ]
     },
     {
-        id: "ejszakai_vadasz",
+        id: "card_8",
         name: "Éjszakai Vadász",
         image: "card/8.png",
         maxHp: 130,
@@ -109,7 +109,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "nicili_fusion",
+        id: "card_9",
         name: "Nicili Fusion",
         image: "card/9.png",
         maxHp: 330,
@@ -121,7 +121,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "barna_medve",
+        id: "card_10",
         name: "Barna Medve",
         image: "card/10.png",
         maxHp: 120,
@@ -133,7 +133,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "bromance",
+        id: "card_11",
         name: "Bromance",
         image: "card/11.png",
         maxHp: 220,
@@ -145,7 +145,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "orgia_a_dezsaban",
+        id: "card_12",
         name: "Orgia a Dézsában",
         image: "card/12.png",
         maxHp: 169,
@@ -157,7 +157,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "golya",
+        id: "card_13",
         name: "Gólya",
         image: "card/13.png",
         maxHp: 110,
@@ -169,7 +169,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "alkoholizmus_a_dezsaban",
+        id: "card_14",
         name: "Alkoholizmus a Dézsában",
         image: "card/14.png",
         maxHp: 169,
@@ -181,7 +181,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "pok_beno",
+        id: "card_15",
         name: "Pók Benó",
         image: "card/15.png",
         maxHp: 160,
@@ -193,7 +193,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "pancelos_malac",
+        id: "card_16",
         name: "Páncélos Malac",
         image: "card/16.png",
         maxHp: 170,
@@ -205,7 +205,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "gombamod",
+        id: "card_17",
         name: "Gombamód",
         image: "card/17.png",
         maxHp: 110,
@@ -217,7 +217,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "gabori_pagoda",
+        id: "card_18",
         name: "Gábori Pagoda",
         image: "card/18.png",
         maxHp: 160,
@@ -229,7 +229,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "tuzes_cserebogar",
+        id: "card_19",
         name: "Tüzes Cserebogár VMAX",
         image: "card/19.png",
         maxHp: 330,
@@ -241,7 +241,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "hosies_hoember",
+        id: "card_20",
         name: "Hősies Hóember",
         image: "card/20.png",
         maxHp: 130,
@@ -253,10 +253,10 @@ const cardDatabase = [
         ]
     },
     {
-        id: "vizi_bence",
+        id: "card_21",
         name: "Vízi Bence",
         image: "card/21.png",
-        maxHp: 1690,
+        maxHp: 169,
         attacks: [
             { name: "Kozmikus Buborék-sokk", type: "dmg", dmg: 120, cost: 3 },
             { name: "Buborékcsapda", type: "dmg", dmg: 40, cost: 1, effect: "paralyze" },
@@ -265,7 +265,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "lila_kod",
+        id: "card_22",
         name: "Lila Köd",
         image: "card/22.png",
         maxHp: 140,
@@ -277,7 +277,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "szivarvany",
+        id: "card_23",
         name: "Szivárvány",
         image: "card/23.png",
         maxHp: 160,
@@ -289,7 +289,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "toyota_verso",
+        id: "card_24",
         name: "Toyota Verso",
         image: "card/24.png",
         maxHp: 160,
@@ -301,7 +301,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "rozsdas_bicikli",
+        id: "card_25",
         name: "Rozsdás Bicikli",
         image: "card/25.png",
         maxHp: 120,
@@ -313,7 +313,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "szuper_szendvics",
+        id: "card_26",
         name: "Szuper Szendvics",
         image: "card/26.png",
         maxHp: 110,
@@ -325,7 +325,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "beno_ragu",
+        id: "card_27",
         name: "Bénó Ragu",
         image: "card/27.png",
         maxHp: 160,
@@ -337,7 +337,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "kandur_bandi",
+        id: "card_28",
         name: "Kandúr Bandi",
         image: "card/28.png",
         maxHp: 130,
@@ -349,7 +349,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "nathas_kutato",
+        id: "card_29",
         name: "Náthás Kutató",
         image: "card/29.png",
         maxHp: 160,
@@ -361,7 +361,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "zseb_zombi",
+        id: "card_30",
         name: "Zseb-Zombi",
         image: "card/30.png",
         maxHp: 140,
@@ -373,7 +373,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "tukor_kep",
+        id: "card_31",
         name: "Tükör-Kép",
         image: "card/31.png",
         maxHp: 120,
@@ -385,7 +385,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "meszaros",
+        id: "card_32",
         name: "Mészáros",
         image: "card/32.png",
         maxHp: 160,
@@ -397,7 +397,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "all_covering_pollen",
+        id: "card_33",
         name: "All-Covering Pollen",
         image: "card/33.png",
         maxHp: 160,
@@ -409,7 +409,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "kocka_kobra",
+        id: "card_34",
         name: "Kocka-Kobra",
         image: "card/34.png",
         maxHp: 130,
@@ -421,7 +421,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "gyemant_galamb",
+        id: "card_35",
         name: "Gyémánt Galamb",
         image: "card/35.png",
         maxHp: 110,
@@ -433,7 +433,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "plazma_parduc",
+        id: "card_36",
         name: "Plazma-Párduc",
         image: "card/36.png",
         maxHp: 150,
@@ -445,7 +445,7 @@ const cardDatabase = [
         ]
     },
     {
-        id: "elfogy_a_benzin",
+        id: "card_37",
         name: "Elfogy a Benzin",
         image: "card/37.png",
         maxHp: 160,
