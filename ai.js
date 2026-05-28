@@ -24,8 +24,8 @@ function getAIMove(aiPlayerState, opponentPlayerState) {
         return null; 
     }
 
-    // Ha van item a kezében, az AI mindig elhasználja az elsőt a körében, mint egy ingyenes akció
-    if (aiPlayerState.items && aiPlayerState.items.length > 0) {
+    // Ha van item a kezében és még nem használt ebben a körben, elhasználja az elsőt
+    if (aiPlayerState.items && aiPlayerState.items.length > 0 && !aiPlayerState.itemUsedThisTurn) {
         return { type: 'item', itemIndex: 0 };
     }
 

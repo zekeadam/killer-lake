@@ -12,11 +12,12 @@ let oppNickname = "Játékos 2";
 // --- ÚJ: HANG RENDSZER (Online MP3 streamelés) ---
 // Ide bármilyen weben található hang linkjét berakhatod! (Nem kell letölteni fájlokat)
 const soundURLs = {
-    click: "https://s3.amazonaws.com/freecodecamp/drums/side_stick_1.mp3",  // MEGSZÓLAL: Bármilyen interaktív gomb megnyomásakor.
-    attack_normal: "https://s3.amazonaws.com/freecodecamp/drums/Brk_Snr.mp3", // MEGSZÓLAL: Sima sebző támadás indításakor.
-    attack_burn: "https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
+    click: "https://www.myinstants.com/media/sounds/mouse-click-by-ek6_VR0O6PL.mp3",  // MEGSZÓLAL: Bármilyen interaktív gomb megnyomásakor.
+    attack_normal: "https://www.myinstants.com/media/sounds/sword-hit-with-blood.mp3", // MEGSZÓLAL: Sima sebző támadás indításakor.
+    attack_burn: "",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
     attack_paralyze: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3",// MEGSZÓLAL: Bénító (Paralyze) támadás indításakor (éles, elektromos hang).
     damage: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3",   // MEGSZÓLAL: Ha az ellenfél ténylegesen sérül, betörik egy pajzsa, vagy kör végén megégetik.
+    miss: "https://www.myinstants.com/media/sounds/woosh_s21KzKN.mp3",        // MEGSZÓLAL: Amikor a támadás célt téveszt vagy kikerülik.
     shield: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
     heal: "https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
     charge: "https://s3.amazonaws.com/freecodecamp/drums/Chord_2.mp3"       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
@@ -343,8 +344,8 @@ function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
     gameState = {
         activePlayer: 'p1',
         gameOver: false,
-        p1: { team: buildTeamObjects(p1TeamIds), activeIndex: 0, ap: 2, items: p1ItemIds || [] },
-        p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2, items: p2ItemIds || [] }
+        p1: { team: buildTeamObjects(p1TeamIds), activeIndex: 0, ap: 2, items: p1ItemIds || [], itemUsedThisTurn: false },
+        p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2, items: p2ItemIds || [], itemUsedThisTurn: false }
     };
     
     document.getElementById('log').innerHTML = "";
@@ -678,7 +679,7 @@ function updateUI() {
         setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), cardData.name);
 
         const isItemShieldFull = action.type === "shield" && activeCard.shields >= 2;
-        btn.disabled = (!isMyTurn || gameState.gameOver || isItemShieldFull);
+        btn.disabled = (!isMyTurn || gameState.gameOver || isItemShieldFull || pState.itemUsedThisTurn);
             btn.onclick = () => executeItem(player, idx);
             itemContainer.appendChild(btn);
         });
@@ -787,12 +788,14 @@ function applyMove(playerId, data) {
         if (move.type === "dmg") {
             if (data.isEvaded) {
                 logMessage(`> ${oppCard.name} kitért a támadás elől! (0 sebzés)`, "status-effect");
+                playSound('miss');
             } else {
                 // FIX: Ha a támadás szerencse alapú (luck) vagy bármilyen effektje van, érmedobás dönt a találatról
                 if (move.luck || move.effect) {
                     logMessage(`> Érmedobás: <b>${data.coinFlip}</b>!`);
                     if (data.coinFlip === "ÍRÁS") {
                         logMessage(`> A támadás célt tévesztett! (0 sebzés)`, "status-effect");
+                        playSound('miss');
                         if (checkWin()) return;
                         endTurnPhase(playerId);
                         return;
@@ -842,12 +845,20 @@ function applyMove(playerId, data) {
                         triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
                     }
                 } else {
-                    if (move.effect === "paralyze") {
-                        oppCard.isParalyzed = true;
-                        logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
-                    } else if (move.effect === "burn") {
-                        oppCard.burnTurns = 3;
-                        logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+                    if (move.effect === "paralyze" || move.effect === "burn") {
+                        if (oppCard.shields > 0) {
+                            oppCard.shields--;
+                            logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
+                            triggerShieldScan(oppId);
+                        } else {
+                            if (move.effect === "paralyze") {
+                                oppCard.isParalyzed = true;
+                                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                            } else if (move.effect === "burn") {
+                                oppCard.burnTurns = 3;
+                                logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+                            }
+                        }
                     }
                 }
             }
@@ -912,6 +923,7 @@ function endTurnPhase(currentPlayerId) {
 
     gameState.activePlayer = oppId;
     nextPState.ap = Math.min(10, nextPState.ap + 1); 
+    nextPState.itemUsedThisTurn = false; // Új kör, újra lehet használni lapot
     isActionLocked = false; // Akció zár feloldása a következő játékosnak
     updateUI();
 
@@ -922,7 +934,7 @@ function endTurnPhase(currentPlayerId) {
 
 function executeItem(playerId, itemIndex) {
     // Itt is lezárjuk az akciót, hogy ne lehessen 10ms alatt mind a 3 tárgyat ellőni
-    if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked) return;
+    if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked || gameState[playerId].itemUsedThisTurn) return;
 
     isActionLocked = true;
     playSound('click');
@@ -942,6 +954,8 @@ function applyItem(playerId, data) {
     const itemId = pState.items[data.itemIndex];
     if (!itemId) return;
 
+    pState.itemUsedThisTurn = true; // Jelöljük, hogy ebben a körben már használt lapot
+
     const cardData = cardDatabase.find(c => c.id === itemId);
     const action = cardData.action;
 
@@ -958,8 +972,14 @@ function applyItem(playerId, data) {
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
         playSound('damage');
         if (action.effect === 'paralyze') {
-            oppCard.isParalyzed = true;
-            logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+            if (oppCard.shields > 0) {
+                oppCard.shields--;
+                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást!`, "log-shield");
+                triggerShieldScan(oppId);
+            } else {
+                oppCard.isParalyzed = true;
+                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+            }
         }
     } else if (action.type === 'heal') {
         myCard.hp = Math.min(myCard.maxHp, myCard.hp + action.healAmount);
@@ -974,8 +994,14 @@ function applyItem(playerId, data) {
         playSound('shield');
     } else if (action.type === 'status') {
         if (action.effect === 'burn') {
-            oppCard.burnTurns = 3;
-            logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+            if (oppCard.shields > 0) {
+                oppCard.shields--;
+                logMessage(`> ${oppCard.name} pajzsa kivédte az égést!`, "log-shield");
+                triggerShieldScan(oppId);
+            } else {
+                oppCard.burnTurns = 3;
+                logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+            }
         }
     } else if (action.type === 'ap_drain') {
         oppState.ap = Math.max(0, oppState.ap - action.amount);
