@@ -147,7 +147,14 @@
         <div id="victory-screen">
             <div class="victory-box">
                 <div class="victory-text" id="victory-winner-text">GYŐZTES!</div>
-                <button onclick="location.reload()">Új Csatlakozás</button>
+                <div class="victory-stats" id="victory-stats">
+                    <!-- Statisztikák ide kerülnek -->
+                </div>
+                <div class="victory-buttons">
+                    <button id="rematch-btn" onclick="handleVictoryButtonClick()">Visszavágó</button>
+                    <button id="copy-log-btn" class="btn-blue" onclick="copyBattleLog()" style="display: none;">Napló Másolása</button>
+                    <button class="btn-red" onclick="location.reload()">Új Játék</button>
+                </div>
             </div>
         </div>
     </div>

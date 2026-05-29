@@ -6,6 +6,12 @@ let isTestMode = false;
 let isPvEMode = false;
 let isActionLocked = false; // Spam-védelem az auto-clicker ellen
 
+let battleStats = {
+    p1: { damageDealt: 0, healingDone: 0, attacksLanded: 0, itemsUsed: 0 },
+    p2: { damageDealt: 0, healingDone: 0, attacksLanded: 0, itemsUsed: 0 },
+    turns: 0
+};
+
 let myNickname = "Játékos 1";
 let oppNickname = "Játékos 2";
 
@@ -234,7 +240,7 @@ function setupConnection() {
             applyItem(oppId, data);
         } else if (data.type === 'REMATCH_OFFER') {
             logMessage("Az ellenfél visszavágót kér!", "log-system");
-            const btn = document.querySelector('#victory-screen button');
+            const btn = document.getElementById('rematch-btn');
             if (btn) btn.innerText = "Visszavágó elfogadása";
         }
     });
@@ -386,6 +392,12 @@ function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
         p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2, items: p2ItemIds || [], itemUsedThisTurn: false }
     };
     
+    battleStats = {
+        p1: { damageDealt: 0, healingDone: 0, attacksLanded: 0, itemsUsed: 0 },
+        p2: { damageDealt: 0, healingDone: 0, attacksLanded: 0, itemsUsed: 0 },
+        turns: 0
+    };
+
     document.getElementById('log').innerHTML = "";
     
     // Nevek beállítása és megjelenítése a fejlécben
@@ -776,17 +788,38 @@ function updateUI() {
 function checkWin() {
     if (gameState.p1.activeIndex >= 5 || gameState.p2.activeIndex >= 5) {
         gameState.gameOver = true;
-        const winnerText = gameState.p1.activeIndex < 5 ? "1. JÁTÉKOS" : "2. JÁTÉKOS";
-        logMessage(`Mérkőzés vége! A ${winnerText} megnyerte a csatát!`, "success");
+        const winnerId = gameState.p1.activeIndex < 5 ? 'p1' : 'p2';
+        const loserId = winnerId === 'p1' ? 'p2' : 'p1';
+        const winnerName = winnerId === myRole ? myNickname : oppNickname;
+        const loserName = loserId === myRole ? myNickname : oppNickname;
+        
+        logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
         document.getElementById('turn-indicator').innerText = "Vége";
         
-        document.getElementById('victory-winner-text').innerHTML = `CSAPAT MEGSEMMISÍTVE!<br><br><span style="color: #fff;">${winnerText}</span><br>GYŐZÖTT!`;
+        document.getElementById('victory-winner-text').innerHTML = `CSAPAT MEGSEMMISÍTVE!<br><br><span style="color: #fff;">${winnerName}</span><br>GYŐZÖTT!`;
         
-        const victoryBtn = document.querySelector('#victory-screen button');
-        if (victoryBtn) {
-            victoryBtn.innerText = "Visszavágó";
-            victoryBtn.disabled = false;
-            victoryBtn.onclick = handleVictoryButtonClick;
+        const statsHtml = `
+            <div class="stat-row"><span class="stat-label">Körök száma:</span> <span class="stat-value">${Math.ceil((battleStats.turns || 0) / 2)}</span></div>
+            <div class="stat-row"><span class="stat-label">Kiosztott sebzés:</span> <span class="stat-value">${battleStats[winnerId].damageDealt} vs ${battleStats[loserId].damageDealt}</span></div>
+            <div class="stat-row"><span class="stat-label">Gyógyítás:</span> <span class="stat-value">${battleStats[winnerId].healingDone} vs ${battleStats[loserId].healingDone}</span></div>
+            <div class="stat-row"><span class="stat-label">Használt tárgyak:</span> <span class="stat-value">${battleStats[winnerId].itemsUsed} vs ${battleStats[loserId].itemsUsed}</span></div>
+        `;
+        document.getElementById('victory-stats').innerHTML = statsHtml;
+
+        const rematchBtn = document.getElementById('rematch-btn');
+        if (rematchBtn) {
+            if (isTestMode) {
+                rematchBtn.style.display = 'none';
+            } else {
+                rematchBtn.style.display = 'inline-block';
+                rematchBtn.innerText = "Visszavágó";
+                rematchBtn.disabled = false;
+            }
+        }
+        
+        const copyLogBtn = document.getElementById('copy-log-btn');
+        if (copyLogBtn) {
+            copyLogBtn.style.display = isTestMode ? 'inline-block' : 'none';
         }
 
         setTimeout(() => { 
@@ -817,7 +850,7 @@ function handleVictoryButtonClick() {
     } else {
         // A Guest jelzi a visszavágó szándékát a Hostnak
         conn.send({ type: 'REMATCH_OFFER' });
-        const btn = document.querySelector('#victory-screen button');
+        const btn = document.getElementById('rematch-btn');
         if (btn) {
             btn.innerText = "Várakozás...";
             btn.disabled = true;
@@ -940,11 +973,13 @@ function applyMove(playerId, data) {
                 } else {
                     oppCard.hp -= dmgPerHit;
                     hitsLanded++;
+                    if (battleStats && battleStats[playerId]) battleStats[playerId].damageDealt += dmgPerHit;
                 }
             }
             
             if (oppCard.hasCounter && hitsLanded > 0) {
                 attackerCard.hp -= 20; // 20 fix sebzés a visszatámadásból
+                if (battleStats && battleStats[oppId]) battleStats[oppId].damageDealt += 20;
                 logMessage(`> ⚔️ Visszatámadás! ${attackerCard.name} 20 sebzést kapott!`, "log-dmg");
                 triggerAnimation(`${playerId}-card`, 'anim-damage', 400);
             }
@@ -973,9 +1008,11 @@ function applyMove(playerId, data) {
             }
             
             if (move.effect === 'lifesteal' && totalDamage > 0) {
-                const healAmt = Math.floor(totalDamage * 0.5);
-                attackerCard.hp = Math.min(attackerCard.maxHp, attackerCard.hp + healAmt);
-                logMessage(`> 🦇 Vámpír Csapás: ${attackerCard.name} visszaszívott ${healAmt} HP-t!`, "log-heal");
+                const healAmtBase = Math.floor(totalDamage * 0.5);
+                const actualHeal = Math.min(attackerCard.maxHp - attackerCard.hp, healAmtBase);
+                attackerCard.hp += actualHeal;
+                if (battleStats && battleStats[playerId]) battleStats[playerId].healingDone += actualHeal;
+                logMessage(`> 🦇 Vámpír Csapás: ${attackerCard.name} visszaszívott ${actualHeal} HP-t!`, "log-heal");
                 triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
             }
 
@@ -1018,12 +1055,14 @@ function applyMove(playerId, data) {
                 }
             }
         } else if (move.type === "heal") {
-            attackerCard.hp = Math.min(attackerCard.maxHp, attackerCard.hp + move.healAmount);
+            const actualHeal = Math.min(attackerCard.maxHp - attackerCard.hp, move.healAmount);
+            attackerCard.hp += actualHeal;
+            if (battleStats && battleStats[playerId]) battleStats[playerId].healingDone += actualHeal;
             const rect = document.getElementById(`${playerId}-card`).getBoundingClientRect();
             spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, "#2ecc71", 45, 150);
             triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
             playSound('heal');
-            logMessage(`> ${attackerCard.name} visszatöltött ${move.healAmount} Életerőt!`, "log-heal");
+            logMessage(`> ${attackerCard.name} visszatöltött ${actualHeal} Életerőt!`, "log-heal");
         } else if (move.type === "shield") {
             attackerCard.shields = Math.min(2, attackerCard.shields + 1);
             triggerShieldScan(playerId);
@@ -1062,6 +1101,7 @@ function endTurnPhase(currentPlayerId) {
     if (pCard && pCard.poisonTurns > 0) {
         const pDmg = pCard.poisonStacks * 10;
         pCard.hp -= pDmg;
+        if (battleStats && battleStats[oppId]) battleStats[oppId].damageDealt += pDmg;
         pCard.poisonTurns--;
         logMessage(`${pCard.name} mérgezést szenvedett (${pDmg} DMG).`, "status-effect");
         triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
@@ -1091,6 +1131,7 @@ function endTurnPhase(currentPlayerId) {
         } else {
             const bDmg = pCard.burnStacks * 20;
             pCard.hp -= bDmg;
+            if (battleStats && battleStats[oppId]) battleStats[oppId].damageDealt += bDmg;
             pCard.burnTurns--;
             triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
             playSound('damage_burn');
@@ -1137,6 +1178,8 @@ function endTurnPhase(currentPlayerId) {
     isActionLocked = false; // Akció zár feloldása a következő játékosnak
     updateUI();
 
+    if (battleStats) battleStats.turns++;
+
     if ((isTestMode || (isPvEMode && oppId === 'p2')) && !gameState.gameOver) {
         setTimeout(runAITestMove, 1000);
     }
@@ -1173,6 +1216,8 @@ function applyItem(playerId, data) {
     const oppCard = oppState.team[oppState.activeIndex];
     const myCard = pState.team[pState.activeIndex];
 
+    if (battleStats && battleStats[playerId]) battleStats[playerId].itemsUsed += 1;
+
     const wasFullHP = (oppCard.hp >= oppCard.maxHp);
 
     logMessage(`🎴 <b>${cardData.name}</b> kijátszva!`, "log-system");
@@ -1187,6 +1232,7 @@ function applyItem(playerId, data) {
             triggerShieldScan(oppId);
         } else {
             oppCard.hp -= dmgToApply;
+            if (battleStats && battleStats[playerId]) battleStats[playerId].damageDealt += dmgToApply;
             logMessage(`> ${cardData.name} sebzett ${dmgToApply}-t!`, "log-dmg");
             if (action.effect === "burn") playSound('damage_burn');
             else if (action.effect === "paralyze") playSound('damage_paralyze');
@@ -1210,8 +1256,10 @@ function applyItem(playerId, data) {
             }
         }
     } else if (action.type === 'heal') {
-        myCard.hp = Math.min(myCard.maxHp, myCard.hp + action.healAmount);
-        logMessage(`> ${myCard.name} visszatöltött ${action.healAmount} HP-t!`, "log-heal");
+        const actualHeal = Math.min(myCard.maxHp - myCard.hp, action.healAmount);
+        myCard.hp += actualHeal;
+        if (battleStats && battleStats[playerId]) battleStats[playerId].healingDone += actualHeal;
+        logMessage(`> ${myCard.name} visszatöltött ${actualHeal} HP-t!`, "log-heal");
         triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
         playSound('heal');
     } else if (action.type === 'shield') {
@@ -1369,5 +1417,22 @@ function copyInviteLink() {
         const originalText = btn.innerText;
         btn.innerText = "Link másolva!";
         setTimeout(() => btn.innerText = originalText, 2000);
+    });
+}
+
+function copyBattleLog() {
+    const logEl = document.getElementById('log');
+    if (!logEl) return;
+    
+    const lines = Array.from(logEl.children)
+        .map(el => el.innerText)
+        .reverse()
+        .join('\n');
+        
+    navigator.clipboard.writeText(lines).then(() => {
+        const btn = document.getElementById('copy-log-btn');
+        const origText = btn.innerText;
+        btn.innerText = "Napló másolva!";
+        setTimeout(() => btn.innerText = origText, 2000);
     });
 }
