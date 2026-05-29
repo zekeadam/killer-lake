@@ -66,6 +66,52 @@ optScript.onload = () => {
 };
 document.head.appendChild(optScript);
 
+// --- FIREBASE AUTHENTICATION (Google Bejelentkezés) ---
+
+// !!! IDE MÁSOLD BE A FIREBASE CONSOLE-BÓL (Project settings) A SAJÁT CONFIGODAT !!!
+const firebaseConfig = {
+    apiKey: "AIzaSyCv7KxaXC-NVzieHA5vnR9lMpm8DlUJXJQ",
+    authDomain: "killer-lake.firebaseapp.com",
+    databaseURL: "https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "killer-lake",
+    storageBucket: "killer-lake.firebasestorage.app",
+    messagingSenderId: "673886954683",
+    appId: "1:673886954683:web:b37ed0467bc9bb5af3759e"
+};
+
+// Firebase inicializálása
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+let loggedInUser = null;
+
+// Figyeljük, hogy be van-e jelentkezve a játékos
+firebase.auth().onAuthStateChanged((user) => {
+    loggedInUser = user;
+    const loginBtn = document.getElementById('google-login-btn');
+    const userInfo = document.getElementById('auth-user-info');
+
+    if (user) {
+        if (loginBtn) loginBtn.style.display = 'none';
+        if (userInfo) {
+            userInfo.style.display = 'block';
+            userInfo.innerHTML = `Bejelentkezve mint: <b>${user.displayName}</b>`;
+        }
+    } else {
+        if (loginBtn) loginBtn.style.display = 'inline-flex';
+        if (userInfo) userInfo.style.display = 'none';
+    }
+});
+
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).catch((error) => {
+        console.error("Bejelentkezési hiba:", error);
+        alert("Nem sikerült bejelentkezni: " + error.message);
+    });
+}
+
 // --- DRAFT VÁLTOZÓK ---
 let myDraftTeam = [];
 let oppDraftTeam = [];
@@ -267,6 +313,10 @@ function setupDraft(teamIds, itemIds) {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
 
+    // Elrejtjük a főcímet a játék kezdetekor, hogy ne zavarjon
+    const mainTitle = document.querySelector('h1');
+    if (mainTitle) mainTitle.style.display = 'none';
+
     const readyBtn = document.getElementById('ready-btn');
     if (readyBtn) {
         readyBtn.disabled = false;
@@ -337,12 +387,12 @@ function renderDraft() {
 }
 
 function confirmTeamOrder() {
-    const nickInput = document.getElementById('nickname-input').value.trim();
-    if (!nickInput && !isPvEMode) {
-        alert("PVP módban kötelező megadni egy nicknevet!");
+    if (!loggedInUser && !isPvEMode && !isTestMode) {
+        alert("PVP módban kötelező bejelentkezni a Google fiókoddal a ranglista miatt!");
         return;
     }
-    myNickname = nickInput || "Játékos";
+    
+    myNickname = loggedInUser ? loggedInUser.displayName : (isPvEMode ? "Játékos" : "Ismeretlen");
     iAmReady = true;
     document.getElementById('ready-btn').disabled = true;
     document.getElementById('ready-btn').innerText = "Készen állsz!";
