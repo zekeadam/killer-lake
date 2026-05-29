@@ -102,7 +102,7 @@ testBtn.onclick = () => {
     const menu = document.createElement('div');
     menu.style.cssText = `
         position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: rgba(10, 10, 20, 0.95); padding: 30px; border-radius: 20px;
+        background: rgba(10, 10, 20, 0.6); padding: 30px; border-radius: 20px;
         border: 2px solid #e94560; z-index: 10001; display: flex; flex-direction: column;
         gap: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
         min-width: 250px;
@@ -824,6 +824,7 @@ function checkWin() {
         const copyLogBtn = document.getElementById('copy-log-btn');
         if (copyLogBtn) {
             copyLogBtn.style.display = isTestMode ? 'inline-block' : 'none';
+            copyLogBtn.style.display = 'inline-block';
         }
 
         setTimeout(() => { 
@@ -1439,4 +1440,24 @@ function copyBattleLog() {
         btn.innerText = "Napló másolva!";
         setTimeout(() => btn.innerText = origText, 2000);
     });
+}
+
+function downloadBattleLog() {
+    const logEl = document.getElementById('log');
+    if (!logEl) return;
+    
+    const lines = Array.from(logEl.children)
+        .map(el => el.innerText)
+        .reverse()
+        .join('\n');
+        
+    const blob = new Blob([lines], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `killer_lake_log_${new Date().getTime()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
