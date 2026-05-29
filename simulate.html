@@ -61,11 +61,11 @@
                 <h3>2. Fázis: Finomhangolás</h3>
                 <div class="control-grid">
                     <label>Variációk:</label>
-                    <input type="number" id="p2-pop-size" value="50" title="Kártya variációk száma">
+                    <input type="number" id="p2-pop-size" value="100" title="Kártya variációk száma">
                     <label>Generációk:</label>
                     <input type="number" id="p2-gen-count" value="1000" title="Hány mutációs ciklus fusson">
                     <label>Meccsek:</label>
-                    <input type="number" id="p2-match-count" value="300" title="Meccsek száma variációnként">
+                    <input type="number" id="p2-match-count" value="500" title="Meccsek száma variációnként">
                 </div>
             </div>
         </div>
@@ -81,13 +81,15 @@
             <button id="copy-log-btn" onclick="copyLog()" style="display:none;">Napló Másolása</button>
         </div>
         
-        <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 250 000 mérkőzés</p>
+        <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 50 500 000 mérkőzés</p>
         <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
         <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
 
         <div id="live-stats" style="margin: 10px 0; font-size: 1.1rem; font-weight: bold; display: flex; justify-content: center; gap: 30px;">
             <span style="color: #4cc9f0;">Legjobb Fitness: <span id="stat-fitness">-</span></span>
             <span style="color: #e94560;">WR Eltérés: <span id="stat-wr">-</span>%</span>
+            <span style="color: #f1c40f;">Átlag körök: <span id="stat-turns">-</span></span>
+            <span style="color: #2ecc71;">WR Tartomány: <span id="stat-range">-</span>%</span>
         </div>
 
         <div class="chart-container">
@@ -442,6 +444,8 @@
             bestOverallBalanceScore = 0;
             document.getElementById('stat-fitness').innerText = "-";
             document.getElementById('stat-wr').innerText = "-";
+            document.getElementById('stat-turns').innerText = "-";
+            document.getElementById('stat-range').innerText = "-";
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
             matchesCompleted = 0;
@@ -652,6 +656,8 @@
                                 
                                 document.getElementById('stat-fitness').innerText = fitness.toFixed(4);
                                 document.getElementById('stat-wr').innerText = (balanceScore * 100).toFixed(2);
+                                document.getElementById('stat-turns').innerText = avgTurns.toFixed(1);
+                                document.getElementById('stat-range').innerText = (maxWR - minWR).toFixed(1);
                                 
                                 currentBestLog = logText;
                                 updateOutput();
@@ -671,7 +677,7 @@
                             population.sort((a, b) => b.fitness - a.fitness);
                             if ((currentPhaseGens + 1) % 10 === 0) {
                                 const best = population[0];
-                                const milestone = `📍 [${currentGen + 1}. Gen] Fitness: ${best.fitness.toFixed(4)} | WR Eltérés: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
+                                const milestone = `📍 [${currentGen + 1}. Gen] Fitness (Gen/Max): ${best.fitness.toFixed(4)} / ${bestOverallFitness.toFixed(4)} | WR: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
                                 milestoneLog.unshift(milestone);
                                 updateOutput();
                             }
