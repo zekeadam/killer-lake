@@ -862,8 +862,8 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- Csak a valódi PVP meccsek statisztikáit mentjük a ranglistára ---
-        if (!isPvEMode && !isTestMode) {
+        // --- A PVP és AI vs AI (Test Mode) meccseket mentjük a ranglistára (PvE-t nem) ---
+        if (!isPvEMode) {
             updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
             updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
         }
