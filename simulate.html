@@ -32,6 +32,7 @@
         #copy-log-btn { background: #9b59b6; }
         #copy-log-btn:hover { background: #8e44ad; }
         #output { text-align: left; background: #0a0a0a; padding: 15px; border-radius: 5px; color: #4cc9f0; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow: auto; border: 1px solid #333; }
+        #output { scroll-behavior: smooth; }
         .progress-bar { width: 100%; height: 25px; background: #222; border-radius: 12.5px; margin: 20px 0; overflow: hidden; border: 1px solid #444; }
         .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #000; }
         .chart-container { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid #333; height: 250px; }
@@ -74,7 +75,8 @@
                 <input type="checkbox" id="use-optimized"> Optimalizált adatokkal indít
             </label>
             
-            <button onclick="startEvolution()">Evolúció Indítása</button>
+            <button id="start-btn" onclick="startEvolution()">Evolúció Indítása</button>
+            <button id="stop-btn" onclick="stopEvolution()" style="display:none; background: #95a5a6;">Leállítás</button>
             <button id="download-btn" onclick="downloadJS()" style="display:none;">Optimalizált JS Letöltése</button>
             <button id="copy-log-btn" onclick="copyLog()" style="display:none;">Napló Másolása</button>
         </div>
@@ -82,6 +84,11 @@
         <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 250 000 mérkőzés</p>
         <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
         <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
+
+        <div id="live-stats" style="margin: 10px 0; font-size: 1.1rem; font-weight: bold; display: flex; justify-content: center; gap: 30px;">
+            <span style="color: #4cc9f0;">Legjobb Fitness: <span id="stat-fitness">-</span></span>
+            <span style="color: #e94560;">WR Eltérés: <span id="stat-wr">-</span>%</span>
+        </div>
 
         <div class="chart-container">
             <canvas id="fitnessChart"></canvas>
@@ -103,6 +110,7 @@
         let popSize, genCount, matchesPerGenome;
         let population = [];
         let phaseGenLimit = 1000;
+        let isSimRunning = false;
         let currentPhaseGens = 0;
         let currentPhase = 1;
         let currentGen = 0;
@@ -392,6 +400,11 @@
 
         // --- EVOLÚCIÓ LOGIKA ---
         function startEvolution() {
+            if (isSimRunning) return;
+            isSimRunning = true;
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('stop-btn').style.display = 'inline-block';
+            
             initWorkers();
             initChart();
             
@@ -427,6 +440,8 @@
             
             bestOverallFitness = -Infinity;
             bestOverallBalanceScore = 0;
+            document.getElementById('stat-fitness').innerText = "-";
+            document.getElementById('stat-wr').innerText = "-";
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
             matchesCompleted = 0;
@@ -443,7 +458,17 @@
         }
 
         function updateOutput() {
-            document.getElementById('output').innerText = getFullLog();
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerText = getFullLog();
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        function stopEvolution() {
+            if (!isSimRunning) return;
+            isSimRunning = false;
+            finalizeEvolution();
+            milestoneLog.unshift("🛑 Szimuláció manuálisan leállítva.");
+            updateOutput();
         }
 
         function getFullLog() {
@@ -537,6 +562,8 @@
         }
 
         function runGeneration() {
+            if (!isSimRunning) return;
+
             if (currentPhaseGens >= phaseGenLimit || generationsSinceLastImprovement >= 100) {
                 handlePhaseEnd();
                 return;
@@ -622,6 +649,9 @@
                                 logText += cardStats.map(c => 
                                     `${c.wr.toFixed(1).padStart(5)}% | ${c.wins.toString().padStart(3)}/${c.matches.toString().padEnd(3)} | ${c.name} (${c.id})`
                                 ).join('\n');
+                                
+                                document.getElementById('stat-fitness').innerText = fitness.toFixed(4);
+                                document.getElementById('stat-wr').innerText = (balanceScore * 100).toFixed(2);
                                 
                                 currentBestLog = logText;
                                 updateOutput();
@@ -715,10 +745,13 @@
         }
 
         function finalizeEvolution() {
+            isSimRunning = false;
             document.getElementById('progress').style.width = '100%';
             document.getElementById('progress').innerText = '100%';
             document.getElementById('download-btn').style.display = 'inline-block';
             document.getElementById('copy-log-btn').style.display = 'inline-block';
+            document.getElementById('start-btn').style.display = 'inline-block';
+            document.getElementById('stop-btn').style.display = 'none';
             let endReason = generationsSinceLastImprovement >= 100 ? " (Stagnálás miatt leállt - 100 gen. óta nincs javulás)" : "";
             document.getElementById('status-text').innerText = "2. Fázis sikeresen befejeződött!" + endReason;
         }
