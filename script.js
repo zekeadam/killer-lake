@@ -164,6 +164,8 @@ peer.on('connection', (connection) => {
     if (conn) return;
     conn = connection;
     myRole = 'p1'; 
+    isPvEMode = false;
+    isTestMode = false;
     setupConnection();
 });
 
@@ -177,6 +179,8 @@ function connectToPeer() {
     document.getElementById('connection-status').innerText = "Kapcsolódás...";
     conn = peer.connect(targetId);
     myRole = 'p2'; 
+    isPvEMode = false;
+    isTestMode = false;
     setupConnection();
 }
 
@@ -1181,7 +1185,6 @@ function endTurnPhase(currentPlayerId) {
     if (battleStats) battleStats.turns++;
 
     if ((isTestMode || (isPvEMode && oppId === 'p2')) && !gameState.gameOver) {
-        setTimeout(runAITestMove, 1000);
         setTimeout(runAITestMove, isTestMode ? 250 : 1000);
     }
 }
@@ -1329,7 +1332,6 @@ function startTestMode() {
     logMessage("--- TEST MÓD AKTIVÁLVA: AI vs AI ---", "log-system");
     
     setTimeout(runAITestMove, 1000);
-    setTimeout(runAITestMove, 250);
 }
 
 function startPvEMode() {
@@ -1375,8 +1377,7 @@ function runAITestMove() {
             itemIndex: moveResult.itemIndex
         };
         applyItem(pId, payload);
-        setTimeout(runAITestMove, 1500); 
-        setTimeout(runAITestMove, isTestMode ? 250 : 800); 
+        setTimeout(runAITestMove, isTestMode ? 250 : 1500); 
         return;
     }
     
