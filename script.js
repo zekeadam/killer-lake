@@ -368,6 +368,10 @@ function buildTeamObjects(teamIds) {
         card.isParalyzed = false;
         card.burnTurns = 0;
         card.shields = 0;
+        card.isMarked = false;
+        card.hasCounter = false;
+        card.poisonStacks = 0;
+        card.poisonTurns = 0;
         return card;
     });
 }
@@ -583,6 +587,22 @@ function updateUI() {
             hpFill.style.backgroundColor = '#2ecc71'; // Zöld alapértelmezetten
         }
 
+    // Segédfüggvény új dinamikus jelvények létrehozására
+    function ensureBadge(p, type, icon) {
+        let el = document.getElementById(`${p}-${type}`);
+        if (!el) {
+            const cont = document.querySelector(`#${p}-card .status-container`);
+            if (cont) {
+                el = document.createElement('div');
+                el.id = `${p}-${type}`;
+                el.className = `status-badge badge-${type}`;
+                el.innerHTML = icon;
+                cont.appendChild(el);
+            }
+        }
+        return el;
+    }
+
         // Flex használata a block helyett, hogy a CSS-ben lévő igazítások működjenek
         document.getElementById(`${player}-para`).style.display = activeCard.isParalyzed ? 'flex' : 'none';
         document.getElementById(`${player}-burn`).style.display = activeCard.burnTurns > 0 ? 'flex' : 'none';
@@ -595,9 +615,22 @@ function updateUI() {
             shieldBadge.style.display = 'none';
         }
 
+    const poisonBadge = ensureBadge(player, 'poison', '☠️');
+    if (poisonBadge) {
+        poisonBadge.style.display = activeCard.poisonTurns > 0 ? 'flex' : 'none';
+        poisonBadge.innerHTML = activeCard.poisonStacks > 1 ? `☠️${activeCard.poisonStacks}` : `☠️`;
+    }
+    const markBadge = ensureBadge(player, 'mark', '🎯');
+    if (markBadge) markBadge.style.display = activeCard.isMarked ? 'flex' : 'none';
+    const counterBadge = ensureBadge(player, 'counter', '⚔️');
+    if (counterBadge) counterBadge.style.display = activeCard.hasCounter ? 'flex' : 'none';
+
         cardElem.classList.toggle('status-shield', activeCard.shields > 0);
         cardElem.classList.toggle('status-burn', activeCard.burnTurns > 0);
         cardElem.classList.toggle('status-para', activeCard.isParalyzed);
+    cardElem.classList.toggle('status-poison', activeCard.poisonTurns > 0);
+    cardElem.classList.toggle('status-mark', activeCard.isMarked);
+    cardElem.classList.toggle('status-counter', activeCard.hasCounter);
 
         const isCurrentTurn = gameState.activePlayer === player;
         cardElem.classList.toggle('active-card', isCurrentTurn);
@@ -633,6 +666,12 @@ function updateUI() {
                     hitText = `🎯${hits}x | 🎲${acc}%`;
                     if (move.effect === "burn") { effectText = "🔥 ÉGÉS"; icon = "🔥"; }
                     else if (move.effect === "paralyze") { effectText = "⚡ BÉNÍT"; icon = "⚡"; }
+                else if (move.effect === "poison") { effectText = "☠️ MÉREG"; icon = "☠️"; }
+                else if (move.effect === "mark") { effectText = "🎯 JELÖL"; icon = "🎯"; }
+                else if (move.effect === "lifesteal") { effectText = "🦇 VÁMPÍR"; icon = "🦇"; }
+                else if (move.effect === "counter") { effectText = "⚔️ COUNTER"; icon = "⚔️"; }
+                
+                if (move.synergy === "mark") { effectText += " (🎯+50%)"; }
                 } else if (move.type === "heal") {
                     dmgText = `💚+${move.healAmount} HP`;
                     hitText = "🧪 GYÓGYUL";
@@ -873,6 +912,12 @@ function applyMove(playerId, data) {
                 triggerAnimation('container', 'screen-shake', 300);
             }
 
+            if (oppCard.isMarked && move.synergy === 'mark') {
+                dmgPerHit = Math.floor(dmgPerHit * 1.5);
+                oppCard.isMarked = false; // Feléli a jelet
+                logMessage(`> 🎯 KIVÉGZÉS! A célpont extra sebzést kapott a jelölés miatt!`, "crit");
+            }
+
             let hitsLanded = 0;
             let shieldsBroken = 0;
 
@@ -885,6 +930,12 @@ function applyMove(playerId, data) {
                     oppCard.hp -= dmgPerHit;
                     hitsLanded++;
                 }
+            }
+            
+            if (oppCard.hasCounter && hitsLanded > 0) {
+                attackerCard.hp -= 20; // 20 fix sebzés a visszatámadásból
+                logMessage(`> ⚔️ Visszatámadás! ${attackerCard.name} 20 sebzést kapott!`, "log-dmg");
+                triggerAnimation(`${playerId}-card`, 'anim-damage', 400);
             }
 
             if (shieldsBroken > 0) {
@@ -904,6 +955,13 @@ function applyMove(playerId, data) {
             if (hitsLanded > 0) {
                 logMessage(`> ${critText}${hitsLanded} találat érte a célpontot: ${totalDamage} sebzéssel.`, "log-dmg");
             }
+            
+            if (move.effect === 'lifesteal' && totalDamage > 0) {
+                const healAmt = Math.floor(totalDamage * 0.5);
+                attackerCard.hp = Math.min(attackerCard.maxHp, attackerCard.hp + healAmt);
+                logMessage(`> 🦇 Vámpír Csapás: ${attackerCard.name} visszaszívott ${healAmt} HP-t!`, "log-heal");
+                triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+            }
 
             if (oppCard.hp <= 0) {
                 logMessage(`> ${oppCard.name} elájult (K.O.)!`, "crit");
@@ -914,7 +972,7 @@ function applyMove(playerId, data) {
                     triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
                 }
             } else {
-                if (move.effect === "paralyze" || move.effect === "burn") {
+                if (move.effect === "paralyze" || move.effect === "burn" || move.effect === "poison" || move.effect === "mark") {
                     if (oppCard.shields > 0) {
                         oppCard.shields--;
                         logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
@@ -927,6 +985,13 @@ function applyMove(playerId, data) {
                         } else if (move.effect === "burn") {
                             oppCard.burnTurns = 3;
                             logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+                        } else if (move.effect === "poison") {
+                            oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
+                            oppCard.poisonTurns = 3;
+                            logMessage(`> ${oppCard.name} megmérgeződött! (Szint: ${oppCard.poisonStacks})`, "status-effect");
+                        } else if (move.effect === "mark") {
+                            oppCard.isMarked = true;
+                            logMessage(`> ${oppCard.name} Célkeresztbe került (Megjelölve)!`, "status-effect");
                         }
                     }
                 }
@@ -946,6 +1011,22 @@ function applyMove(playerId, data) {
             spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, "#3498db", 45, 150);
             logMessage(`> ${attackerCard.name} felhúzott egy pajzsot.`, "log-shield");
         }
+        
+        if (move.effect === "counter") {
+            attackerCard.hasCounter = true;
+            logMessage(`> ${attackerCard.name} Visszatámadó (Counter) állásba lépett!`, "status-effect");
+        }
+
+        // Ha a visszatámadás (Counter) miatt az aktuális támadó meghalt
+        if (attackerCard.hp <= 0) {
+            logMessage(`> ${attackerCard.name} belehalt a visszatámadásba (K.O.)!`, "crit");
+            attackerState.activeIndex++;
+            if (attackerState.activeIndex < 5) {
+                const nextCard = attackerState.team[attackerState.activeIndex];
+                logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
+                triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+            }
+        }
 
         if (checkWin()) return;
         endTurnPhase(playerId);
@@ -954,8 +1035,30 @@ function applyMove(playerId, data) {
 
 function endTurnPhase(currentPlayerId) {
     const pState = gameState[currentPlayerId];
-    const pCard = pState.team[pState.activeIndex];
+    let pCard = pState.team[pState.activeIndex];
     const oppId = currentPlayerId === 'p1' ? 'p2' : 'p1';
+
+    if (pCard && pCard.poisonTurns > 0) {
+        const pDmg = pCard.poisonStacks * 10;
+        pCard.hp -= pDmg;
+        pCard.poisonTurns--;
+        logMessage(`${pCard.name} mérgezést szenvedett (${pDmg} DMG).`, "status-effect");
+        triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
+        if (pCard.poisonTurns === 0) pCard.poisonStacks = 0;
+        
+        if (pCard.hp <= 0) {
+            logMessage(`> ${pCard.name} belehalt a méregbe (K.O.)!`, "crit");
+            pState.activeIndex++;
+            if (pState.activeIndex < 5) {
+                pCard = pState.team[pState.activeIndex];
+                logMessage(`> <b>${pCard.name}</b> lép a pályára!`, "log-system");
+                triggerAnimation(`${currentPlayerId}-card`, 'anim-heal', 600);
+            }
+        } else if (pCard.poisonTurns === 0) {
+            logMessage(`> ${pCard.name} szervezete legyőzte a mérget.`);
+        }
+        if (checkWin()) return;
+    }
     
     if (pCard && pCard.burnTurns > 0) {
         if (pCard.shields > 0) {
@@ -976,8 +1079,8 @@ function endTurnPhase(currentPlayerId) {
             logMessage(`> ${pCard.name} elégett és elájult (K.O.)!`, "crit");
             pState.activeIndex++;
             if (pState.activeIndex < 5) {
-                const nextCard = pState.team[pState.activeIndex];
-                logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
+                pCard = pState.team[pState.activeIndex];
+                logMessage(`> <b>${pCard.name}</b> lép a pályára!`, "log-system");
                 triggerAnimation(`${currentPlayerId}-card`, 'anim-heal', 600);
             }
         } else if (pCard.burnTurns === 0) {
@@ -1001,6 +1104,9 @@ function endTurnPhase(currentPlayerId) {
     gameState.activePlayer = oppId;
     nextPState.ap = Math.min(10, nextPState.ap + 1); 
     nextPState.itemUsedThisTurn = false; // Új kör, újra lehet használni lapot
+    if (nextPCard) {
+        nextPCard.hasCounter = false; // Visszatámadó állás lejárt a saját kör elején
+    }
     isActionLocked = false; // Akció zár feloldása a következő játékosnak
     updateUI();
 

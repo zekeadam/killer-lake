@@ -102,8 +102,8 @@ const cardDatabase = [
         image: "card/8.png",
         maxHp: 130,
         attacks: [
-            { name: "Rúna-tépés", type: "dmg", dmg: 60, cost: 2, effect: "paralyze", accuracy: 0.8 },
-            { name: "Éjszakai Támadás", type: "dmg", dmg: 110, cost: 3, accuracy: 0.7 },
+            { name: "Megjelölő Rúna", type: "dmg", dmg: 60, cost: 2, effect: "mark", accuracy: 0.8 },
+            { name: "Árny Kivégzés", type: "dmg", dmg: 110, cost: 3, synergy: "mark", accuracy: 0.7 },
             { name: "Álcázó Brindle", type: "shield", cost: 1, accuracy: 1.0 },
             { name: "Pihenés", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 }
         ]
@@ -128,7 +128,7 @@ const cardDatabase = [
         attacks: [
             { name: "Békés Pofon", type: "dmg", dmg: 20, cost: 1, accuracy: 0.9 },
             { name: "Dühös Riadó-harapás", type: "dmg", dmg: 60, cost: 2, accuracy: 0.8 },
-            { name: "Vastag Bunda", type: "shield", cost: 1, accuracy: 1.0 },
+            { name: "Vastag Bunda (Counter)", type: "shield", cost: 1, effect: "counter", accuracy: 1.0 },
             { name: "Erőgyűjtés", type: "heal", healAmount: 40, cost: 2, accuracy: 1.0 }
         ]
     },
@@ -381,7 +381,7 @@ const cardDatabase = [
         maxHp: 160,
         attacks: [
             { name: "Tudat-törlő Támadás", type: "dmg", dmg: 40, hits: 2, cost: 2, effect: "paralyze", accuracy: 0.9 },
-            { name: "Az Árnyék Mestere", type: "dmg", dmg: 80, hits: 1, cost: 2, accuracy: 0.8 },
+            { name: "Árnyék Csapolás", type: "dmg", dmg: 80, hits: 1, cost: 2, effect: "lifesteal", accuracy: 0.8 },
             { name: "Sötét Paktum", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 },
             { name: "Árny-Pajzs", type: "shield", cost: 1, accuracy: 1.0 }
         ]
@@ -392,7 +392,7 @@ const cardDatabase = [
         image: "card/33.png",
         maxHp: 160,
         attacks: [
-            { name: "Pollen-áradás", type: "dmg", dmg: 80, cost: 2, accuracy: 0.8 },
+            { name: "Mérgező Spórák", type: "dmg", dmg: 80, cost: 2, effect: "poison", accuracy: 0.8 },
             { name: "Generatív Fulladás", type: "dmg", dmg: 80, cost: 2, effect: "paralyze", accuracy: 0.8 },
             { name: "Folyondár Pajzs", type: "shield", cost: 1, accuracy: 1.0 },
             { name: "Fotoszintézis", type: "heal", healAmount: 60, cost: 2, accuracy: 1.0 }

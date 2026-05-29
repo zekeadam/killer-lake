@@ -247,6 +247,10 @@
                         card.isParalyzed = false;
                         card.burnTurns = 0;
                         card.shields = 0;
+                        card.isMarked = false;
+                        card.hasCounter = false;
+                        card.poisonStacks = 0;
+                        card.poisonTurns = 0;
                         card.turnsAlive = 0; 
                         return card;
                     });
@@ -277,6 +281,11 @@
                         let dmgPerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
                         if (isCrit) dmgPerHit = Math.floor(dmgPerHit * 1.5);
 
+                        if (oppCard.isMarked && move.synergy === 'mark') {
+                            dmgPerHit = Math.floor(dmgPerHit * 1.5);
+                            oppCard.isMarked = false;
+                        }
+
                         const hitCount = move.hits || 1;
                         let hitsLanded = 0;
 
@@ -285,17 +294,36 @@
                             if (oppCard.shields > 0) oppCard.shields--;
                             else { oppCard.hp -= dmgPerHit; hitsLanded++; }
                         }
+                        
+                        if (oppCard.hasCounter && hitsLanded > 0) {
+                            pCard.hp -= 20;
+                            if (pCard.hp <= 0) pState.activeIndex++; // Támadó azonnali K.O.
+                        }
+                        
+                        let totalDamage = hitsLanded * dmgPerHit;
+                        if (move.effect === 'lifesteal' && totalDamage > 0) {
+                            pCard.hp = Math.min(pCard.maxHp, pCard.hp + Math.floor(totalDamage * 0.5));
+                        }
 
                         if (oppCard.hp <= 0) oppState.activeIndex++;
-                        else if (move.effect === 'paralyze' || move.effect === 'burn') {
+                        else if (move.effect === 'paralyze' || move.effect === 'burn' || move.effect === 'poison' || move.effect === 'mark') {
                             if (oppCard.shields > 0) oppCard.shields--;
                             else {
                                 if (move.effect === 'paralyze') oppCard.isParalyzed = true;
                                 if (move.effect === 'burn') oppCard.burnTurns = 3;
+                                if (move.effect === 'poison') {
+                                    oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
+                                    oppCard.poisonTurns = 3;
+                                }
+                                if (move.effect === 'mark') oppCard.isMarked = true;
                             }
                         }
                     } else if (move.type === 'heal') pCard.hp = Math.min(pCard.maxHp, pCard.hp + move.healAmount);
                       else if (move.type === 'shield') pCard.shields = Math.min(2, pCard.shields + 1);
+                      
+                    if (move.effect === 'counter') {
+                        pCard.hasCounter = true;
+                    }
                     
                     checkWinHeadless(state);
                 }
@@ -307,13 +335,22 @@
                 }
 
                 function endTurnPhaseHeadless(state, pId) {
-                    const pState = state[pId]; const pCard = pState.team[pState.activeIndex];
+                    const pState = state[pId]; 
+                    let pCard = pState.team[pState.activeIndex];
                     const oppId = pId === 'p1' ? 'p2' : 'p1';
                     
+                    if (pCard && pCard.poisonTurns > 0) {
+                        pCard.hp -= pCard.poisonStacks * 10;
+                        pCard.poisonTurns--;
+                        if (pCard.poisonTurns <= 0) pCard.poisonStacks = 0;
+                        if (pCard.hp <= 0) { pState.activeIndex++; pCard = pState.team[pState.activeIndex]; }
+                        if (checkWinHeadless(state)) return;
+                    }
+
                     if (pCard && pCard.burnTurns > 0) {
                         if (pCard.shields > 0) { pCard.shields--; pCard.burnTurns--; }
                         else { pCard.hp -= 20; pCard.burnTurns--; }
-                        if (pCard.hp <= 0) pState.activeIndex++;
+                        if (pCard.hp <= 0) { pState.activeIndex++; pCard = pState.team[pState.activeIndex]; }
                         if (checkWinHeadless(state)) return;
                     }
                     const nextPState = state[oppId]; const nextPCard = nextPState.team[nextPState.activeIndex];
@@ -325,6 +362,7 @@
                     state.activePlayer = oppId;
                     nextPState.ap = Math.min(10, nextPState.ap + 1);
                     nextPState.itemUsedThisTurn = false;
+                    if (nextPCard) nextPCard.hasCounter = false;
                 }
 
                 function runMatch(genome) {
