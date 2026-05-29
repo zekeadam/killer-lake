@@ -602,8 +602,9 @@ function updateUI() {
 
                 if (move.type === "dmg") {
                     const hits = move.hits || 1;
+                    const acc = Math.round((move.accuracy !== undefined ? move.accuracy : 1.0) * 100);
                     dmgText = `💥${move.dmg} DMG`;
-                    hitText = `🎯${hits} HIT`;
+                    hitText = `🎯${hits}x | 🎲${acc}%`;
                     if (move.effect === "burn") { effectText = "🔥 ÉGÉS"; icon = "🔥"; }
                     else if (move.effect === "paralyze") { effectText = "⚡ BÉNÍT"; icon = "⚡"; }
                 } else if (move.type === "heal") {
@@ -769,22 +770,29 @@ function executeMove(playerId, attackIndex) {
     isActionLocked = true;
     updateUI();
 
-    let payload = {
-        type: 'MOVE',
-        attackIndex: attackIndex,
-        isEvaded: Math.random() < 0.10,
-        isCrit: Math.random() < 0.15,
-        coinFlip: Math.random() >= 0.5 ? "FEJ" : "ÍRÁS",
-        damagePerHit: 0
-    };
+    let isMiss = false;
+    let damagePerHit = 0;
 
     if (attackIndex !== 'charge') {
         const move = attackerCard.attacks[attackIndex];
+        
+        // Rejtett pontosság (Hit Chance) kiszámítása
+        const hitChance = move.accuracy !== undefined ? move.accuracy : 1.0;
+        isMiss = Math.random() > hitChance;
+        
         if (move.type === "dmg") {
             let variance = move.dmg * 0.2;
-            payload.damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+            damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
         }
     }
+
+    let payload = {
+        type: 'MOVE',
+        attackIndex: attackIndex,
+        isMiss: isMiss,
+        isCrit: Math.random() < 0.15,
+        damagePerHit: damagePerHit
+    };
 
     if (conn) conn.send(payload);
     applyMove(playerId, payload);
@@ -823,85 +831,76 @@ function applyMove(playerId, data) {
     }
 
     setTimeout(() => {
+        if (data.isMiss) {
+            logMessage(`> A támadás célt tévesztett (Miss)!`, "status-effect");
+            playSound('miss');
+            if (checkWin()) return;
+            endTurnPhase(playerId);
+            return;
+        }
+
         if (move.type === "dmg") {
-            if (data.isEvaded) {
-                logMessage(`> ${oppCard.name} kitért a támadás elől! (0 sebzés)`, "status-effect");
-                playSound('miss');
+            const hitCount = move.hits || 1;
+            let dmgPerHit = data.damagePerHit;
+            if (data.isCrit) {
+                dmgPerHit = Math.floor(dmgPerHit * 1.5);
+                triggerAnimation('container', 'screen-shake', 300);
+            }
+
+            let hitsLanded = 0;
+            let shieldsBroken = 0;
+
+            for (let i = 0; i < hitCount; i++) {
+                if (oppCard.hp <= 0) break;
+                if (oppCard.shields > 0) {
+                    oppCard.shields--;
+                    shieldsBroken++;
+                } else {
+                    oppCard.hp -= dmgPerHit;
+                    hitsLanded++;
+                }
+            }
+
+            if (shieldsBroken > 0) {
+                logMessage(`> ${oppCard.name} pajzsa elnyelt ${shieldsBroken} ütést! (${oppCard.shields} maradt)`, "log-shield");
+            }
+
+            const totalDamage = hitsLanded * dmgPerHit;
+            triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
+            if (shieldsBroken > 0) playSound('shield_break');
+            if (hitsLanded > 0) {
+                if (move.effect === "burn") playSound('damage_burn');
+                else if (move.effect === "paralyze") playSound('damage_paralyze');
+                else playSound('damage_normal');
+            }
+
+            let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
+            if (hitsLanded > 0) {
+                logMessage(`> ${critText}${hitsLanded} találat érte a célpontot: ${totalDamage} sebzéssel.`, "log-dmg");
+            }
+
+            if (oppCard.hp <= 0) {
+                logMessage(`> ${oppCard.name} elájult (K.O.)!`, "crit");
+                oppState.activeIndex++;
+                if (oppState.activeIndex < 5) {
+                    const nextCard = oppState.team[oppState.activeIndex];
+                    logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
+                    triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
+                }
             } else {
-                // FIX: Ha a támadás szerencse alapú (luck) vagy bármilyen effektje van, érmedobás dönt a találatról
-                if (move.luck || move.effect) {
-                    logMessage(`> Érmedobás: <b>${data.coinFlip}</b>!`);
-                    if (data.coinFlip === "ÍRÁS") {
-                        logMessage(`> A támadás célt tévesztett! (0 sebzés)`, "status-effect");
-                        playSound('miss');
-                        if (checkWin()) return;
-                        endTurnPhase(playerId);
-                        return;
-                    }
-                }
-
-                const hitCount = move.hits || 1;
-                let dmgPerHit = data.damagePerHit;
-                if (data.isCrit) {
-                    dmgPerHit = Math.floor(dmgPerHit * 1.5);
-                    triggerAnimation('container', 'screen-shake', 300);
-                }
-
-                let hitsLanded = 0;
-                let shieldsBroken = 0;
-
-                for (let i = 0; i < hitCount; i++) {
-                    if (oppCard.hp <= 0) break;
+                if (move.effect === "paralyze" || move.effect === "burn") {
                     if (oppCard.shields > 0) {
                         oppCard.shields--;
-                        shieldsBroken++;
+                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
+                        playSound('shield_break');
+                        triggerShieldScan(oppId);
                     } else {
-                        oppCard.hp -= dmgPerHit;
-                        hitsLanded++;
-                    }
-                }
-
-                if (shieldsBroken > 0) {
-                    logMessage(`> ${oppCard.name} pajzsa elnyelt ${shieldsBroken} ütést! (${oppCard.shields} maradt)`, "log-shield");
-                }
-
-                const totalDamage = hitsLanded * dmgPerHit;
-                triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
-                if (shieldsBroken > 0) playSound('shield_break');
-                if (hitsLanded > 0) {
-                    if (move.effect === "burn") playSound('damage_burn');
-                    else if (move.effect === "paralyze") playSound('damage_paralyze');
-                    else playSound('damage_normal');
-                }
-
-                let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
-                if (hitsLanded > 0) {
-                    logMessage(`> ${critText}${hitsLanded} találat érte a célpontot: ${totalDamage} sebzéssel.`, "log-dmg");
-                }
-
-                if (oppCard.hp <= 0) {
-                    logMessage(`> ${oppCard.name} elájult (K.O.)!`, "crit");
-                    oppState.activeIndex++;
-                    if (oppState.activeIndex < 5) {
-                        const nextCard = oppState.team[oppState.activeIndex];
-                        logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
-                        triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
-                    }
-                } else {
-                    if (move.effect === "paralyze" || move.effect === "burn") {
-                        if (oppCard.shields > 0) {
-                            oppCard.shields--;
-                            logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
-                            playSound('shield_break');
-                            triggerShieldScan(oppId);
-                        } else {
-                            if (move.effect === "paralyze") {
-                                oppCard.isParalyzed = true;
-                                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
-                            } else if (move.effect === "burn") {
-                                oppCard.burnTurns = 3;
-                                logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
-                            }
+                        if (move.effect === "paralyze") {
+                            oppCard.isParalyzed = true;
+                            logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                        } else if (move.effect === "burn") {
+                            oppCard.burnTurns = 3;
+                            logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
                         }
                     }
                 }
@@ -1163,19 +1162,26 @@ function runAITestMove() {
     const attackerCard = gameState[pId].team[gameState[pId].activeIndex];
     const move = moveIdx !== 'charge' ? attackerCard.attacks[moveIdx] : null;
     
+    let isMiss = false;
+    let damagePerHit = 0;
+
+    if (move) {
+        const hitChance = move.accuracy !== undefined ? move.accuracy : 1.0;
+        isMiss = Math.random() > hitChance;
+
+        if (move.type === "dmg") {
+            let variance = move.dmg * 0.2;
+            damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+        }
+    }
+
     const payload = {
         type: 'MOVE',
         attackIndex: moveIdx,
-        isEvaded: Math.random() < 0.10,
+        isMiss: isMiss,
         isCrit: Math.random() < 0.15,
-        coinFlip: Math.random() >= 0.5 ? "FEJ" : "ÍRÁS",
-        damagePerHit: 0
+        damagePerHit: damagePerHit
     };
-
-    if (move && move.type === "dmg") {
-            let variance = move.dmg * 0.2;
-            payload.damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
-    }
 
     applyMove(pId, payload);
 }

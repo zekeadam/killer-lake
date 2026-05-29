@@ -206,8 +206,9 @@
                         let effectLabel = attack.effect ? attack.effect.toUpperCase() : "";
 
                         if (attack.type === 'dmg') {
+                            const acc = Math.round((attack.accuracy !== undefined ? attack.accuracy : 1.0) * 100);
                             statText = `💥${attack.dmg}`;
-                            hitText = `🎯${attack.hits || 1}`;
+                            hitText = `🎯${attack.hits || 1}x | 🎲${acc}%`;
                             if (attack.effect === 'burn') icon = "🔥";
                             if (attack.effect === 'paralyze') icon = "⚡";
                         } else if (attack.type === 'heal') {
