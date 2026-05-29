@@ -377,20 +377,17 @@ function renderDraft() {
                     effectText = "🛡️ PAJZS";
                 }
 
-                attacksHtml += `<button disabled style="pointer-events:none;"><div class="btn-title"><span class="truncate-text">${icon} ${attack.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${attack.cost} AP</span><span class="btn-eff">${effectText}</span></div></button>`;
                 attacksHtml += `<button style="pointer-events:none;"><div class="btn-title"><span class="truncate-text">${icon} ${attack.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${attack.cost} AP</span><span class="btn-eff">${effectText}</span></div></button>`;
             });
             for(let i = cardData.attacks.length; i < 4; i++) {
                  attacksHtml += `<button disabled style="pointer-events:none;">--- <span>Üres slot</span></button>`;
             }
         }
-        attacksHtml += `<button class="charge-btn" disabled style="pointer-events:none;">🔋 ENERGIA TÖLTÉS (+1 AP)</button>`;
-        attacksHtml += `<button class="charge-btn" style="pointer-events:none;">🔋 ENERGIA TÖLTÉS <span>(+1 AP)</span></button>`;
 
         cardEl.innerHTML = `
             <div class="draft-hp-badge">${cardData.maxHp}</div>
             <div class="draft-ap-badge">2</div>
-            <div class="order-badge">${index + 1}.</div>
+            <div class="order-badge">${index + 1}. KÁRTYA</div>
             <div class="card-header" style="pointer-events: none;">
                 <h2><span class="truncate-text">${cardData.name}</span></h2>
             </div>

@@ -226,7 +226,9 @@
                 function getRandomTeam() {
                     let team = [];
                     const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
-                    let f (available.length === 0) break;
+                    let available = [...charCards];
+                    for (let i = 0; i < 5; i++) {
+                        if (available.length === 0) break;
                         const randIdx = Math.floor(Math.random() * available.length);
                         team.push(available[randIdx].id);
                         available.splice(randIdx, 1);
@@ -238,7 +240,11 @@
                     let items = [];
                     const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
                     let available = [...itemCards];
+                    if (available.length > 0) {
+                        for (let i = 0; i < 3; i++) {
                             if (available.length === 0) break;
+                            const randIdx = Math.floor(Math.random() * available.length);
+                            items.push(available[randIdx].id);
                             available.splice(randIdx, 1);
                         }
                     }
