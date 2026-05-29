@@ -202,14 +202,16 @@ peer.on('open', (id) => {
 █░█ █ █▄▄ █▄▄ █▄▄ █▀▄  █▄▄ █▀█ █░█ █▄▄`;
     }
 
-    document.getElementById('my-peer-id').innerText = id;
-
     // Automatikus csatlakozás ha van link
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('join')) {
         const targetId = urlParams.get('join');
-        document.getElementById('opponent-id-input').value = targetId;
-        setTimeout(() => connectToPeer(), 500);
+            document.getElementById('connection-status').innerText = "Kapcsolódás a barátodhoz...";
+            conn = peer.connect(targetId);
+            myRole = 'p2'; 
+            isPvEMode = false;
+            isTestMode = false;
+            setupConnection();
     }
 });
 
@@ -221,21 +223,6 @@ peer.on('connection', (connection) => {
     isTestMode = false;
     setupConnection();
 });
-
-function connectToPeer() {
-    const targetId = document.getElementById('opponent-id-input').value.trim();
-    if (!targetId) {
-        alert("Kérlek, írj be egy érvényes kódot!");
-        return;
-    }
-    
-    document.getElementById('connection-status').innerText = "Kapcsolódás...";
-    conn = peer.connect(targetId);
-    myRole = 'p2'; 
-    isPvEMode = false;
-    isTestMode = false;
-    setupConnection();
-}
 
 function getRandomTeam() {
     let team = [];
@@ -320,10 +307,10 @@ function setupDraft(teamIds, itemIds) {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
 
-    // Elrejtjük a Google bejelentkezést PvE (Gép elleni) és Test módban
+    // Elrejtjük a Google bejelentkezést Test módban
     const authContainer = document.getElementById('auth-container');
     if (authContainer) {
-        authContainer.style.display = (isPvEMode || isTestMode) ? 'none' : 'flex';
+        authContainer.style.display = isTestMode ? 'none' : 'flex';
     }
 
     const readyBtn = document.getElementById('ready-btn');
@@ -396,17 +383,18 @@ function renderDraft() {
 }
 
 function confirmTeamOrder() {
-    if (!loggedInUser && !isPvEMode && !isTestMode) {
-        alert("PVP módban kötelező bejelentkezni a Google fiókoddal a ranglista miatt!");
+    if (!loggedInUser && !isTestMode) {
+        alert("A játékhoz (PVP és PVE) kötelező bejelentkezni a Google fiókoddal a ranglista miatt!");
         return;
     }
     
-    myNickname = loggedInUser ? loggedInUser.displayName : (isPvEMode ? "Játékos" : "Ismeretlen");
+    myNickname = loggedInUser ? loggedInUser.displayName : "Ismeretlen";
     iAmReady = true;
     document.getElementById('ready-btn').disabled = true;
     document.getElementById('ready-btn').innerText = "Készen állsz!";
     
-    if (isPvEMode) {
+    if (isPvEMode || isTestMode) {
+        oppIsReady = true;
         checkStartGame();
     } else {
         document.getElementById('draft-status').innerText = "Várakozás az ellenfélre...";
@@ -872,10 +860,16 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- Csak a befejezett PVP meccseket mentjük a ranglistára (PvE-t és Test módot nem) ---
-        if (!isPvEMode && !isTestMode) {
-            updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
-            updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
+        // --- Csak a befejezett PVP és PVE meccseket mentjük a ranglistára (Test módot nem) ---
+        if (!isTestMode) {
+            const mode = isPvEMode ? 'pve' : 'pvp';
+            if (isPvEMode) {
+                // PVE módban csak a játékos (p1) statisztikáját mentjük el, az AI-t nem
+                updateGlobalStats(myNickname, winnerId === 'p1', battleStats.p1.damageDealt, mode);
+            } else {
+                updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt, mode);
+                updateGlobalStats(loserName, false, battleStats[loserId].damageDealt, mode);
+            }
         }
 
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
@@ -1113,33 +1107,26 @@ function applyMove(playerId, data) {
                     logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
                     triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
                 }
-            } else {
+            } else if (hitsLanded > 0) {
                 if (move.effect === "paralyze" || move.effect === "burn" || move.effect === "poison" || move.effect === "mark") {
-                    if (oppCard.shields > 0) {
-                        oppCard.shields--;
-                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
-                        playSound('shield_break');
-                        triggerShieldScan(oppId);
-                    } else {
-                        if (move.effect === "paralyze") {
-                            if (oppCard.paraImmune) {
-                                logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
-                            } else {
-                                oppCard.isParalyzed = true;
-                                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
-                            }
-                        } else if (move.effect === "burn") {
-                            oppCard.burnStacks = Math.min(3, (oppCard.burnStacks || 0) + 1);
-                            oppCard.burnTurns = 3;
-                            logMessage(`> ${oppCard.name} meggyulladt! (Szint: ${oppCard.burnStacks})`, "crit");
-                        } else if (move.effect === "poison") {
-                            oppCard.poisonStacks = Math.min(3, (oppCard.poisonStacks || 0) + 1);
-                            oppCard.poisonTurns = 3;
-                            logMessage(`> ${oppCard.name} megmérgeződött! (Szint: ${oppCard.poisonStacks})`, "status-effect");
-                        } else if (move.effect === "mark") {
-                            oppCard.isMarked = true;
-                            logMessage(`> ${oppCard.name} Célkeresztbe került (Megjelölve)!`, "status-effect");
+                    if (move.effect === "paralyze") {
+                        if (oppCard.paraImmune) {
+                            logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
+                        } else {
+                            oppCard.isParalyzed = true;
+                            logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
                         }
+                    } else if (move.effect === "burn") {
+                        oppCard.burnStacks = Math.min(3, (oppCard.burnStacks || 0) + 1);
+                        oppCard.burnTurns = 3;
+                        logMessage(`> ${oppCard.name} meggyulladt! (Szint: ${oppCard.burnStacks})`, "crit");
+                    } else if (move.effect === "poison") {
+                        oppCard.poisonStacks = Math.min(3, (oppCard.poisonStacks || 0) + 1);
+                        oppCard.poisonTurns = 3;
+                        logMessage(`> ${oppCard.name} megmérgeződött! (Szint: ${oppCard.poisonStacks})`, "status-effect");
+                    } else if (move.effect === "mark") {
+                        oppCard.isMarked = true;
+                        logMessage(`> ${oppCard.name} Célkeresztbe került (Megjelölve)!`, "status-effect");
                     }
                 }
             }
@@ -1332,19 +1319,12 @@ function applyItem(playerId, data) {
         }
 
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
-        if (action.effect === 'paralyze') {
-            if (oppCard.shields > 0) {
-                oppCard.shields--;
-                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást!`, "log-shield");
-                playSound('shield_break');
-                triggerShieldScan(oppId);
+        if (action.effect === 'paralyze' && dmgToApply > 0) {
+            if (oppCard.paraImmune) {
+                logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
             } else {
-                if (oppCard.paraImmune) {
-                    logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
-                } else {
-                    oppCard.isParalyzed = true;
-                    logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
-                }
+                oppCard.isParalyzed = true;
+                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
             }
         }
     } else if (action.type === 'heal') {
@@ -1501,8 +1481,8 @@ function runAITestMove() {
 }
 
 function copyInviteLink() {
-    const id = document.getElementById('my-peer-id').innerText;
-    if (!id || id === "Generálás folyamatban...") return;
+    const id = peer.id;
+    if (!id) return;
     
     const url = new URL(window.location.href);
     url.searchParams.set('join', id);
@@ -1554,16 +1534,18 @@ function downloadBattleLog() {
 
 // IDE MÁSOLD BE A SAJÁT FIREBASE LINKEDET! (Ne felejtsd el a végét: /leaderboard)
 const LEADERBOARD_API_URL = 'https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app/leaderboard';
+const LEADERBOARD_PVE_API_URL = 'https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app/leaderboard_pve';
 
-async function updateGlobalStats(playerName, isWinner, damageDealt) {
+async function updateGlobalStats(playerName, isWinner, damageDealt, mode = 'pvp') {
     if (!playerName) return;
     
     const safeName = playerName.replace(/[.#$\[\]/]/g, '').trim();
+    const targetUrl = mode === 'pve' ? LEADERBOARD_PVE_API_URL : LEADERBOARD_API_URL;
     
     try {
-        const res = await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`);
+        const res = await fetch(`${targetUrl}/${encodeURIComponent(safeName)}.json`);
         let stats = await res.json() || { wins: 0, losses: 0, matches: 0, damage: 0 };
-        
+
         // Ha régi formátumú adat (csak egy szám) volt ott, alakítsuk át
         if (typeof stats === 'number') {
             stats = { wins: stats, losses: 0, matches: stats, damage: 0 };
@@ -1571,10 +1553,10 @@ async function updateGlobalStats(playerName, isWinner, damageDealt) {
 
         stats.matches += 1;
         stats.damage += (damageDealt || 0);
-        if (isWinner) stats.wins += 1;
-        else stats.losses += 1;
+        if (isWinner) stats.wins = (stats.wins || 0) + 1;
+        else stats.losses = (stats.losses || 0) + 1;
         
-        await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`, {
+        await fetch(`${targetUrl}/${encodeURIComponent(safeName)}.json`, {
             method: 'PUT',
             body: JSON.stringify(stats)
         });
@@ -1583,17 +1565,22 @@ async function updateGlobalStats(playerName, isWinner, damageDealt) {
     }
 }
 
-async function showLeaderboard() {
+async function showLeaderboard(mode = 'pvp') {
     const modal = document.getElementById('leaderboard-modal');
     const list = document.getElementById('leaderboard-list');
+    const tabPvp = document.getElementById('tab-pvp');
+    const tabPve = document.getElementById('tab-pve');
+    if (tabPvp) tabPvp.classList.toggle('active', mode === 'pvp');
+    if (tabPve) tabPve.classList.toggle('active', mode === 'pve');
     
     // Mutatunk egy töltőképernyőt, amíg az internetről jön az adat
     list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Várakozás a szerverre...</p>';
     modal.style.display = 'flex';
-    
+    const targetUrl = mode === 'pve' ? LEADERBOARD_PVE_API_URL : LEADERBOARD_API_URL;
+
     try {
-        console.log("Ranglista lekérése innen:", LEADERBOARD_API_URL);
-        const res = await fetch(`${LEADERBOARD_API_URL}.json`);
+        console.log("Ranglista lekérése innen:", targetUrl);
+        const res = await fetch(`${targetUrl}.json`);
         if (!res.ok) throw new Error("Hálózati hiba");
         let leaderboard = await res.json() || {};
         
@@ -1605,26 +1592,28 @@ async function showLeaderboard() {
             return (b[1].damage || 0) - (a[1].damage || 0);
         });
         
-        list.innerHTML = '';
         if (sorted.length === 0) {
             list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Még nincsenek győzelmek rögzítve globálisan.</p>';
         } else {
             // Fejléc hozzáadása
             list.innerHTML = `
                 <div class="leaderboard-entry leaderboard-header">
-                    <span class="rank">#</span>
-                    <span class="name">Név</span>
-                    <span class="stat">W</span>
-                    <span class="stat">L</span>
-                    <span class="stat">M</span>
-                    <span class="stat">Dmg</span>
+                        <span class="rank">🏆</span>
+                        <span class="name">Játékos</span>
+                        <span class="stat" title="Győzelem">Győz.</span>
+                        <span class="stat" title="Vereség">Vesz.</span>
+                        <span class="stat" title="Lejátszott Meccsek">Meccs</span>
+                        <span class="stat" title="Kiosztott Sebzés">Sebzés</span>
                 </div>`;
 
             sorted.forEach(([name, data], index) => {
                 const s = typeof data === 'object' ? data : { wins: data, losses: 0, matches: data, damage: 0 };
+                    const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : 'rank-normal';
+                    const rankDisplay = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                    
                 list.innerHTML += `
                     <div class="leaderboard-entry">
-                        <span class="rank">#${index + 1}</span>
+                            <span class="rank ${rankClass}">${rankDisplay}</span>
                         <span class="name truncate-text">${name}</span>
                         <span class="wins">${s.wins}</span>
                         <span class="stat">${s.losses || 0}</span>

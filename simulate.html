@@ -315,19 +315,16 @@
                         }
 
                         if (oppCard.hp <= 0) oppState.activeIndex++;
-                        else if (move.effect === 'paralyze' || move.effect === 'burn' || move.effect === 'poison' || move.effect === 'mark') {
-                            if (oppCard.shields > 0) oppCard.shields--;
-                            else {
-                                if (move.effect === 'paralyze') {
-                                    if (!oppCard.paraImmune) oppCard.isParalyzed = true;
-                                }
-                                if (move.effect === 'burn') oppCard.burnTurns = 3;
-                                if (move.effect === 'poison') {
-                                    oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
-                                    oppCard.poisonTurns = 3;
-                                }
-                                if (move.effect === 'mark') oppCard.isMarked = true;
+                        else if (hitsLanded > 0 && (move.effect === 'paralyze' || move.effect === 'burn' || move.effect === 'poison' || move.effect === 'mark')) {
+                            if (move.effect === 'paralyze') {
+                                if (!oppCard.paraImmune) oppCard.isParalyzed = true;
                             }
+                            if (move.effect === 'burn') oppCard.burnTurns = 3;
+                            if (move.effect === 'poison') {
+                                oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
+                                oppCard.poisonTurns = 3;
+                            }
+                            if (move.effect === 'mark') oppCard.isMarked = true;
                         }
                     } else if (move.type === 'heal') pCard.hp = Math.min(pCard.maxHp, pCard.hp + move.healAmount);
                       else if (move.type === 'shield') pCard.shields = Math.min(2, pCard.shields + 1);

@@ -14,28 +14,18 @@
                 <h2>Multiplayer Váróterem</h2>
                 
                 <div class="lobby-section">
-                    <p>A Te csatlakozási kódod:</p>
-                    <div class="code-display" id="my-peer-id">Generálás folyamatban...</div>
-                    <button id="copy-link-btn" onclick="copyInviteLink()">Meghívó link másolása</button>
-                    <p class="hint">Küldd el ezt a kódot vagy a linket az ellenfelednek!</p>
+                    <button id="copy-link-btn" onclick="copyInviteLink()">⚔️ PVP Mód (Meghívó link másolása)</button>
+                    <p class="hint">Küldd el a linket a barátodnak, és ha rákattint, indul a meccs!</p>
                 </div>
 
                 <div class="divider">VAGY</div>
 
                 <div class="lobby-section">
-                    <button id="pve-btn" onclick="startPvEMode()">PVE Mód (AI ellen)</button>
-                </div>
-
-                <div class="divider">VAGY</div>
-
-                <div class="lobby-section">
-                    <p>Csatlakozás ellenfélhez:</p>
-                    <input type="text" id="opponent-id-input" placeholder="Illeszd be a kapott kódot ide">
-                    <button id="connect-btn" onclick="connectToPeer()">Csatlakozás</button>
+                    <button id="pve-btn" onclick="startPvEMode()">🤖 PVE Mód (AI ellen)</button>
                 </div>
 
                 <div class="lobby-section">
-                    <button id="leaderboard-btn" class="btn-gold" onclick="showLeaderboard()">🏆 Globális Ranglista</button>
+                    <button id="leaderboard-btn" class="btn-gold" onclick="showLeaderboard('pvp')">🏆 Globális Ranglista</button>
                 </div>
                 
                 <div id="connection-status">Rendszer inicializálása...</div>
@@ -169,6 +159,10 @@
         <div id="leaderboard-modal" style="display: none;">
             <div class="leaderboard-box">
                 <h2>🏆 Dicsőséglista 🏆</h2>
+                <div class="leaderboard-tabs">
+                    <button id="tab-pvp" class="tab-btn active" onclick="showLeaderboard('pvp')">PVP Ranglista</button>
+                    <button id="tab-pve" class="tab-btn" onclick="showLeaderboard('pve')">PVE Ranglista</button>
+                </div>
                 <div id="leaderboard-list"></div>
                 <button class="btn-red" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="closeLeaderboard()">Bezárás</button>
             </div>
