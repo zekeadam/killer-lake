@@ -258,6 +258,7 @@
                 }
 
                 function checkWinHeadless(state) {
+                    if (state.p1.activeIndex >= 5 && state.p2.activeIndex >= 5) { state.gameOver = true; state.winner = 'draw'; return true; }
                     if (state.p1.activeIndex >= 5) { state.gameOver = true; state.winner = 'p2'; return true; }
                     if (state.p2.activeIndex >= 5) { state.gameOver = true; state.winner = 'p1'; return true; }
                     return false;
@@ -308,7 +309,7 @@
                         }
 
                         let totalDamage = hitsLanded * dmgPerHit;
-                        if (move.effect === 'lifesteal' && totalDamage > 0) {
+                        if (move.effect === 'lifesteal' && totalDamage > 0 && pCard.hp > 0) {
                             pCard.hp = Math.min(pCard.maxHp, pCard.hp + Math.floor(totalDamage * 0.5));
                         }
 
@@ -416,7 +417,7 @@
                     
                     currentTracker.totalTurns += turns;
                     currentTracker.totalMatches++;
-                    if (state.winner) state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
+                    if (state.winner && state.winner !== 'draw') state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
                 }
 
                 self.onmessage = function(e) {
