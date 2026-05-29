@@ -714,11 +714,12 @@ h1 { display: none; }
 
 /* --- RANGLISTA MODAL ÉS GOMB --- */
 #leaderboard-btn {
-    width: 100%; padding: 12px; background: linear-gradient(135deg, #f1c40f 0%, #d4ac0d 100%);
+    display: block !important; width: 100%; padding: 14px; 
+    background: linear-gradient(135deg, #f1c40f 0%, #d4ac0d 100%);
     color: #111; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold;
-    cursor: pointer; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-    transition: transform 0.2s, filter 0.2s; margin-top: 10px;
-    text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+    transition: all 0.2s ease; margin-top: 15px;
+    text-transform: uppercase; letter-spacing: 1px; z-index: 100;
 }
 #leaderboard-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
 

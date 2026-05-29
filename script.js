@@ -1508,7 +1508,9 @@ async function showLeaderboard() {
     modal.style.display = 'flex';
     
     try {
+        console.log("Ranglista lekérése innen:", LEADERBOARD_API_URL);
         const res = await fetch(`${LEADERBOARD_API_URL}.json`);
+        if (!res.ok) throw new Error("Hálózati hiba");
         let leaderboard = await res.json() || {};
         
         // Rendezés: Elsősorban Wins, másodsorban összes sebzés
@@ -1549,6 +1551,7 @@ async function showLeaderboard() {
             });
         }
     } catch (error) {
+        console.error("Firebase hiba:", error);
         list.innerHTML = '<p style="color: #e74c3c; padding: 20px; text-align: center;">Hiba a hálózati kapcsolatban.</p>';
     }
 }
