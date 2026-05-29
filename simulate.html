@@ -660,7 +660,7 @@
                             let tracker = res.tracker;
                             
                             let avgTurns = tracker.totalMatches > 0 ? tracker.totalTurns / tracker.totalMatches : 0;
-                            let optimalTurns = 35; 
+                            let optimalTurns = 50; 
                             let turnDiff = Math.abs(optimalTurns - avgTurns);
                             let turnPenalty = (turnDiff * turnDiff) / 50;
 

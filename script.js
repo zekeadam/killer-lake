@@ -1182,6 +1182,7 @@ function endTurnPhase(currentPlayerId) {
 
     if ((isTestMode || (isPvEMode && oppId === 'p2')) && !gameState.gameOver) {
         setTimeout(runAITestMove, 1000);
+        setTimeout(runAITestMove, isTestMode ? 250 : 1000);
     }
 }
 
@@ -1328,6 +1329,7 @@ function startTestMode() {
     logMessage("--- TEST MÓD AKTIVÁLVA: AI vs AI ---", "log-system");
     
     setTimeout(runAITestMove, 1000);
+    setTimeout(runAITestMove, 250);
 }
 
 function startPvEMode() {
@@ -1374,6 +1376,7 @@ function runAITestMove() {
         };
         applyItem(pId, payload);
         setTimeout(runAITestMove, 1500); 
+        setTimeout(runAITestMove, isTestMode ? 250 : 800); 
         return;
     }
     
