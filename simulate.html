@@ -28,12 +28,14 @@
         #output { text-align: left; background: #0a0a0a; padding: 15px; border-radius: 5px; color: #4cc9f0; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow: auto; border: 1px solid #333; }
         .progress-bar { width: 100%; height: 25px; background: #222; border-radius: 12.5px; margin: 20px 0; overflow: hidden; border: 1px solid #444; }
         .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #000; }
+        .chart-container { background: rgba(0,0,0,0.4); border-radius: 10px; padding: 15px; margin-bottom: 20px; border: 1px solid #333; height: 250px; }
         h1 { display: block; color: #f1c40f; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
     <div class="sim-container">
         <h1> Evolúciós Balance Algoritmus</h1>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <p style="color: #ccc;">A Genetikus Algoritmus automatikusan módosítja a kártyák statisztikáit (HP, DMG, AP, Pontosság), lefuttat több tízezer mérkőzést, és kiszelektálja a legtökéletesebb egyensúlyt adó változatot.</p>
         
         <div class="controls">
@@ -56,6 +58,10 @@
         <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 250 000 mérkőzés</p>
         <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
         <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
+
+        <div class="chart-container">
+            <canvas id="fitnessChart"></canvas>
+        </div>
 
         <div id="output">Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...</div>
     </div>
@@ -83,6 +89,7 @@
         let matchesCompleted = 0;
         let totalMatchesGoal = 0;
         let activeWorkers = 0;
+        let fitnessChart = null;
         
         // Segédfüggvény a kalkulációk frissítéséhez
         function updateCalcInfo() {
@@ -93,6 +100,40 @@
         }
         document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
         window.addEventListener('DOMContentLoaded', updateCalcInfo);
+
+        function initChart() {
+            const ctx = document.getElementById('fitnessChart').getContext('2d');
+            if (fitnessChart) fitnessChart.destroy();
+            
+            fitnessChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Legjobb Fitness',
+                        data: [],
+                        borderColor: '#4cc9f0',
+                        backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: true, grid: { color: '#222' }, title: { display: true, text: 'Generációk', color: '#666' } },
+                        y: { display: true, grid: { color: '#222' }, title: { display: true, text: 'Fitness Érték', color: '#666' } }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#ccc' } },
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
 
         function initWorkers() {
             if (workers.length > 0) return;
@@ -291,6 +332,7 @@
         // --- EVOLÚCIÓ LOGIKA ---
         function startEvolution() {
             initWorkers();
+            initChart();
             popSize = parseInt(document.getElementById('pop-size').value) || 100;
             genCount = parseInt(document.getElementById('gen-count').value) || 1000;
             matchesPerGenome = parseInt(document.getElementById('match-count').value) || 100;
@@ -438,13 +480,6 @@
                                 bestOverallFitness = fitness;
                                 bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
                                 
-                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\n`;
-                                logText += `Fitness: ${fitness.toFixed(4)} (${improvement > 0 ? '+' : ''}${improvement.toFixed(6)})\n`;
-                                logText += `  ├─ Balance Score: ${(-balanceScore).toFixed(4)} (Winrate szórás)\n`;
-                                logText += `  └─ Turn Penalty:  ${(-turnPenalty).toFixed(4)} (Hossz büntetés)\n\n`;
-                                logText += `📊 Átlagos Winrate eltérés: ${(balanceScore * 100).toFixed(2)}%\n`;
-                                logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} kör (Cél: ${optimalTurns})\n\n`;
-                                
                                 let cardStats = Object.values(tracker.cards).map(c => ({ 
                                     name: c.name, 
                                     wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50,
@@ -452,6 +487,19 @@
                                     matches: c.matchesPlayed
                                 }));
                                 cardStats.sort((a, b) => b.wr - a.wr);
+                                
+                                let minWR = Math.min(...cardStats.map(c => c.wr));
+                                let maxWR = Math.max(...cardStats.map(c => c.wr));
+
+                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\n`;
+                                logText += `Fitness: ${fitness.toFixed(4)} (${improvement > 0 ? '+' : ''}${improvement.toFixed(6)})\n`;
+                                logText += `  ├─ Balance Score: ${(-balanceScore).toFixed(4)} (Winrate eltérés)\n`;
+                                logText += `  └─ Turn Penalty:  ${(-turnPenalty).toFixed(4)} (Hossz büntetés)\n\n`;
+                                
+                                logText += `📊 Átlagos Winrate eltérés: ${(balanceScore * 100).toFixed(2)}%\n`;
+                                logText += `📉 Winrate tartomány: ${minWR.toFixed(1)}% - ${maxWR.toFixed(1)}% (Diff: ${(maxWR - minWR).toFixed(2)}%)\n`;
+                                logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} kör (Cél: ${optimalTurns})\n`;
+                                logText += `🔄 Összes lejátszott meccs: ${matchesCompleted.toLocaleString('hu-HU')}\n\n`;
                                 
                                 logText += `Kártya Statisztikák (Winrate szerint):\n`;
                                 logText += ` WR %  |  W/M    | Név\n`;
@@ -466,6 +514,12 @@
                         
                         activeWorkers--;
                         if (activeWorkers === 0) {
+                            if (fitnessChart) {
+                                fitnessChart.data.labels.push(currentGen + 1);
+                                fitnessChart.data.datasets[0].data.push(bestOverallFitness === -Infinity ? null : bestOverallFitness);
+                                fitnessChart.update('none'); // 'none' a jobb teljesítményért 1000 generációnál
+                            }
+
                             if (bestOverallFitness > lastSignificantFitness + 0.0001) {
                                 lastSignificantFitness = bestOverallFitness;
                                 generationsSinceLastImprovement = 0;
@@ -518,7 +572,6 @@
             document.getElementById('download-btn').style.display = 'inline-block';
             document.getElementById('copy-log-btn').style.display = 'inline-block';
             document.getElementById('status-text').innerText = generationsSinceLastImprovement >= 100 ? "Evolúció leállt: 100 generáció óta nincs javulás." : "Evolúció sikeresen befejeződött!";
-            document.getElementById('output').innerText += `\n\n✅ Folyamat vége.\nKattints az "Optimalizált JS Letöltése" gombra, majd másold a kapott fájlt a projekt mappájába!`;
         }
         
         function copyLog() {
