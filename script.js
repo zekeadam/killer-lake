@@ -264,7 +264,19 @@ function setupDraft(teamIds, itemIds) {
     myItemIds = itemIds || [];
     document.getElementById('lobby-screen').style.display = 'none';
     document.getElementById('victory-screen').style.display = 'none';
+    document.getElementById('game-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
+
+    const readyBtn = document.getElementById('ready-btn');
+    if (readyBtn) {
+        readyBtn.disabled = false;
+        readyBtn.innerText = "Harcra fel!";
+    }
+    document.getElementById('draft-status').innerText = "";
+    
+    const nameHeader = document.querySelector('.player-names-header');
+    if (nameHeader) nameHeader.style.display = 'none';
+
     renderDraft();
 }
 
@@ -389,6 +401,7 @@ function buildTeamObjects(teamIds) {
 }
 
 function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
+    isActionLocked = false;
     gameState = {
         activePlayer: 'p1',
         gameOver: false,
