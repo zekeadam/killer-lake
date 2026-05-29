@@ -1,865 +1,867 @@
 const optimizedCardOverrides = {
     "card_0": {
-        "maxHp": 38,
+        "maxHp": 90,
         "attacks": [
             {
-                "dmg": 70,
+                "dmg": 64,
                 "hits": 2,
-                "cost": 1,
-                "accuracy": 0.9677444971251199
+                "cost": 0,
+                "accuracy": 1
             },
             {
-                "dmg": 69,
-                "hits": 3,
-                "cost": 3,
-                "accuracy": 0.9536679152389526
+                "dmg": 52,
+                "hits": 4,
+                "cost": 4,
+                "accuracy": 0.9700620627858619
             },
             {
-                "dmg": 27,
+                "dmg": 82,
                 "hits": 1,
-                "cost": 2,
-                "accuracy": 0.9071580865432834
+                "cost": 3,
+                "accuracy": 0.9108505078402791
             },
             {
-                "cost": 1,
+                "cost": 0,
                 "accuracy": 1
             }
         ]
     },
     "card_1": {
-        "maxHp": 53,
+        "maxHp": 70,
         "attacks": [
             {
-                "dmg": 65,
+                "dmg": 94,
                 "cost": 1,
-                "accuracy": 0.7898182557099427,
-                "hits": 3
+                "accuracy": 0.9135253858911938,
+                "hits": 2
             },
             {
-                "dmg": 28,
-                "cost": 1,
-                "accuracy": 1,
-                "hits": 4
+                "dmg": 19,
+                "cost": 5,
+                "accuracy": 0.9458430380549099,
+                "hits": 1
             },
             {
-                "healAmount": 72,
-                "cost": 2,
-                "accuracy": 0.9327987715265029
+                "healAmount": 54,
+                "cost": 1,
+                "accuracy": 1
             },
             {
-                "cost": 1,
-                "accuracy": 0.8726259940817971
+                "cost": 0,
+                "accuracy": 1
             }
         ]
     },
     "card_2": {
-        "maxHp": 49,
+        "maxHp": 70,
         "attacks": [
             {
+                "cost": 0,
+                "accuracy": 1
+            },
+            {
+                "dmg": 79,
+                "cost": 5,
+                "accuracy": 0.7366407179434765,
+                "hits": 3
+            },
+            {
+                "dmg": 32,
                 "cost": 1,
-                "accuracy": 0.9754849020318996
+                "accuracy": 0.8111440843328199,
+                "hits": 1
             },
             {
-                "dmg": 99,
-                "cost": 2,
-                "accuracy": 0.8628773647971985,
-                "hits": 2
-            },
-            {
-                "dmg": 45,
-                "cost": 1,
-                "accuracy": 0.7507035698918313,
-                "hits": 2
-            },
-            {
-                "healAmount": 26,
-                "cost": 2,
-                "accuracy": 0.9120193900761756
+                "healAmount": 16,
+                "cost": 3,
+                "accuracy": 1
             }
         ]
     },
     "card_3": {
-        "maxHp": 138,
+        "maxHp": 120,
         "attacks": [
             {
-                "dmg": 135,
-                "hits": 3,
+                "dmg": 64,
+                "hits": 4,
                 "cost": 2,
+                "accuracy": 0.9613692686607589
+            },
+            {
+                "dmg": 31,
+                "hits": 1,
+                "cost": 0,
+                "accuracy": 0.98557353457935
+            },
+            {
+                "dmg": 62,
+                "hits": 4,
+                "cost": 1,
                 "accuracy": 1
             },
             {
-                "dmg": 26,
-                "hits": 4,
-                "cost": 1,
-                "accuracy": 0.8894057274308842
-            },
-            {
-                "dmg": 55,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.9270505176474119
-            },
-            {
-                "healAmount": 38,
-                "cost": 1,
-                "accuracy": 0.9183012262451148
+                "healAmount": 41,
+                "cost": 0,
+                "accuracy": 0.9697089032958393
             }
         ]
     },
     "card_4": {
-        "maxHp": 53,
+        "maxHp": 120,
         "attacks": [
             {
-                "dmg": 102,
+                "dmg": 69,
                 "cost": 2,
-                "accuracy": 0.8086902621073899,
-                "hits": 2
+                "accuracy": 0.7167420197694858,
+                "hits": 3
             },
             {
-                "dmg": 164,
-                "cost": 4,
-                "accuracy": 0.6629452150838204,
-                "hits": 1
+                "dmg": 146,
+                "cost": 5,
+                "accuracy": 0.5872072643066802,
+                "hits": 3
             },
             {
-                "dmg": 46,
+                "dmg": 44,
                 "cost": 1,
-                "accuracy": 1,
-                "hits": 1
+                "accuracy": 0.8297116728522574,
+                "hits": 3
             },
             {
                 "cost": 1,
-                "accuracy": 0.9015286033232555
+                "accuracy": 1
             }
         ]
     },
     "card_5": {
-        "maxHp": 92,
+        "maxHp": 130,
         "attacks": [
             {
-                "dmg": 59,
-                "cost": 2,
-                "accuracy": 0.8585385948248861,
-                "hits": 3
+                "dmg": 58,
+                "cost": 0,
+                "accuracy": 0.8162768129833018,
+                "hits": 4
             },
             {
-                "dmg": 86,
-                "cost": 3,
-                "accuracy": 0.6122354451619818,
-                "hits": 1
+                "dmg": 163,
+                "cost": 5,
+                "accuracy": 0.8029363959523657,
+                "hits": 2
             },
             {
-                "cost": 1,
-                "accuracy": 1
+                "cost": 5,
+                "accuracy": 0.8797472987017039
             },
             {
-                "dmg": 57,
-                "cost": 1,
-                "accuracy": 0.8990030953328887
+                "dmg": 10,
+                "cost": 0,
+                "accuracy": 0.9562433230609998
             }
         ]
     },
     "card_6": {
-        "maxHp": 91,
+        "maxHp": 130,
         "attacks": [
             {
                 "cost": 1,
-                "accuracy": 0.8112535315561956
+                "accuracy": 0.8441838890895451
             },
             {
-                "dmg": 120,
-                "cost": 2,
-                "accuracy": 0.7612535608082258,
+                "dmg": 58,
+                "cost": 0,
+                "accuracy": 0.7457882911665555,
                 "hits": 3
             },
             {
-                "dmg": 189,
-                "cost": 4,
-                "accuracy": 0.6574147048155429,
-                "hits": 1
+                "dmg": 204,
+                "cost": 0,
+                "accuracy": 0.6662188234829972,
+                "hits": 2
             },
             {
-                "healAmount": 35,
-                "cost": 2,
-                "accuracy": 0.9456202849382644
+                "healAmount": 25,
+                "cost": 5,
+                "accuracy": 0.9882431986962036
             }
         ]
     },
     "card_7": {
-        "maxHp": 147,
+        "maxHp": 130,
         "attacks": [
             {
-                "healAmount": 33,
-                "cost": 1,
-                "accuracy": 0.9935929893154839
-            },
-            {
-                "dmg": 40,
+                "healAmount": 74,
                 "cost": 2,
-                "accuracy": 0.8775065140574838,
-                "hits": 2
+                "accuracy": 1
             },
             {
-                "dmg": 157,
-                "cost": 4,
-                "accuracy": 0.8399173674632034,
-                "hits": 3
+                "dmg": 94,
+                "cost": 0,
+                "accuracy": 0.7975238836670023,
+                "hits": 1
             },
             {
-                "cost": 1,
-                "accuracy": 0.9118652666862685
+                "dmg": 110,
+                "cost": 3,
+                "accuracy": 0.7108431420557371,
+                "hits": 4
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.9899387449201754
             }
         ]
     },
     "card_8": {
-        "maxHp": 145,
+        "maxHp": 130,
         "attacks": [
             {
-                "dmg": 91,
-                "cost": 2,
-                "accuracy": 0.9183681684632347,
+                "dmg": 24,
+                "cost": 1,
+                "accuracy": 0.9463334280071457,
                 "hits": 4
             },
             {
-                "dmg": 136,
-                "cost": 3,
-                "accuracy": 0.7284886034706707,
-                "hits": 4
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.8833359281928466
-            },
-            {
-                "healAmount": 50,
-                "cost": 2,
-                "accuracy": 0.939604367824374
-            }
-        ]
-    },
-    "card_9": {
-        "maxHp": 65,
-        "attacks": [
-            {
-                "dmg": 83,
-                "cost": 1,
-                "accuracy": 0.9533895140378915,
-                "hits": 2
-            },
-            {
-                "dmg": 25,
-                "cost": 2,
-                "accuracy": 0.5222863324801267,
-                "hits": 2
-            },
-            {
-                "cost": 1,
-                "accuracy": 1
-            },
-            {
-                "healAmount": 10,
-                "cost": 1,
-                "accuracy": 0.9453824031518654
-            }
-        ]
-    },
-    "card_10": {
-        "maxHp": 147,
-        "attacks": [
-            {
-                "dmg": 10,
-                "cost": 1,
-                "accuracy": 0.8951123068602843,
-                "hits": 1
-            },
-            {
-                "dmg": 80,
-                "cost": 2,
-                "accuracy": 0.8549016131552829,
-                "hits": 4
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.7424649106371348
-            },
-            {
-                "healAmount": 38,
-                "cost": 2,
-                "accuracy": 0.9996123695052295
-            }
-        ]
-    },
-    "card_13": {
-        "maxHp": 128,
-        "attacks": [
-            {
-                "dmg": 28,
-                "cost": 1,
-                "accuracy": 0.6881064530338283,
-                "hits": 2
-            },
-            {
-                "dmg": 112,
-                "cost": 2,
-                "accuracy": 0.731091945415303,
-                "hits": 4
-            },
-            {
-                "healAmount": 32,
-                "cost": 2,
-                "accuracy": 1
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.9118072176108744
-            }
-        ]
-    },
-    "card_17": {
-        "maxHp": 239,
-        "attacks": [
-            {
-                "healAmount": 45,
-                "cost": 2,
-                "accuracy": 1
-            },
-            {
-                "dmg": 174,
-                "cost": 3,
-                "accuracy": 0.6478179061232174
-            },
-            {
-                "dmg": 244,
-                "cost": 3,
-                "accuracy": 0.6353561094098685,
-                "hits": 3
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.8880354180166504
-            }
-        ]
-    },
-    "card_18": {
-        "maxHp": 62,
-        "attacks": [
-            {
-                "dmg": 46,
-                "cost": 1,
-                "accuracy": 0.824599992046329,
-                "hits": 3
-            },
-            {
-                "dmg": 138,
-                "cost": 3,
-                "accuracy": 0.5729143709752131,
-                "hits": 3
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.9209471009516341
-            },
-            {
-                "healAmount": 45,
-                "cost": 2,
-                "accuracy": 1
-            }
-        ]
-    },
-    "card_19": {
-        "maxHp": 334,
-        "attacks": [
-            {
-                "dmg": 63,
-                "cost": 2,
-                "accuracy": 0.5839544215504603,
-                "hits": 2
-            },
-            {
-                "dmg": 220,
+                "dmg": 129,
                 "cost": 4,
-                "accuracy": 0.5,
-                "hits": 1
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.8941758987813146
-            },
-            {
-                "dmg": 88,
-                "cost": 2,
-                "accuracy": 0.7425290034450404,
-                "hits": 4
-            }
-        ]
-    },
-    "card_20": {
-        "maxHp": 166,
-        "attacks": [
-            {
-                "cost": 1,
-                "accuracy": 1
-            },
-            {
-                "dmg": 40,
-                "cost": 1,
-                "accuracy": 0.6786560047635473,
-                "hits": 2
-            },
-            {
-                "dmg": 142,
-                "cost": 3,
-                "accuracy": 0.7279191877422029,
+                "accuracy": 0.7648201378007363,
                 "hits": 4
             },
             {
-                "healAmount": 28,
-                "cost": 2,
-                "accuracy": 0.8987772005381166
-            }
-        ]
-    },
-    "card_21": {
-        "maxHp": 221,
-        "attacks": [
-            {
-                "dmg": 158,
-                "cost": 3,
-                "accuracy": 0.5978364182295571,
-                "hits": 3
-            },
-            {
-                "dmg": 54,
-                "cost": 1,
-                "accuracy": 0.9833399799770859,
-                "hits": 3
+                "cost": 0,
+                "accuracy": 0.9176496743497559
             },
             {
                 "healAmount": 73,
                 "cost": 2,
-                "accuracy": 0.9155056291793939
+                "accuracy": 1
+            }
+        ]
+    },
+    "card_9": {
+        "maxHp": 50,
+        "attacks": [
+            {
+                "dmg": 26,
+                "cost": 0,
+                "accuracy": 0.6927375387361114,
+                "hits": 3
+            },
+            {
+                "dmg": 28,
+                "cost": 1,
+                "accuracy": 0.939363376353069,
+                "hits": 1
+            },
+            {
+                "cost": 2,
+                "accuracy": 0.7891750419103779
+            },
+            {
+                "healAmount": 13,
+                "cost": 2,
+                "accuracy": 0.9750205295196882
+            }
+        ]
+    },
+    "card_10": {
+        "maxHp": 120,
+        "attacks": [
+            {
+                "dmg": 86,
+                "cost": 0,
+                "accuracy": 0.9452996256658925,
+                "hits": 1
+            },
+            {
+                "dmg": 87,
+                "cost": 2,
+                "accuracy": 0.866572226862025,
+                "hits": 2
+            },
+            {
+                "cost": 4,
+                "accuracy": 0.8685551705476077
+            },
+            {
+                "healAmount": 10,
+                "cost": 3,
+                "accuracy": 0.807778533476025
+            }
+        ]
+    },
+    "card_13": {
+        "maxHp": 110,
+        "attacks": [
+            {
+                "dmg": 89,
+                "cost": 4,
+                "accuracy": 0.7583261362386065,
+                "hits": 4
+            },
+            {
+                "dmg": 70,
+                "cost": 0,
+                "accuracy": 0.8,
+                "hits": 1
+            },
+            {
+                "healAmount": 59,
+                "cost": 3,
+                "accuracy": 0.9902157037068134
+            },
+            {
+                "cost": 4,
+                "accuracy": 1
+            }
+        ]
+    },
+    "card_17": {
+        "maxHp": 330,
+        "attacks": [
+            {
+                "healAmount": 73,
+                "cost": 0,
+                "accuracy": 1
+            },
+            {
+                "dmg": 209,
+                "cost": 5,
+                "accuracy": 0.7589824711196114,
+                "hits": 2
+            },
+            {
+                "dmg": 241,
+                "cost": 5,
+                "accuracy": 0.5497180071217026,
+                "hits": 2
+            },
+            {
+                "cost": 5,
+                "accuracy": 0.8633147816843209
+            }
+        ]
+    },
+    "card_18": {
+        "maxHp": 160,
+        "attacks": [
+            {
+                "dmg": 110,
+                "cost": 2,
+                "accuracy": 0.6982208914792927,
+                "hits": 3
+            },
+            {
+                "dmg": 144,
+                "cost": 2,
+                "accuracy": 0.7011653246646297,
+                "hits": 4
+            },
+            {
+                "cost": 2,
+                "accuracy": 0.9321211540738568
+            },
+            {
+                "healAmount": 10,
+                "cost": 2,
+                "accuracy": 0.9000084895993483
+            }
+        ]
+    },
+    "card_19": {
+        "maxHp": 330,
+        "attacks": [
+            {
+                "dmg": 159,
+                "cost": 1,
+                "accuracy": 1,
+                "hits": 3
+            },
+            {
+                "dmg": 308,
+                "cost": 5,
+                "accuracy": 0.517181940797117,
+                "hits": 2
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.9399108099392176
+            },
+            {
+                "dmg": 51,
+                "cost": 3,
+                "accuracy": 0.675076207902018,
+                "hits": 1
+            }
+        ]
+    },
+    "card_20": {
+        "maxHp": 169,
+        "attacks": [
+            {
+                "cost": 2,
+                "accuracy": 1
+            },
+            {
+                "dmg": 54,
+                "cost": 0,
+                "accuracy": 0.8263063904681199,
+                "hits": 4
+            },
+            {
+                "dmg": 81,
+                "cost": 3,
+                "accuracy": 0.5615828651910477,
+                "hits": 1
+            },
+            {
+                "healAmount": 16,
+                "cost": 0,
+                "accuracy": 0.8080535142612844
+            }
+        ]
+    },
+    "card_21": {
+        "maxHp": 169,
+        "attacks": [
+            {
+                "dmg": 133,
+                "cost": 0,
+                "accuracy": 0.7705356517172145,
+                "hits": 3
+            },
+            {
+                "dmg": 10,
+                "cost": 2,
+                "accuracy": 0.9223911798373874,
+                "hits": 1
+            },
+            {
+                "healAmount": 79,
+                "cost": 0,
+                "accuracy": 0.9088619422813987
             },
             {
                 "cost": 1,
-                "accuracy": 0.9111668685516184
+                "accuracy": 0.8464749654640367
             }
         ]
     },
     "card_22": {
-        "maxHp": 30,
+        "maxHp": 169,
         "attacks": [
             {
-                "dmg": 49,
-                "cost": 1,
-                "accuracy": 1,
-                "hits": 1
-            },
-            {
-                "dmg": 89,
+                "dmg": 37,
                 "cost": 3,
-                "accuracy": 0.557537752035088,
-                "hits": 1
+                "accuracy": 0.7505611371090989,
+                "hits": 3
             },
             {
+                "dmg": 164,
                 "cost": 1,
-                "accuracy": 0.9024949671808575
+                "accuracy": 0.5,
+                "hits": 3
             },
             {
-                "healAmount": 50,
                 "cost": 2,
-                "accuracy": 0.9056280672613363
+                "accuracy": 0.8046117246604033
+            },
+            {
+                "healAmount": 28,
+                "cost": 1,
+                "accuracy": 1
             }
         ]
     },
     "card_23": {
-        "maxHp": 76,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 93,
-                "cost": 1,
-                "accuracy": 0.6386603876678446,
+                "dmg": 108,
+                "cost": 0,
+                "accuracy": 0.8405210180565973,
                 "hits": 2
             },
             {
-                "dmg": 137,
-                "cost": 3,
-                "accuracy": 0.5867050051932702,
+                "dmg": 160,
+                "cost": 0,
+                "accuracy": 0.8631460106557218,
                 "hits": 2
             },
             {
-                "healAmount": 19,
+                "healAmount": 10,
+                "cost": 5,
+                "accuracy": 0.7465101853621536
+            },
+            {
                 "cost": 2,
                 "accuracy": 1
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.8481943988694303
             }
         ]
     },
     "card_24": {
-        "maxHp": 220,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 91,
-                "cost": 1,
-                "accuracy": 0.9584086244588763,
-                "hits": 4
+                "dmg": 51,
+                "cost": 3,
+                "accuracy": 0.7081574642101599,
+                "hits": 1
             },
             {
                 "dmg": 114,
                 "cost": 3,
-                "accuracy": 0.5
+                "accuracy": 0.6728158797865463,
+                "hits": 3
             },
             {
-                "cost": 1,
-                "accuracy": 0.8793027716004882
+                "cost": 0,
+                "accuracy": 0.9729985965979642
             },
             {
-                "healAmount": 41,
+                "healAmount": 18,
                 "cost": 2,
-                "accuracy": 0.6912580252473993
+                "accuracy": 0.858390030572164
             }
         ]
     },
     "card_25": {
-        "maxHp": 107,
+        "maxHp": 220,
         "attacks": [
             {
-                "healAmount": 20,
+                "healAmount": 64,
                 "cost": 2,
-                "accuracy": 0.9324527123629494
+                "accuracy": 0.9675360418928118
             },
             {
-                "dmg": 158,
-                "cost": 3,
+                "dmg": 12,
+                "cost": 5,
+                "accuracy": 0.6874662801465489,
+                "hits": 1
+            },
+            {
+                "dmg": 175,
+                "cost": 1,
                 "accuracy": 0.5,
                 "hits": 3
             },
             {
-                "dmg": 163,
-                "cost": 4,
-                "accuracy": 0.5277437884514767,
-                "hits": 1
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.8912861163684097
+                "cost": 0,
+                "accuracy": 0.986698128255242
             }
         ]
     },
     "card_26": {
-        "maxHp": 30,
+        "maxHp": 160,
         "attacks": [
             {
-                "healAmount": 10,
-                "cost": 3,
-                "accuracy": 0.9649503598779029
+                "healAmount": 15,
+                "cost": 5,
+                "accuracy": 1
             },
             {
-                "dmg": 55,
-                "cost": 2,
-                "accuracy": 0.6963706298817894,
-                "hits": 1
-            },
-            {
-                "dmg": 132,
+                "dmg": 77,
                 "cost": 4,
-                "accuracy": 0.5414822297927232,
-                "hits": 1
+                "accuracy": 0.7087772249486683,
+                "hits": 4
             },
             {
-                "cost": 1,
-                "accuracy": 0.8647910333027725
+                "dmg": 92,
+                "cost": 4,
+                "accuracy": 0.5872866105607553,
+                "hits": 2
+            },
+            {
+                "cost": 3,
+                "accuracy": 0.8737321072530176
             }
         ]
     },
     "card_27": {
-        "maxHp": 144,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 78,
+                "dmg": 33,
                 "cost": 1,
-                "accuracy": 0.7726410743536338,
-                "hits": 4
+                "accuracy": 0.794918941974022,
+                "hits": 2
             },
             {
-                "dmg": 93,
-                "cost": 3,
-                "accuracy": 0.609530913352595,
+                "dmg": 114,
+                "cost": 5,
+                "accuracy": 0.706344757891847,
                 "hits": 3
             },
             {
                 "cost": 1,
-                "accuracy": 0.9782171005857966
+                "accuracy": 0.953855818032183
             },
             {
-                "dmg": 10,
-                "cost": 1,
-                "accuracy": 0.6776183408467038,
-                "hits": 3
+                "dmg": 40,
+                "cost": 5,
+                "accuracy": 0.8802201266298738,
+                "hits": 2
             }
         ]
     },
     "card_28": {
-        "maxHp": 66,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 95,
-                "cost": 2,
-                "accuracy": 0.714459936428425,
+                "dmg": 67,
+                "cost": 4,
+                "accuracy": 0.7457730092507648,
+                "hits": 3
+            },
+            {
+                "dmg": 144,
+                "cost": 3,
+                "accuracy": 0.5698312756688055,
                 "hits": 1
             },
             {
-                "dmg": 97,
+                "cost": 4,
+                "accuracy": 0.8638113791387168
+            },
+            {
+                "healAmount": 15,
                 "cost": 3,
-                "accuracy": 0.7364828139664206,
-                "hits": 4
-            },
-            {
-                "cost": 1,
-                "accuracy": 1
-            },
-            {
-                "healAmount": 46,
-                "cost": 2,
-                "accuracy": 0.920178701958984
+                "accuracy": 0.8655046105704438
             }
         ]
     },
     "card_29": {
-        "maxHp": 132,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 62,
+                "dmg": 143,
                 "cost": 1,
-                "accuracy": 1,
+                "accuracy": 0.706586418608197,
                 "hits": 2
             },
             {
-                "dmg": 130,
-                "cost": 3,
-                "accuracy": 0.7,
+                "dmg": 135,
+                "cost": 2,
+                "accuracy": 0.9271915412340939,
                 "hits": 3
             },
             {
-                "cost": 1,
-                "accuracy": 0.9194715920685171
+                "cost": 0,
+                "accuracy": 0.9741589945037012
             },
             {
-                "dmg": 41,
+                "dmg": 32,
                 "cost": 1,
-                "accuracy": 1,
-                "hits": 1
+                "accuracy": 0.9541452490920097,
+                "hits": 2
             }
         ]
     },
     "card_30": {
-        "maxHp": 218,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 78,
-                "cost": 3,
-                "accuracy": 0.6986412149761047,
-                "hits": 3
+                "dmg": 44,
+                "cost": 5,
+                "accuracy": 0.7656220177488492,
+                "hits": 4
             },
             {
-                "dmg": 102,
-                "cost": 3,
-                "accuracy": 0.7120809398237952,
-                "hits": 1
+                "dmg": 168,
+                "cost": 0,
+                "accuracy": 0.925287214061348,
+                "hits": 2
             },
             {
                 "cost": 1,
-                "accuracy": 1
+                "accuracy": 0.9103260918189264
             },
             {
-                "healAmount": 50,
-                "cost": 2,
-                "accuracy": 0.9505505496076398
+                "healAmount": 61,
+                "cost": 3,
+                "accuracy": 0.7995965759442514
             }
         ]
     },
     "card_31": {
-        "maxHp": 116,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 90,
-                "cost": 3,
-                "accuracy": 0.6118606046305601,
-                "hits": 1
-            },
-            {
-                "dmg": 111,
-                "cost": 3,
-                "accuracy": 0.5968067867988284,
+                "dmg": 93,
+                "cost": 0,
+                "accuracy": 0.7937680908850197,
                 "hits": 4
             },
             {
-                "cost": 1,
-                "accuracy": 0.9737621259803338
+                "dmg": 15,
+                "cost": 5,
+                "accuracy": 0.8412111703276255,
+                "hits": 2
             },
             {
-                "dmg": 22,
                 "cost": 2,
-                "accuracy": 0.6678717401140916,
-                "hits": 1
+                "accuracy": 0.9924688697415963
+            },
+            {
+                "dmg": 116,
+                "cost": 0,
+                "accuracy": 0.7876743742701465,
+                "hits": 2
             }
         ]
     },
     "card_32": {
-        "maxHp": 44,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 27,
-                "hits": 3,
-                "cost": 2,
+                "dmg": 81,
+                "hits": 4,
+                "cost": 5,
+                "accuracy": 0.852838849353331
+            },
+            {
+                "dmg": 68,
+                "hits": 4,
+                "cost": 1,
                 "accuracy": 1
             },
             {
-                "dmg": 38,
-                "hits": 1,
-                "cost": 2,
-                "accuracy": 0.8515253109434727
-            },
-            {
-                "healAmount": 30,
-                "cost": 2,
-                "accuracy": 1
+                "healAmount": 10,
+                "cost": 1,
+                "accuracy": 0.9722712683899738
             },
             {
                 "cost": 1,
-                "accuracy": 0.9965528948866837
+                "accuracy": 1
             }
         ]
     },
     "card_33": {
-        "maxHp": 156,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 138,
+                "dmg": 53,
                 "cost": 2,
-                "accuracy": 0.6960084497254174,
+                "accuracy": 0.5943865458282394,
                 "hits": 3
             },
             {
-                "dmg": 120,
-                "cost": 2,
-                "accuracy": 0.8130384582673151,
+                "dmg": 90,
+                "cost": 5,
+                "accuracy": 0.8136466949675677,
                 "hits": 1
             },
             {
-                "cost": 1,
-                "accuracy": 1
+                "cost": 0,
+                "accuracy": 0.8549638352455949
             },
             {
-                "healAmount": 76,
-                "cost": 2,
-                "accuracy": 0.9806252718870979
+                "healAmount": 30,
+                "cost": 0,
+                "accuracy": 0.9697172609488185
             }
         ]
     },
     "card_34": {
-        "maxHp": 170,
+        "maxHp": 300,
         "attacks": [
             {
-                "cost": 1,
-                "accuracy": 0.927267099016132
+                "cost": 0,
+                "accuracy": 0.957030243430498
             },
             {
-                "dmg": 123,
-                "cost": 3,
-                "accuracy": 0.7467190909716787,
-                "hits": 1
+                "dmg": 207,
+                "cost": 4,
+                "accuracy": 0.6086869468528121,
+                "hits": 4
             },
             {
-                "dmg": 202,
-                "cost": 3,
-                "accuracy": 0.6274254753177244,
-                "hits": 2
+                "dmg": 268,
+                "cost": 4,
+                "accuracy": 0.5357643404091652,
+                "hits": 4
             },
             {
-                "healAmount": 26,
+                "healAmount": 35,
                 "cost": 2,
-                "accuracy": 1
+                "accuracy": 0.9016204321463432
             }
         ]
     },
     "card_35": {
-        "maxHp": 292,
+        "maxHp": 300,
         "attacks": [
             {
-                "cost": 1,
-                "accuracy": 0.8820508254706713
+                "cost": 0,
+                "accuracy": 1
             },
             {
-                "dmg": 168,
+                "dmg": 134,
+                "cost": 3,
+                "accuracy": 0.6785564381807859,
+                "hits": 3
+            },
+            {
+                "dmg": 219,
                 "cost": 4,
                 "accuracy": 0.5,
-                "hits": 4
+                "hits": 2
             },
             {
-                "dmg": 227,
-                "cost": 4,
-                "accuracy": 0.5207190290109001,
-                "hits": 1
-            },
-            {
-                "healAmount": 33,
-                "cost": 2,
-                "accuracy": 0.9587876746780011
+                "healAmount": 16,
+                "cost": 3,
+                "accuracy": 0.9765129789304137
             }
         ]
     },
     "card_36": {
-        "maxHp": 233,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 68,
-                "cost": 1,
-                "accuracy": 0.8004397244219889,
+                "dmg": 77,
+                "cost": 0,
+                "accuracy": 0.7635234393778078,
                 "hits": 3
             },
             {
-                "dmg": 230,
-                "cost": 4,
-                "accuracy": 0.6339892819113354,
-                "hits": 2
-            },
-            {
+                "dmg": 278,
                 "cost": 1,
-                "accuracy": 0.8116430145125355
+                "accuracy": 0.5,
+                "hits": 3
             },
             {
-                "healAmount": 70,
-                "cost": 2,
-                "accuracy": 0.8921235621755529
+                "cost": 0,
+                "accuracy": 0.9499728281312758
+            },
+            {
+                "healAmount": 58,
+                "cost": 0,
+                "accuracy": 1
             }
         ]
     },
     "card_37": {
-        "maxHp": 38,
+        "maxHp": 160,
         "attacks": [
             {
-                "dmg": 183,
-                "cost": 4,
-                "accuracy": 0.5294179096269989,
-                "hits": 4
-            },
-            {
-                "dmg": 79,
-                "cost": 3,
-                "accuracy": 0.8037728115457118,
-                "hits": 4
-            },
-            {
+                "dmg": 158,
                 "cost": 1,
-                "accuracy": 0.8233202578495772
+                "accuracy": 0.715362930027163,
+                "hits": 4
             },
             {
-                "healAmount": 63,
+                "dmg": 137,
                 "cost": 2,
-                "accuracy": 0.9679010651542982
+                "accuracy": 0.7354268466935073,
+                "hits": 4
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.8132663782718621
+            },
+            {
+                "healAmount": 59,
+                "cost": 4,
+                "accuracy": 1
             }
         ]
     }
