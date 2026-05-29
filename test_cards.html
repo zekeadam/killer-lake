@@ -63,7 +63,7 @@
         }
         .grid-card img {
             width: 100%;
-            height: 475px;
+            height: 250px;
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -104,8 +104,8 @@
         }
         .grid-card .attacks-list ul {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
+            grid-template-columns: 1fr;
+            gap: 8px;
             list-style: none;
             padding: 0;
             margin: 0;
@@ -114,7 +114,7 @@
             background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%);
             border: 1px solid #2a4a7a;
             border-radius: 8px;
-            padding: 5px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start; /* Elemek egymás után, üres hely nélkül */
@@ -123,10 +123,10 @@
             border-bottom: 2px solid rgba(0,0,0,0.3);
         }
         .li-title {
-            font-size: 0.8rem; /* Nagyobb cím */
+            font-size: 0.9rem; /* Nagyobb cím */
             color: #fff;
             font-weight: 800;
-            margin-bottom: 2px; /* Csak egy minimális távolság a következő sortól */
+            margin-bottom: 4px; /* Csak egy minimális távolság a következő sortól */
             display: flex;
             align-items: center;
         }
@@ -134,9 +134,10 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
-            font-size: 0.7rem; /* Nagyobb stat szöveg */
+            font-size: 0.8rem; /* Nagyobb stat szöveg */
             color: #4cc9f0;
             font-weight: 700;
+            margin-bottom: 2px;
         }
         .li-row span {
             flex: 1;
@@ -163,6 +164,11 @@
             z-index: 5;
             border: 1px solid rgba(197, 160, 89, 0.5);
         }
+        
+        /* Buff és Nerf stílusok az optimalizált statokhoz */
+        .stat-buff { color: #2ecc71; font-weight: 900; }
+        .stat-nerf { color: #ff4d4d; font-weight: 900; }
+        .stat-old { color: #888; text-decoration: line-through; margin-right: 5px; font-weight: normal; }
     </style>
 </head>
 <body>
@@ -201,6 +207,8 @@
                                     if (override.attacks[i]) {
                                         if (override.attacks[i].dmg !== undefined && override.attacks[i].dmg !== atk.dmg) atk.origDmg = atk.dmg;
                                         if (override.attacks[i].accuracy !== undefined && override.attacks[i].accuracy !== atk.accuracy) atk.origAccuracy = atk.accuracy;
+                                        if (override.attacks[i].healAmount !== undefined && override.attacks[i].healAmount !== atk.healAmount) atk.origHealAmount = atk.healAmount;
+                                        if (override.attacks[i].hits !== undefined && override.attacks[i].hits !== (atk.hits || 1)) atk.origHits = (atk.hits || 1);
                                         Object.assign(atk, override.attacks[i]);
                                     }
                                 });
@@ -238,17 +246,33 @@
 
                         if (attack.type === 'dmg') {
                             const acc = Math.round((attack.accuracy !== undefined ? attack.accuracy : 1.0) * 100);
-                            const origAcc = attack.origAccuracy !== undefined ? Math.round(attack.origAccuracy * 100) : acc;
                             
-                            let dmgDisplay = attack.origDmg !== undefined ? `<s>${attack.origDmg}</s> <span style="color: #ff4d4d;">${attack.dmg}</span>` : `${attack.dmg}`;
-                            let accDisplay = attack.origAccuracy !== undefined ? `<s>${origAcc}%</s> <span style="color: #ff4d4d;">${acc}%</span>` : `${acc}%`;
+                            let dmgDisplay = `${attack.dmg}`;
+                            if (attack.origDmg !== undefined) {
+                                dmgDisplay = `<span class="stat-old">${attack.origDmg}</span><span class="${attack.dmg > attack.origDmg ? 'stat-buff' : 'stat-nerf'}">${attack.dmg}</span>`;
+                            }
+                            
+                            let accDisplay = `${acc}%`;
+                            if (attack.origAccuracy !== undefined) {
+                                const origAcc = Math.round(attack.origAccuracy * 100);
+                                accDisplay = `<span class="stat-old">${origAcc}%</span><span class="${acc > origAcc ? 'stat-buff' : 'stat-nerf'}">${acc}%</span>`;
+                            }
+                            
+                            let hitsDisplay = `${attack.hits || 1}x`;
+                            if (attack.origHits !== undefined) {
+                                hitsDisplay = `<span class="stat-old">${attack.origHits}x</span><span class="${attack.hits > attack.origHits ? 'stat-buff' : 'stat-nerf'}">${attack.hits}x</span>`;
+                            }
 
                             statText = `💥${dmgDisplay}`;
-                            hitText = `🎯${attack.hits || 1}x | 🎲${accDisplay}`;
+                            hitText = `🎯${hitsDisplay} | 🎲${accDisplay}`;
                             if (attack.effect === 'burn') icon = "🔥";
                             if (attack.effect === 'paralyze') icon = "⚡";
                         } else if (attack.type === 'heal') {
-                            statText = `💚+${attack.healAmount}`;
+                            let healDisplay = `${attack.healAmount}`;
+                            if (attack.origHealAmount !== undefined) {
+                                healDisplay = `<span class="stat-old">${attack.origHealAmount}</span><span class="${attack.healAmount > attack.origHealAmount ? 'stat-buff' : 'stat-nerf'}">${attack.healAmount}</span>`;
+                            }
+                            statText = `💚+${healDisplay}`;
                             hitText = "REGEN";
                         } else if (attack.type === 'shield') {
                             statText = "🛡️VÉD";
@@ -265,7 +289,10 @@
                     attacksHtml += '</ul></div>';
                 }
 
-                let hpDisplay = card.origMaxHp !== undefined ? `<s>${card.origMaxHp}</s> <span style="color: #ff4d4d;">${card.maxHp}</span>` : `${card.maxHp}`;
+                let hpDisplay = `${card.maxHp}`;
+                if (card.origMaxHp !== undefined) {
+                    hpDisplay = `<span class="stat-old">${card.origMaxHp}</span><span class="${card.maxHp > card.origMaxHp ? 'stat-buff' : 'stat-nerf'}">${card.maxHp}</span>`;
+                }
 
                 cardEl.innerHTML = `
                     <div class="card-index">#${index}</div>

@@ -11,17 +11,19 @@
             height: auto; align-items: unset; justify-content: unset;
         }
         .sim-container {
-            max-width: 900px; margin: 0 auto; background: rgba(10,10,20,0.8);
+            max-width: 1000px; margin: 0 auto; background: rgba(10,10,20,0.8);
             padding: 30px; border-radius: 15px; border: 1px solid #e94560;
             box-shadow: 0 0 30px rgba(233,69,96,0.3); text-align: center;
             backdrop-filter: blur(10px);
         }
-        .controls { margin: 20px 0; display: flex; gap: 10px; justify-content: center; align-items: center; }
+        .controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
         input { padding: 12px; border-radius: 5px; border: 2px solid #0f3460; background: #111; color: #fff; font-size: 1.1rem; width: 120px; text-align: center; }
         button { padding: 12px 25px; border-radius: 5px; border: none; font-weight: bold; font-size: 1.1rem; background: #e94560; color: #fff; cursor: pointer; transition: 0.2s; }
         button:hover { background: #ff4757; transform: scale(1.05); }
         #download-btn { background: #3498db; }
         #download-btn:hover { background: #2980b9; }
+        #copy-log-btn { background: #9b59b6; }
+        #copy-log-btn:hover { background: #8e44ad; }
         #output { text-align: left; background: #0a0a0a; padding: 15px; border-radius: 5px; color: #4cc9f0; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow: auto; border: 1px solid #333; }
         .progress-bar { width: 100%; height: 25px; background: #222; border-radius: 12.5px; margin: 20px 0; overflow: hidden; border: 1px solid #444; }
         .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #000; }
@@ -43,6 +45,7 @@
             
             <button onclick="startEvolution()">Evolúció Indítása</button>
             <button id="download-btn" onclick="downloadJS()" style="display:none;">Optimalizált JS Letöltése</button>
+            <button id="copy-log-btn" onclick="copyLog()" style="display:none;">Napló Másolása</button>
         </div>
         
         <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 250 000 mérkőzés</p>
@@ -61,6 +64,8 @@
         let currentGen = 0, currentGenome = 0, currentMatch = 0;
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
+        let generationsSinceLastImprovement = 0;
+        let lastSignificantFitness = -Infinity;
         
         let currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
         
@@ -196,6 +201,8 @@
             
             currentGen = 0;
             bestOverallFitness = -Infinity;
+            generationsSinceLastImprovement = 0;
+            lastSignificantFitness = -Infinity;
             
             // Kezdeti populáció létrehozása (alap statok + mutációk)
             population = [];
@@ -214,7 +221,13 @@
                 if (!card.type || card.type === 'character') {
                     genome[card.id] = {
                         maxHp: card.maxHp,
-                        attacks: (card.attacks || []).map(a => ({ dmg: a.dmg, cost: a.cost, accuracy: a.accuracy || 1.0 }))
+                        attacks: (card.attacks || []).map(a => ({ 
+                            dmg: a.dmg, 
+                            healAmount: a.healAmount,
+                            hits: a.hits,
+                            cost: a.cost, 
+                            accuracy: a.accuracy || 1.0 
+                        }))
                     };
                 }
             });
@@ -225,11 +238,21 @@
             let newGenome = JSON.parse(JSON.stringify(genome));
             for (let cardId in newGenome) {
                 let card = newGenome[cardId];
-                // HP mutáció
-                if (Math.random() < 0.3) card.maxHp = Math.max(50, Math.round(card.maxHp + (Math.random() * 40 - 20)));
-                // Támadás mutációk
+                // Támadás mutációk (Sebzés is ugrálhat akár ±20-at)
                 card.attacks.forEach(atk => {
-                    if (Math.random() < 0.2 && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * 20 - 10)));
+                    if (Math.random() < 0.2 && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * 40 - 20)));
+                    if (Math.random() < 0.2 && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * 30 - 15)));
+                    // Találatok (hits) számának mutációja (kisebb eséllyel)
+                    if (Math.random() < 0.05 && atk.dmg !== undefined) {
+                        atk.hits = atk.hits || 1;
+                        if (Math.random() < 0.5) atk.hits = Math.min(4, atk.hits + 1);
+                        else atk.hits = Math.max(1, atk.hits - 1);
+                    }
+                    // AP Költség mutáció
+                    if (Math.random() < 0.1 && atk.cost !== undefined) {
+                        if (Math.random() < 0.5) atk.cost = Math.min(5, atk.cost + 1);
+                        else atk.cost = Math.max(0, atk.cost - 1);
+                    }
                     if (Math.random() < 0.1) atk.accuracy = Math.min(1.0, Math.max(0.5, (atk.accuracy || 1.0) + (Math.random() * 0.2 - 0.1)));
                 });
             }
@@ -245,7 +268,8 @@
         }
 
         async function runGeneration() {
-            if (currentGen >= genCount) {
+            let minGen = Math.max(5, Math.floor(genCount * 0.4)); // Minimum generációk száma a leállás előtt
+            if (currentGen >= genCount || (currentGen >= minGen && generationsSinceLastImprovement >= 8)) {
                 finalizeEvolution();
                 return;
             }
@@ -267,7 +291,8 @@
                 // Ha egy meccs csak 10 kör, vagy 100+ körig tart, azt büntetjük!
                 let avgTurns = currentTracker.totalMatches > 0 ? currentTracker.totalTurns / currentTracker.totalMatches : 0;
                 let optimalTurns = 35; 
-                let turnPenalty = Math.abs(optimalTurns - avgTurns) / 100;
+                let turnDiff = Math.abs(optimalTurns - avgTurns);
+                let turnPenalty = (turnDiff * turnDiff) / 50; // Kvadratikus büntetés, így a túl hosszú meccsek azonnal "kihalnak"
 
                 // Balance faktor: Mennyire van balance-ban az összes kártya (Winrate ~ 50%)
                 let totalWinDiff = 0;
@@ -287,7 +312,18 @@
                 if (fitness > bestOverallFitness) {
                     bestOverallFitness = fitness;
                     bestOverallGenome = JSON.parse(JSON.stringify(genome));
-                    document.getElementById('output').innerText = `🏆 Új legjobb variáció megtalálva!\nFitness: ${fitness.toFixed(4)}\n\n📊 Balance (eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)`;
+                    
+                    let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\nFitness: ${fitness.toFixed(4)}\n`;
+                    logText += `\n📊 Balance (átlag eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n`;
+                    logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)\n\n`;
+                    
+                    let cardStats = Object.values(currentTracker.cards).map(c => ({ name: c.name, wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50 }));
+                    cardStats.sort((a, b) => b.wr - a.wr);
+                    
+                    logText += `Legjobban teljesítő kártyák:\n ${cardStats.slice(0, 3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}\n\n`;
+                    logText += `Leggyengébben teljesítő kártyák:\n ${cardStats.slice(-3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}`;
+                    
+                    document.getElementById('output').innerText = logText;
                 }
             }
             evolvePopulation();
@@ -328,7 +364,10 @@
                     c.hp = c.maxHp;
                     c.attacks.forEach((a, i) => {
                         if (genome[c.id].attacks[i]) {
-                            a.dmg = genome[c.id].attacks[i].dmg;
+                            if (genome[c.id].attacks[i].dmg !== undefined) a.dmg = genome[c.id].attacks[i].dmg;
+                            if (genome[c.id].attacks[i].healAmount !== undefined) a.healAmount = genome[c.id].attacks[i].healAmount;
+                            if (genome[c.id].attacks[i].hits !== undefined) a.hits = genome[c.id].attacks[i].hits;
+                            if (genome[c.id].attacks[i].cost !== undefined) a.cost = genome[c.id].attacks[i].cost;
                             a.accuracy = genome[c.id].attacks[i].accuracy;
                         }
                     });
@@ -337,7 +376,7 @@
             }));
 
             let turns = 0;
-            while (!state.gameOver && turns < 150) {
+            while (!state.gameOver && turns < 250) { // Megemeltük 250-re a plafont, hogy biztosan befejeződjön a meccs
                 let pId = state.activePlayer;
                 let oppId = pId === 'p1' ? 'p2' : 'p1';
                 let move = getAIMove(state[pId], state[oppId]);
@@ -346,6 +385,10 @@
                 else { applyMoveHeadless(state, pId, move); if (!state.gameOver) endTurnPhaseHeadless(state, pId); }
                 turns++;
             }
+            
+            // Ha mégis kifutna az időből, gigantikus büntetést kap a turn szorzóra
+            if (turns >= 250) turns += 200; 
+            
             currentTracker.totalTurns += turns;
             currentTracker.totalMatches++;
             if (state.winner) state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
@@ -363,8 +406,19 @@
 
         function finalizeEvolution() {
             document.getElementById('download-btn').style.display = 'inline-block';
-            document.getElementById('status-text').innerText = "Evolúció sikeresen befejeződött!";
-            document.getElementById('output').innerText += `\n\nKattints az "Optimalizált JS Letöltése" gombra, majd másold a kapott fájlt a projekt mappájába!`;
+            document.getElementById('copy-log-btn').style.display = 'inline-block';
+            document.getElementById('status-text').innerText = generationsSinceLastImprovement >= 8 ? "Evolúció leállt: Nincs jelentős javulás az utóbbi generációkban." : "Evolúció sikeresen befejeződött!";
+            document.getElementById('output').innerText += `\n\n✅ Folyamat vége.\nKattints az "Optimalizált JS Letöltése" gombra, majd másold a kapott fájlt a projekt mappájába!`;
+        }
+        
+        function copyLog() {
+            const text = document.getElementById('output').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copy-log-btn');
+                const orig = btn.innerText;
+                btn.innerText = "Másolva!";
+                setTimeout(() => btn.innerText = orig, 2000);
+            });
         }
 
         function downloadJS() {

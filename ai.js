@@ -55,15 +55,18 @@ function getAIMove(aiPlayerState, opponentPlayerState) {
     if (aiCard.hp / aiCard.maxHp < 0.4) { // 40% HP alatt
         const healMove = availableMoves.find(item => item.move.type === 'heal');
         if (healMove) {
-            return healMove.index;
+            // Ne spammelje be a végtelenségig, adjunk esélyt a támadásnak is
+            if (Math.random() < 0.8) return healMove.index;
         }
     }
 
-    // Pajzs használata, ha 2-nél kevesebb van
+    // Pajzs használata, de ne spammelje mindig, hogy tudjon támadni is
     if (aiCard.shields < 2) {
         const shieldMove = availableMoves.find(item => item.move.type === 'shield');
         if (shieldMove) {
-            return shieldMove.index;
+            // Ha nincs pajzsa, 80% eséllyel használja. Ha már van 1, csak 30% eséllyel.
+            let useShieldChance = aiCard.shields === 0 ? 0.8 : 0.3;
+            if (Math.random() < useShieldChance) return shieldMove.index;
         }
     }
 
