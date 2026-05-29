@@ -313,9 +313,11 @@ function setupDraft(teamIds, itemIds) {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
 
-    // Elrejtjük a főcímet a játék kezdetekor, hogy ne zavarjon
-    const mainTitle = document.querySelector('h1');
-    if (mainTitle) mainTitle.style.display = 'none';
+    // Elrejtjük a Google bejelentkezést PvE (Gép elleni) és Test módban
+    const authContainer = document.getElementById('auth-container');
+    if (authContainer) {
+        authContainer.style.display = (isPvEMode || isTestMode) ? 'none' : 'flex';
+    }
 
     const readyBtn = document.getElementById('ready-btn');
     if (readyBtn) {
@@ -860,9 +862,11 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- Módosítva: Most már az AI vs AI (Test Mode) és a PvE győzelmeket is mentjük a ranglistára ---
-        updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
-        updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
+        // --- Csak a valódi PVP meccsek statisztikáit mentjük a ranglistára ---
+        if (!isPvEMode && !isTestMode) {
+            updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
+            updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
+        }
 
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
         document.getElementById('turn-indicator').innerText = "Vége";

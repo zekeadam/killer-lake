@@ -28,19 +28,6 @@ html, body {
     transition: transform 0.1s;
 }
 
-h1 {
-    position: absolute;
-    top: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #e94560;
-    font-size: 2.5rem;
-    text-shadow: 2px 2px #0f3460, -2px -2px #571089;
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace;
-    z-index: 100;
-}
-
 /* --- LOBBY (VÁRÓTEREM) --- */
 #lobby-screen {
     flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
