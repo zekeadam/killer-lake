@@ -42,7 +42,7 @@
             <label for="gen-count" style="font-weight: bold;">Generációk:</label>
             <input type="number" id="gen-count" value="1000" title="Hány alkalommal mutálódjon a populáció">
             <label for="match-count" style="font-weight: bold;">Meccsek:</label>
-            <input type="number" id="match-count" value="30" title="Hány meccset játsszon egy variáció">
+            <input type="number" id="match-count" value="100" title="Hány meccset játsszon egy variáció (több = pontosabb balance)">
 
             <label style="font-weight: bold; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <input type="checkbox" id="use-optimized"> Optimalizált adatokkal indít
@@ -88,7 +88,7 @@
         function updateCalcInfo() {
             const p = parseInt(document.getElementById('pop-size').value) || 100;
             const g = parseInt(document.getElementById('gen-count').value) || 1000;
-            const m = parseInt(document.getElementById('match-count').value) || 30;
+            const m = parseInt(document.getElementById('match-count').value) || 100;
             document.getElementById('calc-info').innerText = `Összes kalkuláció: ${(p * g * m).toLocaleString('hu-HU')} mérkőzés`;
         }
         document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
@@ -293,7 +293,7 @@
             initWorkers();
             popSize = parseInt(document.getElementById('pop-size').value) || 100;
             genCount = parseInt(document.getElementById('gen-count').value) || 1000;
-            matchesPerGenome = parseInt(document.getElementById('match-count').value) || 30;
+            matchesPerGenome = parseInt(document.getElementById('match-count').value) || 100;
             
             currentGen = 0;
             bestOverallFitness = -Infinity;
@@ -353,10 +353,10 @@
             let newGenome = JSON.parse(JSON.stringify(genome));
             for (let cardId in newGenome) {
                 let card = newGenome[cardId];
-                // Támadás mutációk (Sebzés is ugrálhat akár ±20-at)
+                // Finomabb mutációk (±20 helyett ±10 a sebzésnél, hogy ne legyen túl drasztikus a változás)
                 card.attacks.forEach(atk => {
-                    if (Math.random() < 0.2 && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * 40 - 20)));
-                    if (Math.random() < 0.2 && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * 30 - 15)));
+                    if (Math.random() < 0.2 && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * 20 - 10)));
+                    if (Math.random() < 0.2 && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * 20 - 10)));
                     // Találatok (hits) számának mutációja (kisebb eséllyel)
                     if (Math.random() < 0.05 && atk.dmg !== undefined) {
                         atk.hits = atk.hits || 1;
@@ -434,18 +434,31 @@
                             population[genomeIndex].fitness = fitness;
                             
                             if (fitness > bestOverallFitness) {
+                                let improvement = bestOverallFitness === -Infinity ? 0 : fitness - bestOverallFitness;
                                 bestOverallFitness = fitness;
                                 bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
                                 
-                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\nFitness: ${fitness.toFixed(4)}\n`;
-                                logText += `\n📊 Balance (átlag eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n`;
-                                logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)\n\n`;
+                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\n`;
+                                logText += `Fitness: ${fitness.toFixed(4)} (${improvement > 0 ? '+' : ''}${improvement.toFixed(6)})\n`;
+                                logText += `  ├─ Balance Score: ${(-balanceScore).toFixed(4)} (Winrate szórás)\n`;
+                                logText += `  └─ Turn Penalty:  ${(-turnPenalty).toFixed(4)} (Hossz büntetés)\n\n`;
+                                logText += `📊 Átlagos Winrate eltérés: ${(balanceScore * 100).toFixed(2)}%\n`;
+                                logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} kör (Cél: ${optimalTurns})\n\n`;
                                 
-                                let cardStats = Object.values(tracker.cards).map(c => ({ name: c.name, wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50 }));
+                                let cardStats = Object.values(tracker.cards).map(c => ({ 
+                                    name: c.name, 
+                                    wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50,
+                                    wins: c.wins,
+                                    matches: c.matchesPlayed
+                                }));
                                 cardStats.sort((a, b) => b.wr - a.wr);
                                 
-                                logText += `Legjobban teljesítő kártyák:\n ${cardStats.slice(0, 3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}\n\n`;
-                                logText += `Leggyengébben teljesítő kártyák:\n ${cardStats.slice(-3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}`;
+                                logText += `Kártya Statisztikák (Winrate szerint):\n`;
+                                logText += ` WR %  |  W/M    | Név\n`;
+                                logText += `-------|---------|----------------------\n`;
+                                logText += cardStats.map(c => 
+                                    `${c.wr.toFixed(1).padStart(5)}% | ${c.wins.toString().padStart(3)}/${c.matches.toString().padEnd(3)} | ${c.name}`
+                                ).join('\n');
                                 
                                 document.getElementById('output').innerText = logText;
                             }
