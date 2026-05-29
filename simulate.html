@@ -16,11 +16,17 @@
             box-shadow: 0 0 30px rgba(233,69,96,0.3); text-align: center;
             backdrop-filter: blur(10px);
         }
-        .controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
-        input { padding: 12px; border-radius: 5px; border: 2px solid #0f3460; background: #111; color: #fff; font-size: 1.1rem; width: 120px; text-align: center; }
+        .controls { margin: 10px 0 20px 0; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; }
+        input { padding: 10px; border-radius: 5px; border: 2px solid #0f3460; background: #111; color: #fff; font-size: 1rem; text-align: center; }
         input[type="checkbox"] { width: 20px; height: 20px; padding: 0; margin: 0; cursor: pointer; vertical-align: middle; }
         button { padding: 12px 25px; border-radius: 5px; border: none; font-weight: bold; font-size: 1.1rem; background: #e94560; color: #fff; cursor: pointer; transition: 0.2s; }
         button:hover { background: #ff4757; transform: scale(1.05); }
+        .phase-controls { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 20px 0; }
+        .phase-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; border: 1px solid #333; min-width: 280px; text-align: left; }
+        .phase-box h3 { margin: 0 0 10px 0; font-size: 1rem; color: #e94560; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center; }
+        .control-grid label { font-size: 0.85rem; color: #ccc; }
+        .control-grid input { width: 100%; box-sizing: border-box; padding: 6px; font-size: 0.9rem; }
         #download-btn { background: #3498db; }
         #download-btn:hover { background: #2980b9; }
         #copy-log-btn { background: #9b59b6; }
@@ -38,14 +44,32 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <p style="color: #ccc;">A Genetikus Algoritmus automatikusan módosítja a kártyák statisztikáit (HP, DMG, AP, Pontosság), lefuttat több tízezer mérkőzést, és kiszelektálja a legtökéletesebb egyensúlyt adó változatot.</p>
         
-        <div class="controls">
-            <label for="pop-size" style="font-weight: bold;">Variációk:</label>
-            <input type="number" id="pop-size" value="100" title="Kártya variációk száma generációnként">
-            <label for="gen-count" style="font-weight: bold;">Generációk:</label>
-            <input type="number" id="gen-count" value="1000" title="Hány alkalommal mutálódjon a populáció">
-            <label for="match-count" style="font-weight: bold;">Meccsek:</label>
-            <input type="number" id="match-count" value="100" title="Hány meccset játsszon egy variáció (több = pontosabb balance)">
+        <div class="phase-controls">
+            <div class="phase-box">
+                <h3>1. Fázis: Durva keresés</h3>
+                <div class="control-grid">
+                    <label>Variációk:</label>
+                    <input type="number" id="p1-pop-size" value="100" title="Kártya variációk száma">
+                    <label>Generációk:</label>
+                    <input type="number" id="p1-gen-count" value="100" title="Hány mutációs ciklus fusson">
+                    <label>Meccsek:</label>
+                    <input type="number" id="p1-match-count" value="50" title="Meccsek száma variációnként">
+                </div>
+            </div>
+            <div class="phase-box">
+                <h3>2. Fázis: Finomhangolás</h3>
+                <div class="control-grid">
+                    <label>Variációk:</label>
+                    <input type="number" id="p2-pop-size" value="50" title="Kártya variációk száma">
+                    <label>Generációk:</label>
+                    <input type="number" id="p2-gen-count" value="1000" title="Hány mutációs ciklus fusson">
+                    <label>Meccsek:</label>
+                    <input type="number" id="p2-match-count" value="300" title="Meccsek száma variációnként">
+                </div>
+            </div>
+        </div>
 
+        <div class="controls">
             <label style="font-weight: bold; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 <input type="checkbox" id="use-optimized"> Optimalizált adatokkal indít
             </label>
@@ -78,6 +102,9 @@
         // Evolúciós paraméterek
         let popSize, genCount, matchesPerGenome;
         let population = [];
+        let phaseGenLimit = 1000;
+        let currentPhaseGens = 0;
+        let currentPhase = 1;
         let currentGen = 0;
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
@@ -85,6 +112,8 @@
         let generationsSinceLastImprovement = 0;
         let lastSignificantFitness = -Infinity;
         let currentBestLog = "";
+        let settingsSummary = "";
+        let phase1Results = "";
         let milestoneLog = [];
         
         let workers = [];
@@ -96,12 +125,16 @@
         
         // Segédfüggvény a kalkulációk frissítéséhez
         function updateCalcInfo() {
-            const p = parseInt(document.getElementById('pop-size').value) || 100;
-            const g = parseInt(document.getElementById('gen-count').value) || 1000;
-            const m = parseInt(document.getElementById('match-count').value) || 100;
-            document.getElementById('calc-info').innerText = `Összes kalkuláció: ${(p * g * m).toLocaleString('hu-HU')} mérkőzés`;
+            const p1p = parseInt(document.getElementById('p1-pop-size').value) || 0;
+            const p1g = parseInt(document.getElementById('p1-gen-count').value) || 0;
+            const p1m = parseInt(document.getElementById('p1-match-count').value) || 0;
+            const p2p = parseInt(document.getElementById('p2-pop-size').value) || 0;
+            const p2g = parseInt(document.getElementById('p2-gen-count').value) || 0;
+            const p2m = parseInt(document.getElementById('p2-match-count').value) || 0;
+            const total = (p1p * p1g * p1m) + (p2p * p2g * p2m);
+            document.getElementById('calc-info').innerText = `Összes kalkuláció: ${total.toLocaleString('hu-HU')} mérkőzés`;
         }
-        document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
+        document.querySelectorAll('.phase-controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
         window.addEventListener('DOMContentLoaded', updateCalcInfo);
 
         function initChart() {
@@ -361,43 +394,72 @@
         function startEvolution() {
             initWorkers();
             initChart();
-            popSize = parseInt(document.getElementById('pop-size').value) || 100;
-            genCount = parseInt(document.getElementById('gen-count').value) || 1000;
-            matchesPerGenome = parseInt(document.getElementById('match-count').value) || 100;
             
+            const p1p = document.getElementById('p1-pop-size').value;
+            const p1g = document.getElementById('p1-gen-count').value;
+            const p1m = document.getElementById('p1-match-count').value;
+            const p2p = document.getElementById('p2-pop-size').value;
+            const p2g = document.getElementById('p2-gen-count').value;
+            const p2m = document.getElementById('p2-match-count').value;
+
+            settingsSummary = `📊 SZIMULÁCIÓS TERV:\n` +
+                              `  1. Fázis: ${p1p} pop, ${p1g} gen, ${p1m} meccs\n` +
+                              `  2. Fázis: ${p2p} pop, ${p2g} gen, ${p2m} meccs\n` +
+                              `--------------------------------------------------\n\n`;
+
+            currentPhase = 1;
             currentGen = 0;
+            currentBestLog = "";
+            phase1Results = "";
+            milestoneLog = [];
+            
+            startPhase();
+        }
+
+        function startPhase() {
+            const p = currentPhase;
+            popSize = parseInt(document.getElementById(`p${p}-pop-size`).value) || 10;
+            phaseGenLimit = parseInt(document.getElementById(`p${p}-gen-count`).value) || 10;
+            matchesPerGenome = parseInt(document.getElementById(`p${p}-match-count`).value) || 10;
+            
+            currentPhaseGens = 0;
+            updateCalcInfo();
+            
             bestOverallFitness = -Infinity;
             bestOverallBalanceScore = 0;
-            currentBestLog = "";
-            milestoneLog = [];
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
             matchesCompleted = 0;
-            totalMatchesGoal = popSize * genCount * matchesPerGenome;
+            totalMatchesGoal = popSize * phaseGenLimit * matchesPerGenome;
             
-            // Kezdeti populáció létrehozása (alap statok + mutációk)
             population = [];
             for (let i = 0; i < popSize; i++) {
                 let genome = (i === 0) ? createInitialGenome() : mutateGenome(createInitialGenome());
                 population.push({ genome, fitness: 0, stats: null });
             }
             
-            document.getElementById('output').innerText = "Evolúció elindítva (" + numWorkers + " szálon)...";
+            document.getElementById('output').innerText = `${currentPhase}. Fázis elindítva (${numWorkers} szálon)...`;
             runGeneration();
         }
 
         function updateOutput() {
-            let out = currentBestLog || "Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...";
+            document.getElementById('output').innerText = getFullLog();
+        }
+
+        function getFullLog() {
+            let out = settingsSummary;
+            if (phase1Results) out += phase1Results + "\n" + "=".repeat(50) + "\n\n";
+            out += currentBestLog || "Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...";
             if (milestoneLog.length > 0) {
-                out += "\n\n--- Időközi Mérföldkövek (50 generációnként) ---\n";
+                out += "\n\n--- Időközi Mérföldkövek (10 generációnként) ---\n";
                 out += milestoneLog.join('\n');
             }
-            document.getElementById('output').innerText = out;
+            return out;
         }
 
         function createInitialGenome() {
             let genome = {};
-            const useOptimized = document.getElementById('use-optimized').checked;
+            const useOptimized = document.getElementById('use-optimized').checked || currentPhase === 2;
             cardDatabase.forEach(card => {
                 if (!card.type || card.type === 'character') {
                     let maxHp = card.maxHp;
@@ -409,9 +471,13 @@
                         accuracy: a.accuracy || 1.0 
                     }));
 
-                    // Alkalmazzuk az optimalizált értékeket indulásként (ha léteznek)
-                    if (useOptimized && typeof optimizedCardOverrides !== 'undefined' && optimizedCardOverrides[card.id]) {
-                        const override = optimizedCardOverrides[card.id];
+                    let override = null;
+                    if (useOptimized) {
+                        if (typeof window.optimizedCardOverrides !== 'undefined' && window.optimizedCardOverrides[card.id]) override = window.optimizedCardOverrides[card.id];
+                        else if (typeof optimizedCardOverrides !== 'undefined' && optimizedCardOverrides[card.id]) override = optimizedCardOverrides[card.id];
+                    }
+
+                    if (override) {
                         if (override.maxHp !== undefined) maxHp = override.maxHp;
                         if (override.attacks) {
                             attacks.forEach((atk, i) => {
@@ -433,25 +499,30 @@
 
         function mutateGenome(genome) {
             let newGenome = JSON.parse(JSON.stringify(genome));
+            let dmgHealMutateAmount = currentPhase === 1 ? 20 : 10;
+            let dmgHealMutateChance = currentPhase === 1 ? 0.2 : 0.1;
+            let apCostChance = currentPhase === 1 ? 0.3 : 0.1;
+            let accChance = currentPhase === 1 ? 0.1 : 0.05;
+
             for (let cardId in newGenome) {
                 let card = newGenome[cardId];
-                // Finomabb mutációk (±20 helyett ±10 a sebzésnél, hogy ne legyen túl drasztikus a változás)
                 card.attacks.forEach(atk => {
-                    if (Math.random() < 0.2 && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * 20 - 10)));
-                    if (Math.random() < 0.2 && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * 20 - 10)));
-                    // Találatok (hits) számának mutációja (kisebb eséllyel)
+                    if (Math.random() < dmgHealMutateChance && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
+                    if (Math.random() < dmgHealMutateChance && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
                     if (Math.random() < 0.05 && atk.dmg !== undefined) {
                         atk.hits = atk.hits || 1;
                         if (Math.random() < 0.5) atk.hits = Math.min(4, atk.hits + 1);
                         else atk.hits = Math.max(1, atk.hits - 1);
                     }
-                    // AP Költség mutáció - sokkal agresszívabb optimalizálás
-                    if (Math.random() < 0.3 && atk.cost !== undefined) {
+                    if (Math.random() < apCostChance && atk.cost !== undefined) {
                         let change = Math.random() < 0.5 ? 1 : -1;
-                        if (Math.random() < 0.2) change *= 2; // 20% eséllyel 2 AP-t is ugorhat
+                        if (currentPhase === 1 && Math.random() < 0.2) change *= 2;
                         atk.cost = Math.max(0, Math.min(6, atk.cost + change));
                     }
-                    if (Math.random() < 0.1) atk.accuracy = Math.min(1.0, Math.max(0.5, (atk.accuracy || 1.0) + (Math.random() * 0.2 - 0.1)));
+                    if (Math.random() < accChance) {
+                        let accChange = currentPhase === 1 ? 0.2 : 0.1;
+                        atk.accuracy = Math.min(1.0, Math.max(0.5, (atk.accuracy || 1.0) + (Math.random() * accChange - (accChange/2))));
+                    }
                 });
             }
             return newGenome;
@@ -466,8 +537,8 @@
         }
 
         function runGeneration() {
-            if (currentGen >= genCount || generationsSinceLastImprovement >= 100) {
-                finalizeEvolution();
+            if (currentPhaseGens >= phaseGenLimit || generationsSinceLastImprovement >= 100) {
+                handlePhaseEnd();
                 return;
             }
 
@@ -534,7 +605,8 @@
                                 let minWR = Math.min(...cardStats.map(c => c.wr));
                                 let maxWR = Math.max(...cardStats.map(c => c.wr));
 
-                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\n`;
+                                let settingsText = `⚙️ Beállítások: Fázis ${currentPhase} | Pop: ${popSize} | Meccsek: ${matchesPerGenome}\n\n`;
+                                let logText = settingsText + `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\n`;
                                 logText += `Fitness: ${fitness.toFixed(4)} (${improvement > 0 ? '+' : ''}${improvement.toFixed(6)})\n`;
                                 logText += `  ├─ Balance Score: ${(-balanceScore).toFixed(4)} (Winrate eltérés)\n`;
                                 logText += `  └─ Turn Penalty:  ${(-turnPenalty).toFixed(4)} (Hossz büntetés)\n\n`;
@@ -565,9 +637,9 @@
                                 fitnessChart.update('none'); // 'none' a jobb teljesítményért 1000 generációnál
                             }
 
-                            // Mérföldkő mentése 50 generációnként
+                            // Mérföldkő mentése 10 generációnként
                             population.sort((a, b) => b.fitness - a.fitness);
-                            if ((currentGen + 1) % 50 === 0) {
+                            if ((currentPhaseGens + 1) % 10 === 0) {
                                 const best = population[0];
                                 const milestone = `📍 [${currentGen + 1}. Gen] Fitness: ${best.fitness.toFixed(4)} | WR Eltérés: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
                                 milestoneLog.unshift(milestone);
@@ -592,6 +664,25 @@
                 });
             }
         }
+        
+        function handlePhaseEnd() {
+            if (currentPhase === 1) {
+                phase1Results = `✅ 1. FÁZIS VÉGEREDMÉNY:\n` + currentBestLog;
+                currentBestLog = `⏳ 2. Fázis indítása...`;
+                milestoneLog.unshift("📍 --- 2. FÁZIS INDUL ---");
+                updateOutput();
+                
+                // A legjobb eredmény betáplálása a 2. fázishoz
+                window.optimizedCardOverrides = JSON.parse(JSON.stringify(bestOverallGenome));
+                currentPhase = 2;
+                
+                setTimeout(() => {
+                    startPhase();
+                }, 3000);
+            } else {
+                finalizeEvolution();
+            }
+        }
 
         function evolvePopulation() {
             population.sort((a, b) => b.fitness - a.fitness); // Legjobbak elöl
@@ -611,21 +702,25 @@
             
             population = nextPop;
             currentGen++;
+            currentPhaseGens++;
             runGeneration();
         }
 
         function updateUIProgress() {
             const pct = Math.round((matchesCompleted / totalMatchesGoal) * 100);
             
-            document.getElementById('progress').style.width = pct + '%';
-            document.getElementById('progress').innerText = pct + '%';
-            document.getElementById('status-text').innerText = `Generáció: ${currentGen+1}/${genCount} | Kész: ${pct}%`;
+            document.getElementById('progress').style.width = Math.min(100, pct) + '%';
+            document.getElementById('progress').innerText = Math.min(100, pct) + '%';
+            document.getElementById('status-text').innerText = `${currentPhase}. Fázis | Generáció: ${currentPhaseGens+1}/${phaseGenLimit} | Kész: ${Math.min(100, pct)}%`;
         }
 
         function finalizeEvolution() {
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('progress').innerText = '100%';
             document.getElementById('download-btn').style.display = 'inline-block';
             document.getElementById('copy-log-btn').style.display = 'inline-block';
-            document.getElementById('status-text').innerText = generationsSinceLastImprovement >= 100 ? "Evolúció leállt: 100 generáció óta nincs javulás." : "Evolúció sikeresen befejeződött!";
+            let endReason = generationsSinceLastImprovement >= 100 ? " (Stagnálás miatt leállt - 100 gen. óta nincs javulás)" : "";
+            document.getElementById('status-text').innerText = "2. Fázis sikeresen befejeződött!" + endReason;
         }
         
         function copyLog() {
@@ -640,7 +735,8 @@
 
         async function downloadJS() {
             if (!bestOverallGenome) return;
-            let exportStr = "const optimizedCardOverrides = " + JSON.stringify(bestOverallGenome, null, 4) + ";\n";
+            let logComment = "/*\n" + getFullLog() + "\n*/\n\n";
+            let exportStr = logComment + "const optimizedCardOverrides = " + JSON.stringify(bestOverallGenome, null, 4) + ";\n";
             
             // Modern böngészőkben (Chrome, Edge) a File System Access API-val kérhetünk Save As ablakot
             if ('showSaveFilePicker' in window) {
