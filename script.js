@@ -40,6 +40,26 @@ function playSound(type) {
     }
 }
 
+// --- OPTIMALIZÁLT ADATOK BETÖLTÉSE ---
+const optScript = document.createElement('script');
+optScript.src = 'optimized_cards.js';
+optScript.onload = () => {
+    if (typeof optimizedCardOverrides !== 'undefined') {
+        cardDatabase.forEach(card => {
+            const override = optimizedCardOverrides[card.id];
+            if (override) {
+                if (override.maxHp !== undefined) card.maxHp = override.maxHp;
+                if (override.attacks) {
+                    card.attacks.forEach((atk, i) => {
+                        if (override.attacks[i]) Object.assign(atk, override.attacks[i]);
+                    });
+                }
+            }
+        });
+    }
+};
+document.head.appendChild(optScript);
+
 // --- DRAFT VÁLTOZÓK ---
 let myDraftTeam = [];
 let oppDraftTeam = [];

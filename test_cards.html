@@ -184,7 +184,27 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Próbáljuk meg betölteni az optimalizált statisztikákat
+            const optScript = document.createElement('script');
+            optScript.src = 'optimized_cards.js';
+            optScript.onload = () => {
+                if (typeof optimizedCardOverrides !== 'undefined') {
+                    cardDatabase.forEach(card => {
+                        const override = optimizedCardOverrides[card.id];
+                        if (override) {
+                            if (override.maxHp !== undefined) card.maxHp = override.maxHp;
+                            if (override.attacks) card.attacks.forEach((atk, i) => { if (override.attacks[i]) Object.assign(atk, override.attacks[i]); });
+                        }
+                    });
+                }
+                renderGrid();
+            };
+            optScript.onerror = () => renderGrid(); // Ha nincs fájl, akkor is rajzoljon
+            document.head.appendChild(optScript);
+
+            function renderGrid() {
             const cardGrid = document.getElementById('card-grid');
+                cardGrid.innerHTML = ''; // Törlés frissítés esetén
 
             cardDatabase.forEach((card, index) => {
                 const cardEl = document.createElement('div');
@@ -248,7 +268,8 @@
                     const attack = card.attacks[idx];
                     if (attack) setTooltipIfOverflows(li, li.querySelector('.truncate-text'), attack.name);
                 });
-            });
+                });
+            }
         });
     </script>
 </body>
