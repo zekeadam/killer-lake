@@ -12,16 +12,14 @@ let oppNickname = "Játékos 2";
 // --- ÚJ: HANG RENDSZER (Online MP3 streamelés) ---
 // Ide bármilyen weben található hang linkjét berakhatod! (Nem kell letölteni fájlokat)
 const soundURLs = {
-    click: "https://www.myinstants.com/media/sounds/mouse-click-by-ek6_VR0O6PL.mp3",  // MEGSZÓLAL: Bármilyen interaktív gomb megnyomásakor.
-    attack_normal: "https://www.myinstants.com/media/sounds/sword-hit-with-blood.mp3", // MEGSZÓLAL: Sima sebző támadás indításakor.
-    attack_burn: "https://www.myinstants.com/media/sounds/fireball-incoming.mp3",    // MEGSZÓLAL: Tűz (Burn) alapú támadás indításakor (sziszegő hang).
-    attack_paralyze: "https://www.myinstants.com/media/sounds/electricity_us849kj.mp3",// MEGSZÓLAL: Bénító (Paralyze) támadás indításakor (éles, elektromos hang).
-    damage: "https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3",   // MEGSZÓLAL: Ha az ellenfél ténylegesen sérül, betörik egy pajzsa, vagy kör végén megégetik.
-    shield_break: "https://www.myinstants.com/media/sounds/glass-break-sound-effect.mp3", // MEGSZÓLAL: Amikor egy pajzs megsemmisül.
+    damage_normal: "https://www.myinstants.com/media/sounds/sword-hit-with-blood.mp3", // MEGSZÓLAL: Amikor a karakter ténylegesen sebet kap (nem pajzsot).
+    damage_burn: "https://www.myinstants.com/media/sounds/fireball-incoming.mp3",    // MEGSZÓLAL: Égési sérülés elszenvedésekor (találatkor vagy kör végén).
+    damage_paralyze: "https://www.myinstants.com/media/sounds/electricity_us849kj.mp3",// MEGSZÓLAL: Bénító sebzés (villám) becsapódásakor.
+    shield_break: "https://www.myinstants.com/media/sounds/metal-pipe-sound.mp3", // MEGSZÓLAL: Amikor egy pajzs megsemmisül.
     miss: "https://www.myinstants.com/media/sounds/woosh_s21KzKN.mp3",        // MEGSZÓLAL: Amikor a támadás célt téveszt vagy kikerülik.
-    shield: "https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
-    heal: "https://s3.amazonaws.com/freecodecamp/drums/Chord_1.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
-    charge: "https://s3.amazonaws.com/freecodecamp/drums/Chord_2.mp3"       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
+    shield: "https://www.myinstants.com/media/sounds/energy-generator-bounce.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
+    heal: "https://www.myinstants.com/media/sounds/health-potion.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
+    charge: "https://www.myinstants.com/media/sounds/z-charge.mp3"       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
 };
 
 const audioCache = {};
@@ -769,7 +767,6 @@ function executeMove(playerId, attackIndex) {
 
     // Akció lezárása és UI azonnali letiltása
     isActionLocked = true;
-    playSound('click');
     updateUI();
 
     let payload = {
@@ -822,9 +819,6 @@ function applyMove(playerId, data) {
     triggerAnimation(`${playerId}-card`, 'anim-attack', 300);
 
     if (move.type === "dmg") {
-        if (move.effect === "burn") playSound('attack_burn');
-        else if (move.effect === "paralyze") playSound('attack_paralyze');
-        else playSound('attack_normal');
         createProjectile(`${playerId}-card`, `${oppId}-card`, move.effect, move.hits || 1);
     }
 
@@ -874,7 +868,11 @@ function applyMove(playerId, data) {
                 const totalDamage = hitsLanded * dmgPerHit;
                 triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
                 if (shieldsBroken > 0) playSound('shield_break');
-                if (hitsLanded > 0) playSound('damage');
+                if (hitsLanded > 0) {
+                    if (move.effect === "burn") playSound('damage_burn');
+                    else if (move.effect === "paralyze") playSound('damage_paralyze');
+                    else playSound('damage_normal');
+                }
 
                 let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
                 if (hitsLanded > 0) {
@@ -935,11 +933,19 @@ function endTurnPhase(currentPlayerId) {
     const oppId = currentPlayerId === 'p1' ? 'p2' : 'p1';
     
     if (pCard && pCard.burnTurns > 0) {
-        pCard.hp -= 20;
-        pCard.burnTurns--;
-        triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
-        playSound('damage');
-        logMessage(`${pCard.name} égési sérülést szenvedett (20 DMG).`, "crit");
+        if (pCard.shields > 0) {
+            pCard.shields--;
+            pCard.burnTurns--;
+            logMessage(`${pCard.name} pajzsa elnyelte az égést! (1 pajzs elveszett)`, "log-shield");
+            playSound('shield_break');
+            triggerShieldScan(currentPlayerId);
+        } else {
+            pCard.hp -= 20;
+            pCard.burnTurns--;
+            triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
+            playSound('damage_burn');
+            logMessage(`${pCard.name} égési sérülést szenvedett (20 DMG).`, "crit");
+        }
         
         if (pCard.hp <= 0) {
             logMessage(`> ${pCard.name} elégett és elájult (K.O.)!`, "crit");
@@ -983,7 +989,6 @@ function executeItem(playerId, itemIndex) {
     if (gameState.gameOver || myRole !== playerId || gameState.activePlayer !== playerId || isActionLocked || gameState[playerId].itemUsedThisTurn) return;
 
     isActionLocked = true;
-    playSound('click');
     updateUI();
 
     let payload = {
@@ -1013,10 +1018,22 @@ function applyItem(playerId, data) {
     logMessage(`🎴 <b>${cardData.name}</b> kijátszva!`, "log-system");
 
     if (action.type === 'dmg') {
-        oppCard.hp -= action.dmg;
-        logMessage(`> ${cardData.name} sebzett ${action.dmg}-t!`, "log-dmg");
+        let dmgToApply = action.dmg;
+        if (oppCard.shields > 0) {
+            oppCard.shields--;
+            dmgToApply = 0; // A pajzs elnyeli a tárgy sebzését
+            logMessage(`> ${oppCard.name} pajzsa elnyelte a tárgy sebzését!`, "log-shield");
+            playSound('shield_break');
+            triggerShieldScan(oppId);
+        } else {
+            oppCard.hp -= dmgToApply;
+            logMessage(`> ${cardData.name} sebzett ${dmgToApply}-t!`, "log-dmg");
+            if (action.effect === "burn") playSound('damage_burn');
+            else if (action.effect === "paralyze") playSound('damage_paralyze');
+            else playSound('damage_normal');
+        }
+
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
-        playSound('damage');
         if (action.effect === 'paralyze') {
             if (oppCard.shields > 0) {
                 oppCard.shields--;
