@@ -366,7 +366,9 @@ function buildTeamObjects(teamIds) {
         let card = JSON.parse(JSON.stringify(cardData));
         card.hp = card.maxHp;
         card.isParalyzed = false;
+        card.paraImmune = false;
         card.burnTurns = 0;
+        card.burnStacks = 0;
         card.shields = 0;
         card.isMarked = false;
         card.hasCounter = false;
@@ -605,7 +607,14 @@ function updateUI() {
 
         // Flex használata a block helyett, hogy a CSS-ben lévő igazítások működjenek
         document.getElementById(`${player}-para`).style.display = activeCard.isParalyzed ? 'flex' : 'none';
-        document.getElementById(`${player}-burn`).style.display = activeCard.burnTurns > 0 ? 'flex' : 'none';
+        const immuneBadge = ensureBadge(player, 'immune', '🛡️⚡');
+        if (immuneBadge) immuneBadge.style.display = activeCard.paraImmune ? 'flex' : 'none';
+
+        const burnBadge = document.getElementById(`${player}-burn`);
+        if (burnBadge) {
+            burnBadge.style.display = activeCard.burnTurns > 0 ? 'flex' : 'none';
+            burnBadge.innerHTML = activeCard.burnStacks > 1 ? `🔥x${activeCard.burnStacks}` : `🔥`;
+        }
         
         const shieldBadge = document.getElementById(`${player}-shield`);
         if (activeCard.shields > 0) {
@@ -618,7 +627,7 @@ function updateUI() {
     const poisonBadge = ensureBadge(player, 'poison', '☠️');
     if (poisonBadge) {
         poisonBadge.style.display = activeCard.poisonTurns > 0 ? 'flex' : 'none';
-        poisonBadge.innerHTML = activeCard.poisonStacks > 1 ? `☠️${activeCard.poisonStacks}` : `☠️`;
+        poisonBadge.innerHTML = activeCard.poisonStacks > 1 ? `☠️x${activeCard.poisonStacks}` : `☠️`;
     }
     const markBadge = ensureBadge(player, 'mark', '🎯');
     if (markBadge) markBadge.style.display = activeCard.isMarked ? 'flex' : 'none';
@@ -876,6 +885,8 @@ function applyMove(playerId, data) {
     const oppState = gameState[oppId];
     const oppCard = oppState.team[oppState.activeIndex];
 
+    const wasFullHP = (oppCard.hp >= oppCard.maxHp);
+
     if (data.attackIndex === 'charge') {
         attackerState.ap = Math.min(10, attackerState.ap + 1);
         logMessage(`⚡ <b>${attackerCard.name}</b> erőt gyűjt! (Kör kihagyása, extra AP)`, "log-ap");
@@ -951,6 +962,11 @@ function applyMove(playerId, data) {
                 else playSound('damage_normal');
             }
 
+            if (wasFullHP && oppCard.hp <= 0) {
+                oppCard.hp = Math.max(1, Math.floor(oppCard.maxHp * 0.01));
+                logMessage(`> 🛡️ KITARTÁS! One-shot védelem: ${oppCard.name} 1% élettel túlélte!`, "status-effect");
+            }
+
             let critText = data.isCrit ? `<span class="crit">Kritikus Találat!</span> ` : "";
             if (hitsLanded > 0) {
                 logMessage(`> ${critText}${hitsLanded} találat érte a célpontot: ${totalDamage} sebzéssel.`, "log-dmg");
@@ -980,13 +996,18 @@ function applyMove(playerId, data) {
                         triggerShieldScan(oppId);
                     } else {
                         if (move.effect === "paralyze") {
-                            oppCard.isParalyzed = true;
-                            logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                            if (oppCard.paraImmune) {
+                                logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
+                            } else {
+                                oppCard.isParalyzed = true;
+                                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                            }
                         } else if (move.effect === "burn") {
+                            oppCard.burnStacks = Math.min(3, (oppCard.burnStacks || 0) + 1);
                             oppCard.burnTurns = 3;
-                            logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+                            logMessage(`> ${oppCard.name} meggyulladt! (Szint: ${oppCard.burnStacks})`, "crit");
                         } else if (move.effect === "poison") {
-                            oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
+                            oppCard.poisonStacks = Math.min(3, (oppCard.poisonStacks || 0) + 1);
                             oppCard.poisonTurns = 3;
                             logMessage(`> ${oppCard.name} megmérgeződött! (Szint: ${oppCard.poisonStacks})`, "status-effect");
                         } else if (move.effect === "mark") {
@@ -1068,11 +1089,12 @@ function endTurnPhase(currentPlayerId) {
             playSound('shield_break');
             triggerShieldScan(currentPlayerId);
         } else {
-            pCard.hp -= 20;
+            const bDmg = pCard.burnStacks * 20;
+            pCard.hp -= bDmg;
             pCard.burnTurns--;
             triggerAnimation(`${currentPlayerId}-card`, 'anim-damage', 400);
             playSound('damage_burn');
-            logMessage(`${pCard.name} égési sérülést szenvedett (20 DMG).`, "crit");
+            logMessage(`${pCard.name} égési sérülést szenvedett (${bDmg} DMG).`, "crit");
         }
         
         if (pCard.hp <= 0) {
@@ -1087,6 +1109,8 @@ function endTurnPhase(currentPlayerId) {
             logMessage(`> ${pCard.name} tüze kialudt.`);
         }
         
+        if (pCard.burnTurns === 0) pCard.burnStacks = 0;
+        
         if (checkWin()) return;
     }
 
@@ -1095,10 +1119,13 @@ function endTurnPhase(currentPlayerId) {
 
     if (nextPCard && nextPCard.isParalyzed) {
         nextPCard.isParalyzed = false;
+        nextPCard.paraImmune = true; // Védettséget kap a következő körig
         logMessage(`-- ${nextPCard.name} bénult! Kimarad a köre (Nem kap AP-t). --`, "status-effect");
         updateUI();
         setTimeout(() => endTurnPhase(oppId), 1500); 
         return;
+    } else if (nextPCard) {
+        nextPCard.paraImmune = false; // Ha rendes köre van, lejárt a védettség
     }
 
     gameState.activePlayer = oppId;
@@ -1146,6 +1173,8 @@ function applyItem(playerId, data) {
     const oppCard = oppState.team[oppState.activeIndex];
     const myCard = pState.team[pState.activeIndex];
 
+    const wasFullHP = (oppCard.hp >= oppCard.maxHp);
+
     logMessage(`🎴 <b>${cardData.name}</b> kijátszva!`, "log-system");
 
     if (action.type === 'dmg') {
@@ -1172,8 +1201,12 @@ function applyItem(playerId, data) {
                 playSound('shield_break');
                 triggerShieldScan(oppId);
             } else {
-                oppCard.isParalyzed = true;
-                logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                if (oppCard.paraImmune) {
+                    logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
+                } else {
+                    oppCard.isParalyzed = true;
+                    logMessage(`> ${oppCard.name} megbénult!`, "status-effect");
+                }
             }
         }
     } else if (action.type === 'heal') {
@@ -1195,8 +1228,9 @@ function applyItem(playerId, data) {
                 playSound('shield_break');
                 triggerShieldScan(oppId);
             } else {
+                oppCard.burnStacks = Math.min(3, (oppCard.burnStacks || 0) + 1);
                 oppCard.burnTurns = 3;
-                logMessage(`> ${oppCard.name} meggyulladt!`, "crit");
+                logMessage(`> ${oppCard.name} meggyulladt! (Szint: ${oppCard.burnStacks})`, "crit");
             }
         }
     } else if (action.type === 'ap_drain') {
@@ -1205,6 +1239,11 @@ function applyItem(playerId, data) {
     }
 
     pState.items.splice(data.itemIndex, 1);
+
+    if (wasFullHP && oppCard.hp <= 0) {
+        oppCard.hp = Math.max(1, Math.floor(oppCard.maxHp * 0.01));
+        logMessage(`> 🛡️ KITARTÁS! ${oppCard.name} túlélte a tárgyat 1% élettel!`, "status-effect");
+    }
     
     if (oppCard.hp <= 0) {
         logMessage(`> ${oppCard.name} elájult az itemtől (K.O.)!`, "crit");

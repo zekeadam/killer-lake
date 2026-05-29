@@ -245,6 +245,7 @@
                         let card = JSON.parse(JSON.stringify(cardData));
                         card.hp = card.maxHp;
                         card.isParalyzed = false;
+                        card.paraImmune = false;
                         card.burnTurns = 0;
                         card.shields = 0;
                         card.isMarked = false;
@@ -266,6 +267,8 @@
                     const oppId = pId === 'p1' ? 'p2' : 'p1';
                     const pState = state[pId]; const oppState = state[oppId];
                     const pCard = pState.team[pState.activeIndex]; const oppCard = oppState.team[oppState.activeIndex];
+
+                    const wasFullHP = (oppCard.hp >= oppCard.maxHp);
 
                     if (moveIdx === 'charge') { pState.ap = Math.min(10, pState.ap + 1); return; }
 
@@ -300,6 +303,10 @@
                             if (pCard.hp <= 0) pState.activeIndex++; // Támadó azonnali K.O.
                         }
                         
+                        if (wasFullHP && oppCard.hp <= 0) {
+                            oppCard.hp = Math.max(1, Math.floor(oppCard.maxHp * 0.01));
+                        }
+
                         let totalDamage = hitsLanded * dmgPerHit;
                         if (move.effect === 'lifesteal' && totalDamage > 0) {
                             pCard.hp = Math.min(pCard.maxHp, pCard.hp + Math.floor(totalDamage * 0.5));
@@ -309,7 +316,9 @@
                         else if (move.effect === 'paralyze' || move.effect === 'burn' || move.effect === 'poison' || move.effect === 'mark') {
                             if (oppCard.shields > 0) oppCard.shields--;
                             else {
-                                if (move.effect === 'paralyze') oppCard.isParalyzed = true;
+                                if (move.effect === 'paralyze') {
+                                    if (!oppCard.paraImmune) oppCard.isParalyzed = true;
+                                }
                                 if (move.effect === 'burn') oppCard.burnTurns = 3;
                                 if (move.effect === 'poison') {
                                     oppCard.poisonStacks = (oppCard.poisonStacks || 0) + 1;
@@ -356,9 +365,12 @@
                     const nextPState = state[oppId]; const nextPCard = nextPState.team[nextPState.activeIndex];
                     if (nextPCard && nextPCard.isParalyzed) {
                         nextPCard.isParalyzed = false;
+                        nextPCard.paraImmune = true;
                         endTurnPhaseHeadless(state, oppId);
                         return;
                     }
+                    if (nextPCard) nextPCard.paraImmune = false;
+
                     state.activePlayer = oppId;
                     nextPState.ap = Math.min(10, nextPState.ap + 1);
                     nextPState.itemUsedThisTurn = false;

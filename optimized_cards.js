@@ -7,151 +7,150 @@
 ✅ 1. FÁZIS VÉGEREDMÉNY:
 ⚙️ Beállítások: Fázis 1 | Pop: 100 | Meccsek: 50
 
-🏆 Új legjobb variáció megtalálva (Generáció: 79)!
-Fitness: -0.0713 (+0.012547)
-  ├─ Balance Score: -0.0620 (Winrate eltérés)
-  └─ Turn Penalty:  -0.0092 (Hossz büntetés)
+🏆 Új legjobb variáció megtalálva (Generáció: 82)!
+Fitness: -0.0821 (+0.002252)
+  ├─ Balance Score: -0.0813 (Winrate eltérés)
+  └─ Turn Penalty:  -0.0008 (Hossz büntetés)
 
-📊 Átlagos Winrate eltérés: 6.20%
-📉 Winrate tartomány: 33.3% - 64.7% (Diff: 31.37%)
-⏱️ Átlagos meccs hossz: 35.7 kör (Cél: 35)
-🔄 Összes lejátszott meccs: 393 620
+📊 Átlagos Winrate eltérés: 8.13%
+📉 Winrate tartomány: 20.0% - 77.8% (Diff: 57.78%)
+⏱️ Átlagos meccs hossz: 35.2 kör (Cél: 35)
+🔄 Összes lejátszott meccs: 409 430
 
 Kártya Statisztikák (Winrate szerint):
  WR %  |  W/M    | Név (ID)
 -------|---------|----------------------
- 64.7% |  11/17  | Toyota Verso (card_24)
- 61.1% |  11/18  | Gólya (card_13)
- 61.1% |  11/18  | Orgia A Dézsában (card_22)
- 61.1% |  11/18  | Mészáros (card_32)
- 58.8% |  10/17  | Vízi Bence (card_21)
- 58.3% |   7/12  | Barna Medve (card_10)
- 57.1% |   4/7   | Kedves Gergő (card_36)
- 56.3% |   9/16  | Éjszakai Vadász (card_8)
- 56.3% |   9/16  | Bromance (card_25)
- 55.6% |   5/9   | Tudó Villám (card_6)
- 54.5% |   6/11  | Chin-Gaze (card_1)
- 54.5% |   6/11  | Thievery Corp (card_7)
- 54.5% |   6/11  | Szivárvány (card_23)
- 53.8% |   7/13  | Lángoló Tok (card_0)
- 50.0% |  11/22  | Vakító Ordítás (card_5)
- 50.0% |   8/16  | Gábori Trükkmester (card_9)
- 50.0% |   9/18  | Nicili Fusion (card_17)
- 50.0% |   7/14  | Náthás Kutató (card_29)
- 50.0% |   4/8   | István (card_30)
- 50.0% |   9/18  | Csere Géza (card_35)
- 50.0% |   8/16  | Elfogy a Benzin (card_37)
- 47.4% |   9/19  | Gengszter Niki (card_34)
- 47.1% |   8/17  | Tüzes Cserebogár VMAX (card_19)
- 46.2% |   6/13  | Cskiló Fény-Világ (card_4)
- 46.2% |   6/13  | Pók Benó (card_26)
- 45.5% |   5/11  | All-Covering Pollen (card_33)
- 42.3% |  11/26  | Bénó Ragu (card_27)
- 41.7% |   5/12  | Sárkány Cili (card_31)
- 40.0% |   6/15  | Chin-Gaze (card_2)
- 38.9% |   7/18  | Alkoholizmus A Dézsában (card_20)
- 38.5% |   5/13  | Ai Doll (card_28)
- 36.4% |   8/22  | Üvöltő Villám (card_3)
- 33.3% |   5/15  | Gábori Pagoda (card_18)
+ 77.8% |  14/18  | Vakító Ordítás (card_5)
+ 69.2% |   9/13  | Toyota Verso (card_24)
+ 68.8% |  11/16  | Kedves Gergő (card_36)
+ 64.3% |   9/14  | Tüzes Cserebogár VMAX (card_19)
+ 64.3% |   9/14  | Pók Benó (card_26)
+ 63.6% |  14/22  | Elfogy a Benzin (card_37)
+ 60.0% |   6/10  | Bromance (card_25)
+ 56.3% |   9/16  | Mészáros (card_32)
+ 55.6% |  10/18  | Cskiló Fény-Világ (card_4)
+ 54.5% |   6/11  | Sárkány Cili (card_31)
+ 53.8% |   7/13  | István (card_30)
+ 50.0% |   2/4   | Éjszakai Vadász (card_8)
+ 50.0% |   7/14  | Gábori Trükkmester (card_9)
+ 50.0% |   6/12  | Gábori Pagoda (card_18)
+ 50.0% |   6/12  | Alkoholizmus A Dézsában (card_20)
+ 50.0% |   9/18  | Orgia A Dézsában (card_22)
+ 50.0% |   9/18  | Bénó Ragu (card_27)
+ 50.0% |   8/16  | Ai Doll (card_28)
+ 50.0% |   6/12  | Náthás Kutató (card_29)
+ 47.8% |  11/23  | Tudó Villám (card_6)
+ 47.4% |   9/19  | Barna Medve (card_10)
+ 46.7% |   7/15  | All-Covering Pollen (card_33)
+ 45.5% |   5/11  | Gólya (card_13)
+ 45.5% |  10/22  | Vízi Bence (card_21)
+ 43.8% |   7/16  | Thievery Corp (card_7)
+ 43.8% |   7/16  | Nicili Fusion (card_17)
+ 42.9% |   9/21  | Lángoló Tok (card_0)
+ 41.7% |   5/12  | Chin-Gaze (card_1)
+ 41.7% |   5/12  | Szivárvány (card_23)
+ 40.0% |   4/10  | Csere Géza (card_35)
+ 35.7% |   5/14  | Chin-Gaze (card_2)
+ 27.8% |   5/18  | Üvöltő Villám (card_3)
+ 20.0% |   4/20  | Gengszter Niki (card_34)
 ==================================================
 
 ⚙️ Beállítások: Fázis 2 | Pop: 100 | Meccsek: 500
 
-🏆 Új legjobb variáció megtalálva (Generáció: 366)!
-Fitness: -0.0280 (+0.001046)
-  ├─ Balance Score: -0.0278 (Winrate eltérés)
-  └─ Turn Penalty:  -0.0002 (Hossz büntetés)
+🏆 Új legjobb variáció megtalálva (Generáció: 359)!
+Fitness: -0.0293 (+0.006092)
+  ├─ Balance Score: -0.0290 (Winrate eltérés)
+  └─ Turn Penalty:  -0.0003 (Hossz büntetés)
 
-📊 Átlagos Winrate eltérés: 2.78%
-📉 Winrate tartomány: 41.1% - 57.6% (Diff: 16.44%)
-⏱️ Átlagos meccs hossz: 35.1 kör (Cél: 35)
-🔄 Összes lejátszott meccs: 13 299 140
+📊 Átlagos Winrate eltérés: 2.90%
+📉 Winrate tartomány: 39.4% - 60.2% (Diff: 20.72%)
+⏱️ Átlagos meccs hossz: 34.9 kör (Cél: 35)
+🔄 Összes lejátszott meccs: 12 948 340
 
 Kártya Statisztikák (Winrate szerint):
  WR %  |  W/M    | Név (ID)
 -------|---------|----------------------
- 57.6% |  76/132 | Bénó Ragu (card_27)
- 55.6% |  74/133 | Pók Benó (card_26)
- 54.9% |  89/162 | Csere Géza (card_35)
- 54.0% |  87/161 | Gábori Pagoda (card_18)
- 53.6% |  82/153 | István (card_30)
- 53.5% |  83/155 | Tüzes Cserebogár VMAX (card_19)
- 53.3% |  89/167 | Vízi Bence (card_21)
- 53.3% |  81/152 | Kedves Gergő (card_36)
- 53.0% |  88/166 | Mészáros (card_32)
- 52.3% |  81/155 | Alkoholizmus A Dézsában (card_20)
- 51.4% |  72/140 | Ai Doll (card_28)
- 51.1% |  68/133 | Sárkány Cili (card_31)
- 50.9% |  82/161 | Üvöltő Villám (card_3)
- 50.6% |  79/156 | Cskiló Fény-Világ (card_4)
- 50.3% |  82/163 | Bromance (card_25)
- 50.0% |  77/154 | Lángoló Tok (card_0)
- 49.7% |  83/167 | Szivárvány (card_23)
- 49.3% |  75/152 | Éjszakai Vadász (card_8)
- 49.3% |  73/148 | Náthás Kutató (card_29)
- 49.3% |  68/138 | Thievery Corp (card_7)
- 48.9% |  65/133 | Gengszter Niki (card_34)
- 48.2% |  81/168 | Tudó Villám (card_6)
- 47.9% |  68/142 | Orgia A Dézsában (card_22)
- 47.7% |  84/176 | Elfogy a Benzin (card_37)
- 47.4% |  65/137 | Toyota Verso (card_24)
- 47.3% |  71/150 | Gábori Trükkmester (card_9)
- 47.0% |  78/166 | Nicili Fusion (card_17)
- 46.8% |  66/141 | All-Covering Pollen (card_33)
- 46.5% |  73/157 | Chin-Gaze (card_2)
- 46.5% |  73/157 | Barna Medve (card_10)
- 46.2% |  67/145 | Chin-Gaze (card_1)
- 44.6% |  62/139 | Vakító Ordítás (card_5)
- 41.1% |  58/141 | Gólya (card_13)
+ 60.2% |  77/128 | Orgia A Dézsában (card_22)
+ 56.3% |  80/142 | Szivárvány (card_23)
+ 55.0% |  83/151 | Sárkány Cili (card_31)
+ 54.3% |  75/138 | Cskiló Fény-Világ (card_4)
+ 53.8% |  78/145 | Éjszakai Vadász (card_8)
+ 53.4% |  87/163 | Gábori Pagoda (card_18)
+ 53.3% |  81/152 | Elfogy a Benzin (card_37)
+ 52.7% |  97/184 | Chin-Gaze (card_1)
+ 52.7% |  78/148 | Barna Medve (card_10)
+ 52.2% |  82/157 | Gólya (card_13)
+ 51.6% |  80/155 | Nicili Fusion (card_17)
+ 51.5% |  86/167 | Chin-Gaze (card_2)
+ 51.0% |  79/155 | Ai Doll (card_28)
+ 50.3% |  81/161 | Vízi Bence (card_21)
+ 50.0% |  60/120 | Thievery Corp (card_7)
+ 50.0% |  65/130 | Náthás Kutató (card_29)
+ 50.0% |  76/152 | Mészáros (card_32)
+ 49.7% |  90/181 | Alkoholizmus A Dézsában (card_20)
+ 49.7% |  75/151 | István (card_30)
+ 49.4% |  78/158 | Vakító Ordítás (card_5)
+ 49.3% |  69/140 | Toyota Verso (card_24)
+ 48.9% |  86/176 | Tudó Villám (card_6)
+ 48.6% |  72/148 | Lángoló Tok (card_0)
+ 48.4% |  75/155 | Gábori Trükkmester (card_9)
+ 48.1% |  65/135 | Bénó Ragu (card_27)
+ 47.7% |  72/151 | Üvöltő Villám (card_3)
+ 47.3% |  71/150 | Tüzes Cserebogár VMAX (card_19)
+ 47.2% |  68/144 | Gengszter Niki (card_34)
+ 47.2% |  75/159 | Csere Géza (card_35)
+ 46.6% |  75/161 | Bromance (card_25)
+ 43.2% |  67/155 | All-Covering Pollen (card_33)
+ 41.8% |  61/146 | Pók Benó (card_26)
+ 39.4% |  56/142 | Kedves Gergő (card_36)
 
 --- Időközi Mérföldkövek (10 generációnként) ---
-📍 [460. Gen] Fitness (Gen/Max): -0.0345 / -0.0280 | WR: 3.36% | Körök: 35.2
-📍 [450. Gen] Fitness (Gen/Max): -0.0382 / -0.0280 | WR: 3.79% | Körök: 35.1
-📍 [440. Gen] Fitness (Gen/Max): -0.0367 / -0.0280 | WR: 3.66% | Körök: 34.9
-📍 [430. Gen] Fitness (Gen/Max): -0.0425 / -0.0280 | WR: 4.25% | Körök: 35.0
-📍 [420. Gen] Fitness (Gen/Max): -0.0345 / -0.0280 | WR: 3.44% | Körök: 34.9
-📍 [410. Gen] Fitness (Gen/Max): -0.0397 / -0.0280 | WR: 3.95% | Körök: 35.1
-📍 [400. Gen] Fitness (Gen/Max): -0.0388 / -0.0280 | WR: 3.85% | Körök: 35.1
-📍 [390. Gen] Fitness (Gen/Max): -0.0404 / -0.0280 | WR: 3.89% | Körök: 35.3
-📍 [380. Gen] Fitness (Gen/Max): -0.0389 / -0.0280 | WR: 3.66% | Körök: 35.3
-📍 [370. Gen] Fitness (Gen/Max): -0.0380 / -0.0280 | WR: 3.78% | Körök: 35.1
-📍 [360. Gen] Fitness (Gen/Max): -0.0361 / -0.0290 | WR: 3.55% | Körök: 34.8
-📍 [350. Gen] Fitness (Gen/Max): -0.0383 / -0.0290 | WR: 3.83% | Körök: 35.0
-📍 [340. Gen] Fitness (Gen/Max): -0.0374 / -0.0290 | WR: 3.68% | Körök: 35.2
-📍 [330. Gen] Fitness (Gen/Max): -0.0420 / -0.0290 | WR: 3.99% | Körök: 35.3
-📍 [320. Gen] Fitness (Gen/Max): -0.0366 / -0.0290 | WR: 3.64% | Körök: 35.1
-📍 [310. Gen] Fitness (Gen/Max): -0.0381 / -0.0290 | WR: 3.78% | Körök: 34.9
-📍 [300. Gen] Fitness (Gen/Max): -0.0430 / -0.0290 | WR: 4.30% | Körök: 35.0
-⭐ [290. Gen] Fitness (Gen/Max): -0.0290 / -0.0290 | WR: 2.90% | Körök: 35.0
-📍 [280. Gen] Fitness (Gen/Max): -0.0393 / -0.0334 | WR: 3.92% | Körök: 35.0
-📍 [270. Gen] Fitness (Gen/Max): -0.0416 / -0.0334 | WR: 3.88% | Körök: 34.6
-📍 [260. Gen] Fitness (Gen/Max): -0.0435 / -0.0334 | WR: 4.31% | Körök: 35.1
-📍 [250. Gen] Fitness (Gen/Max): -0.0469 / -0.0351 | WR: 4.58% | Körök: 35.2
-📍 [240. Gen] Fitness (Gen/Max): -0.0385 / -0.0351 | WR: 3.85% | Körök: 35.0
-📍 [230. Gen] Fitness (Gen/Max): -0.0489 / -0.0385 | WR: 4.87% | Körök: 35.1
-📍 [220. Gen] Fitness (Gen/Max): -0.0443 / -0.0385 | WR: 4.40% | Körök: 35.1
-📍 [210. Gen] Fitness (Gen/Max): -0.0420 / -0.0402 | WR: 4.05% | Körök: 34.7
-📍 [200. Gen] Fitness (Gen/Max): -0.0463 / -0.0402 | WR: 4.57% | Körök: 35.2
-📍 [190. Gen] Fitness (Gen/Max): -0.0508 / -0.0402 | WR: 4.73% | Körök: 34.6
-📍 [180. Gen] Fitness (Gen/Max): -0.0441 / -0.0402 | WR: 4.35% | Körök: 34.8
-📍 [170. Gen] Fitness (Gen/Max): -0.0436 / -0.0410 | WR: 4.36% | Körök: 35.0
-📍 [160. Gen] Fitness (Gen/Max): -0.0470 / -0.0410 | WR: 4.61% | Körök: 34.8
-📍 [150. Gen] Fitness (Gen/Max): -0.0466 / -0.0428 | WR: 4.55% | Körök: 35.2
-📍 [140. Gen] Fitness (Gen/Max): -0.0534 / -0.0439 | WR: 5.34% | Körök: 35.0
-📍 [130. Gen] Fitness (Gen/Max): -0.0514 / -0.0439 | WR: 5.03% | Körök: 34.8
-📍 [120. Gen] Fitness (Gen/Max): -0.0586 / -0.0499 | WR: 5.84% | Körök: 34.9
-📍 [110. Gen] Fitness (Gen/Max): -0.0581 / -0.0508 | WR: 5.57% | Körök: 34.7
+📍 [450. Gen] Fitness (Gen/Max): -0.0419 / -0.0293 | WR: 4.10% | Körök: 34.8
+📍 [440. Gen] Fitness (Gen/Max): -0.0371 / -0.0293 | WR: 3.70% | Körök: 35.1
+📍 [430. Gen] Fitness (Gen/Max): -0.0387 / -0.0293 | WR: 3.80% | Körök: 35.2
+📍 [420. Gen] Fitness (Gen/Max): -0.0420 / -0.0293 | WR: 4.16% | Körök: 34.9
+📍 [410. Gen] Fitness (Gen/Max): -0.0451 / -0.0293 | WR: 4.00% | Körök: 35.5
+📍 [400. Gen] Fitness (Gen/Max): -0.0413 / -0.0293 | WR: 4.13% | Körök: 35.0
+📍 [390. Gen] Fitness (Gen/Max): -0.0413 / -0.0293 | WR: 4.10% | Körök: 35.1
+📍 [380. Gen] Fitness (Gen/Max): -0.0421 / -0.0293 | WR: 4.05% | Körök: 35.3
+📍 [370. Gen] Fitness (Gen/Max): -0.0391 / -0.0293 | WR: 3.74% | Körök: 34.7
+📍 [360. Gen] Fitness (Gen/Max): -0.0422 / -0.0293 | WR: 4.18% | Körök: 35.1
+📍 [350. Gen] Fitness (Gen/Max): -0.0453 / -0.0354 | WR: 4.51% | Körök: 35.1
+📍 [340. Gen] Fitness (Gen/Max): -0.0429 / -0.0354 | WR: 3.94% | Körök: 34.6
+📍 [330. Gen] Fitness (Gen/Max): -0.0440 / -0.0354 | WR: 3.58% | Körök: 34.4
+📍 [320. Gen] Fitness (Gen/Max): -0.0454 / -0.0354 | WR: 4.51% | Körök: 34.9
+📍 [310. Gen] Fitness (Gen/Max): -0.0479 / -0.0354 | WR: 4.60% | Körök: 35.3
+📍 [300. Gen] Fitness (Gen/Max): -0.0462 / -0.0354 | WR: 4.58% | Körök: 34.8
+📍 [290. Gen] Fitness (Gen/Max): -0.0489 / -0.0399 | WR: 4.87% | Körök: 34.9
+📍 [280. Gen] Fitness (Gen/Max): -0.0439 / -0.0399 | WR: 4.04% | Körök: 35.4
+📍 [270. Gen] Fitness (Gen/Max): -0.0424 / -0.0399 | WR: 4.23% | Körök: 34.9
+📍 [260. Gen] Fitness (Gen/Max): -0.0463 / -0.0418 | WR: 4.62% | Körök: 35.1
+📍 [250. Gen] Fitness (Gen/Max): -0.0460 / -0.0419 | WR: 4.59% | Körök: 34.9
+⭐ [240. Gen] Fitness (Gen/Max): -0.0430 / -0.0430 | WR: 4.30% | Körök: 35.0
+📍 [230. Gen] Fitness (Gen/Max): -0.0463 / -0.0438 | WR: 4.51% | Körök: 35.2
+📍 [220. Gen] Fitness (Gen/Max): -0.0539 / -0.0443 | WR: 5.12% | Körök: 35.4
+📍 [210. Gen] Fitness (Gen/Max): -0.0506 / -0.0448 | WR: 4.78% | Körök: 35.4
+📍 [200. Gen] Fitness (Gen/Max): -0.0529 / -0.0478 | WR: 5.28% | Körök: 35.1
+📍 [190. Gen] Fitness (Gen/Max): -0.0562 / -0.0500 | WR: 5.60% | Körök: 35.1
+📍 [180. Gen] Fitness (Gen/Max): -0.0544 / -0.0500 | WR: 5.27% | Körök: 35.3
+📍 [170. Gen] Fitness (Gen/Max): -0.0571 / -0.0500 | WR: 5.71% | Körök: 35.0
+📍 [160. Gen] Fitness (Gen/Max): -0.0640 / -0.0500 | WR: 6.35% | Körök: 34.9
+📍 [150. Gen] Fitness (Gen/Max): -0.0609 / -0.0511 | WR: 6.08% | Körök: 35.0
+📍 [140. Gen] Fitness (Gen/Max): -0.0639 / -0.0583 | WR: 6.38% | Körök: 35.1
+📍 [130. Gen] Fitness (Gen/Max): -0.0620 / -0.0601 | WR: 5.95% | Körök: 34.6
+📍 [120. Gen] Fitness (Gen/Max): -0.0672 / -0.0601 | WR: 6.68% | Körök: 34.8
+⭐ [110. Gen] Fitness (Gen/Max): -0.0673 / -0.0673 | WR: 6.73% | Körök: 35.0
 📍 --- 2. FÁZIS INDUL ---
-📍 [100. Gen] Fitness (Gen/Max): -0.0962 / -0.0713 | WR: 9.54% | Körök: 34.8
-📍 [90. Gen] Fitness (Gen/Max): -0.0921 / -0.0713 | WR: 9.16% | Körök: 34.8
-📍 [80. Gen] Fitness (Gen/Max): -0.0851 / -0.0713 | WR: 8.43% | Körök: 35.2
-📍 [70. Gen] Fitness (Gen/Max): -0.0916 / -0.0848 | WR: 9.16% | Körök: 35.0
-⭐ [60. Gen] Fitness (Gen/Max): -0.0848 / -0.0848 | WR: 8.47% | Körök: 34.9
-⭐ [50. Gen] Fitness (Gen/Max): -0.0963 / -0.0963 | WR: 7.94% | Körök: 34.1
-📍 [40. Gen] Fitness (Gen/Max): -0.1609 / -0.1262 | WR: 13.40% | Körök: 36.2
-⭐ [30. Gen] Fitness (Gen/Max): -2.6432 / -2.6432 | WR: 8.94% | Körök: 46.3
-📍 [20. Gen] Fitness (Gen/Max): -10.6474 / -10.2909 | WR: 12.26% | Körök: 57.9
-⭐ [10. Gen] Fitness (Gen/Max): -44.0816 / -44.0816 | WR: 12.69% | Körök: 81.9
+📍 [100. Gen] Fitness (Gen/Max): -0.1037 / -0.0821 | WR: 8.89% | Körök: 34.1
+📍 [90. Gen] Fitness (Gen/Max): -0.0930 / -0.0821 | WR: 9.30% | Körök: 35.0
+📍 [80. Gen] Fitness (Gen/Max): -0.0991 / -0.0843 | WR: 9.90% | Körök: 34.9
+📍 [70. Gen] Fitness (Gen/Max): -0.1151 / -0.0843 | WR: 10.29% | Körök: 35.8
+📍 [60. Gen] Fitness (Gen/Max): -0.0969 / -0.0843 | WR: 9.15% | Körök: 35.5
+📍 [50. Gen] Fitness (Gen/Max): -0.1051 / -0.0879 | WR: 10.43% | Körök: 35.2
+📍 [40. Gen] Fitness (Gen/Max): -0.0991 / -0.0879 | WR: 9.87% | Körök: 35.1
+📍 [30. Gen] Fitness (Gen/Max): -0.0917 / -0.0896 | WR: 9.17% | Körök: 35.0
+📍 [20. Gen] Fitness (Gen/Max): -0.1121 / -0.0896 | WR: 10.54% | Körök: 34.4
+📍 [10. Gen] Fitness (Gen/Max): -0.1154 / -0.0978 | WR: 10.77% | Körök: 35.6
 */
 
 const optimizedCardOverrides = {
@@ -159,26 +158,26 @@ const optimizedCardOverrides = {
         "maxHp": 90,
         "attacks": [
             {
-                "dmg": 13,
+                "dmg": 32,
                 "hits": 2,
-                "cost": 2,
-                "accuracy": 0.884161399808813
+                "cost": 4,
+                "accuracy": 0.9205417973683004
             },
             {
-                "dmg": 25,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.8834982104540495
-            },
-            {
-                "dmg": 68,
-                "hits": 4,
+                "dmg": 75,
+                "hits": 1,
                 "cost": 0,
-                "accuracy": 0.9825111604843508
+                "accuracy": 0.9107294813310691
             },
             {
-                "cost": 1,
-                "accuracy": 0.9868815244973682
+                "dmg": 17,
+                "hits": 1,
+                "cost": 4,
+                "accuracy": 0.5974094249842683
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.9169999881473927
             }
         ]
     },
@@ -186,25 +185,25 @@ const optimizedCardOverrides = {
         "maxHp": 70,
         "attacks": [
             {
-                "dmg": 25,
-                "hits": 3,
-                "cost": 0,
-                "accuracy": 0.6798207699755434
-            },
-            {
-                "dmg": 29,
-                "hits": 3,
-                "cost": 1,
-                "accuracy": 0.8315046697573498
-            },
-            {
-                "healAmount": 56,
+                "dmg": 21,
+                "hits": 2,
                 "cost": 5,
-                "accuracy": 0.7146480038719776
+                "accuracy": 0.892001711569727
             },
             {
+                "dmg": 14,
+                "hits": 1,
+                "cost": 0,
+                "accuracy": 0.9010041651766516
+            },
+            {
+                "healAmount": 47,
                 "cost": 6,
-                "accuracy": 0.7898980732390775
+                "accuracy": 0.930918113120062
+            },
+            {
+                "cost": 5,
+                "accuracy": 0.956367146149008
             }
         ]
     },
@@ -212,25 +211,25 @@ const optimizedCardOverrides = {
         "maxHp": 70,
         "attacks": [
             {
-                "cost": 5,
-                "accuracy": 0.7839846094034054
-            },
-            {
-                "dmg": 104,
-                "hits": 2,
-                "cost": 2,
-                "accuracy": 0.5166580551485125
+                "cost": 6,
+                "accuracy": 0.8873138655334541
             },
             {
                 "dmg": 35,
-                "hits": 3,
-                "cost": 1,
-                "accuracy": 0.82753972882698
+                "hits": 1,
+                "cost": 6,
+                "accuracy": 0.6933232220569457
             },
             {
-                "healAmount": 35,
-                "cost": 5,
-                "accuracy": 0.9901918706143418
+                "dmg": 11,
+                "hits": 1,
+                "cost": 0,
+                "accuracy": 0.8716724605350364
+            },
+            {
+                "healAmount": 19,
+                "cost": 4,
+                "accuracy": 0.960536511554814
             }
         ]
     },
@@ -238,27 +237,27 @@ const optimizedCardOverrides = {
         "maxHp": 120,
         "attacks": [
             {
-                "dmg": 70,
-                "hits": 4,
+                "dmg": 58,
+                "hits": 2,
                 "cost": 1,
-                "accuracy": 0.8822121882308709
+                "accuracy": 0.8088636398232856
             },
             {
-                "dmg": 55,
+                "dmg": 32,
                 "hits": 3,
-                "cost": 2,
-                "accuracy": 0.7662514626562318
+                "cost": 6,
+                "accuracy": 0.9421054965297735
             },
             {
-                "dmg": 16,
-                "hits": 1,
-                "cost": 4,
+                "dmg": 12,
+                "hits": 4,
+                "cost": 3,
+                "accuracy": 0.6895053384787669
+            },
+            {
+                "healAmount": 16,
+                "cost": 3,
                 "accuracy": 1
-            },
-            {
-                "healAmount": 38,
-                "cost": 5,
-                "accuracy": 0.8724717058779077
             }
         ]
     },
@@ -266,26 +265,26 @@ const optimizedCardOverrides = {
         "maxHp": 120,
         "attacks": [
             {
-                "dmg": 64,
-                "cost": 1,
-                "accuracy": 1,
-                "hits": 4
+                "dmg": 55,
+                "hits": 3,
+                "cost": 3,
+                "accuracy": 0.7977007785904278
             },
             {
-                "dmg": 168,
-                "hits": 4,
-                "cost": 1,
-                "accuracy": 0.5810460619916993
-            },
-            {
-                "dmg": 10,
+                "dmg": 120,
                 "hits": 4,
                 "cost": 2,
-                "accuracy": 0.7543520308302955
+                "accuracy": 0.6428594785592441
+            },
+            {
+                "dmg": 49,
+                "hits": 2,
+                "cost": 6,
+                "accuracy": 0.7682491976647672
             },
             {
                 "cost": 5,
-                "accuracy": 0.8225082250926747
+                "accuracy": 0.9683781675474438
             }
         ]
     },
@@ -293,26 +292,26 @@ const optimizedCardOverrides = {
         "maxHp": 130,
         "attacks": [
             {
-                "dmg": 71,
-                "hits": 4,
-                "cost": 0,
-                "accuracy": 0.6763090957207882
+                "dmg": 64,
+                "hits": 1,
+                "cost": 3,
+                "accuracy": 0.9646449247094577
             },
             {
-                "dmg": 132,
-                "hits": 3,
-                "cost": 4,
-                "accuracy": 0.8977709729371066
-            },
-            {
-                "cost": 4,
-                "accuracy": 0.9573592323635802
-            },
-            {
-                "dmg": 24,
+                "dmg": 126,
                 "hits": 2,
-                "cost": 4,
-                "accuracy": 1
+                "cost": 3,
+                "accuracy": 0.8465616560712469
+            },
+            {
+                "cost": 2,
+                "accuracy": 0.8770093277571461
+            },
+            {
+                "dmg": 14,
+                "hits": 1,
+                "cost": 3,
+                "accuracy": 0.949136485976202
             }
         ]
     },
@@ -320,25 +319,25 @@ const optimizedCardOverrides = {
         "maxHp": 130,
         "attacks": [
             {
-                "cost": 2,
-                "accuracy": 0.9261808319571347
-            },
-            {
-                "dmg": 45,
-                "hits": 3,
                 "cost": 1,
-                "accuracy": 0.9961593396797611
+                "accuracy": 0.7815253944276661
             },
             {
-                "dmg": 102,
+                "dmg": 10,
+                "hits": 2,
+                "cost": 1,
+                "accuracy": 0.9216810871045527
+            },
+            {
+                "dmg": 114,
                 "hits": 4,
-                "cost": 6,
-                "accuracy": 0.9206917533528824
+                "cost": 2,
+                "accuracy": 0.6856151474192891
             },
             {
                 "healAmount": 46,
-                "cost": 0,
-                "accuracy": 0.8027080298460935
+                "cost": 6,
+                "accuracy": 0.9039739342748728
             }
         ]
     },
@@ -346,25 +345,25 @@ const optimizedCardOverrides = {
         "maxHp": 130,
         "attacks": [
             {
-                "healAmount": 37,
-                "cost": 2,
+                "healAmount": 24,
+                "cost": 4,
                 "accuracy": 1
             },
             {
-                "dmg": 95,
-                "hits": 3,
-                "cost": 2,
-                "accuracy": 0.6381602115930748
+                "dmg": 89,
+                "hits": 4,
+                "cost": 5,
+                "accuracy": 0.9081660718906182
             },
             {
-                "dmg": 112,
-                "hits": 2,
-                "cost": 4,
-                "accuracy": 0.6753650555953049
+                "dmg": 115,
+                "hits": 4,
+                "cost": 1,
+                "accuracy": 0.5314637008938004
             },
             {
-                "cost": 6,
-                "accuracy": 0.5502440788253211
+                "cost": 0,
+                "accuracy": 1
             }
         ]
     },
@@ -372,25 +371,25 @@ const optimizedCardOverrides = {
         "maxHp": 130,
         "attacks": [
             {
-                "dmg": 108,
-                "hits": 2,
-                "cost": 0,
-                "accuracy": 0.9464736134931453
-            },
-            {
-                "dmg": 102,
+                "dmg": 65,
                 "hits": 4,
-                "cost": 1,
-                "accuracy": 0.5665259122603334
+                "cost": 0,
+                "accuracy": 0.5
             },
             {
-                "cost": 4,
-                "accuracy": 0.9599966511184039
+                "dmg": 156,
+                "hits": 3,
+                "cost": 3,
+                "accuracy": 0.5448461977439714
             },
             {
-                "healAmount": 39,
-                "cost": 1,
-                "accuracy": 0.9949216835417763
+                "cost": 2,
+                "accuracy": 1
+            },
+            {
+                "healAmount": 81,
+                "cost": 0,
+                "accuracy": 1
             }
         ]
     },
@@ -398,25 +397,25 @@ const optimizedCardOverrides = {
         "maxHp": 50,
         "attacks": [
             {
-                "dmg": 31,
+                "dmg": 27,
                 "hits": 4,
-                "cost": 4,
-                "accuracy": 0.7711903973540513
+                "cost": 1,
+                "accuracy": 1
             },
             {
-                "dmg": 34,
+                "dmg": 30,
                 "hits": 4,
-                "cost": 0,
-                "accuracy": 0.7427792565892138
-            },
-            {
                 "cost": 6,
-                "accuracy": 0.825114328391553
+                "accuracy": 1
             },
             {
-                "healAmount": 22,
-                "cost": 4,
-                "accuracy": 0.9299520920434117
+                "cost": 5,
+                "accuracy": 0.9629698862642774
+            },
+            {
+                "healAmount": 40,
+                "cost": 2,
+                "accuracy": 0.819224318864655
             }
         ]
     },
@@ -424,25 +423,25 @@ const optimizedCardOverrides = {
         "maxHp": 120,
         "attacks": [
             {
-                "dmg": 40,
+                "dmg": 42,
+                "hits": 2,
+                "cost": 2,
+                "accuracy": 1
+            },
+            {
+                "dmg": 83,
                 "hits": 2,
                 "cost": 1,
-                "accuracy": 0.922775381868368
+                "accuracy": 0.7114098888812083
             },
             {
-                "dmg": 69,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.6495625093022939
+                "cost": 6,
+                "accuracy": 0.9489140553269992
             },
             {
-                "cost": 5,
-                "accuracy": 0.9010056920514077
-            },
-            {
-                "healAmount": 48,
+                "healAmount": 16,
                 "cost": 4,
-                "accuracy": 1
+                "accuracy": 0.8110653051497837
             }
         ]
     },
@@ -450,25 +449,25 @@ const optimizedCardOverrides = {
         "maxHp": 110,
         "attacks": [
             {
+                "dmg": 39,
+                "hits": 4,
+                "cost": 2,
+                "accuracy": 0.953316627718111
+            },
+            {
                 "dmg": 60,
-                "hits": 4,
-                "cost": 0,
-                "accuracy": 0.9638668885699121
+                "hits": 3,
+                "cost": 3,
+                "accuracy": 0.5988697138910852
             },
             {
-                "dmg": 83,
-                "hits": 4,
-                "cost": 4,
-                "accuracy": 0.9753361352120252
-            },
-            {
-                "healAmount": 30,
-                "cost": 1,
-                "accuracy": 0.9210159810644388
+                "healAmount": 94,
+                "cost": 6,
+                "accuracy": 0.7910869363970764
             },
             {
                 "cost": 4,
-                "accuracy": 0.6967898624752156
+                "accuracy": 0.5168365516663578
             }
         ]
     },
@@ -476,25 +475,25 @@ const optimizedCardOverrides = {
         "maxHp": 330,
         "attacks": [
             {
-                "healAmount": 48,
-                "cost": 0,
-                "accuracy": 0.901381694938917
-            },
-            {
-                "dmg": 179,
-                "hits": 4,
-                "cost": 5,
-                "accuracy": 0.7718266997469344
-            },
-            {
-                "dmg": 314,
-                "hits": 2,
-                "cost": 2,
-                "accuracy": 0.7820873579833945
-            },
-            {
+                "healAmount": 56,
                 "cost": 4,
-                "accuracy": 1
+                "accuracy": 0.9534496419004248
+            },
+            {
+                "dmg": 180,
+                "hits": 3,
+                "cost": 5,
+                "accuracy": 0.8602108559754373
+            },
+            {
+                "dmg": 270,
+                "hits": 3,
+                "cost": 6,
+                "accuracy": 0.5033135977125929
+            },
+            {
+                "cost": 2,
+                "accuracy": 0.7632453909529937
             }
         ]
     },
@@ -502,25 +501,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 38,
-                "hits": 1,
-                "cost": 2,
-                "accuracy": 0.8501294304705288
-            },
-            {
-                "dmg": 143,
+                "dmg": 67,
                 "hits": 4,
                 "cost": 0,
-                "accuracy": 1
+                "accuracy": 0.5
             },
             {
-                "cost": 0,
-                "accuracy": 0.72473028616857
+                "dmg": 139,
+                "cost": 4,
+                "accuracy": 0.5,
+                "hits": 4
             },
             {
-                "healAmount": 22,
+                "cost": 1,
+                "accuracy": 0.7305547372399703
+            },
+            {
+                "healAmount": 43,
                 "cost": 3,
-                "accuracy": 0.8381162253098432
+                "accuracy": 0.9908573771612633
             }
         ]
     },
@@ -528,26 +527,26 @@ const optimizedCardOverrides = {
         "maxHp": 330,
         "attacks": [
             {
-                "dmg": 42,
-                "hits": 2,
-                "cost": 6,
-                "accuracy": 0.8818639211826529
-            },
-            {
-                "dmg": 254,
-                "hits": 4,
+                "dmg": 37,
+                "hits": 1,
                 "cost": 0,
-                "accuracy": 0.5035953587654811
+                "accuracy": 1
             },
             {
-                "cost": 6,
-                "accuracy": 0.923828761643736
-            },
-            {
-                "dmg": 29,
+                "dmg": 259,
                 "hits": 2,
-                "cost": 4,
-                "accuracy": 0.8068865573643149
+                "cost": 6,
+                "accuracy": 0.8904258010375344
+            },
+            {
+                "cost": 2,
+                "accuracy": 0.7824595327888823
+            },
+            {
+                "dmg": 76,
+                "hits": 4,
+                "cost": 5,
+                "accuracy": 0.8366349587799157
             }
         ]
     },
@@ -555,25 +554,25 @@ const optimizedCardOverrides = {
         "maxHp": 169,
         "attacks": [
             {
-                "cost": 1,
-                "accuracy": 0.9131257263433608
+                "cost": 6,
+                "accuracy": 0.9626711142821861
             },
             {
-                "dmg": 53,
+                "dmg": 17,
                 "hits": 3,
-                "cost": 1,
-                "accuracy": 0.9284965118843743
+                "cost": 4,
+                "accuracy": 0.7484145011861293
             },
             {
-                "dmg": 90,
-                "hits": 4,
-                "cost": 0,
-                "accuracy": 0.7109187585737675
+                "dmg": 94,
+                "hits": 2,
+                "cost": 2,
+                "accuracy": 0.5642053264954574
             },
             {
-                "healAmount": 52,
-                "cost": 3,
-                "accuracy": 0.9692225691419808
+                "healAmount": 63,
+                "cost": 6,
+                "accuracy": 0.9733370019599697
             }
         ]
     },
@@ -581,25 +580,25 @@ const optimizedCardOverrides = {
         "maxHp": 169,
         "attacks": [
             {
-                "dmg": 117,
-                "hits": 1,
-                "cost": 1,
-                "accuracy": 0.6672972551884602
-            },
-            {
-                "dmg": 53,
+                "dmg": 65,
                 "hits": 3,
-                "cost": 3,
-                "accuracy": 0.8971639355981499
+                "cost": 4,
+                "accuracy": 0.5283490611985615
             },
             {
-                "healAmount": 57,
+                "dmg": 91,
+                "hits": 1,
                 "cost": 2,
-                "accuracy": 0.7939354848452571
+                "accuracy": 0.7178932552905042
             },
             {
-                "cost": 6,
-                "accuracy": 1
+                "healAmount": 75,
+                "cost": 4,
+                "accuracy": 0.9234280219338096
+            },
+            {
+                "cost": 4,
+                "accuracy": 0.8890660786773943
             }
         ]
     },
@@ -607,25 +606,25 @@ const optimizedCardOverrides = {
         "maxHp": 169,
         "attacks": [
             {
-                "dmg": 31,
-                "hits": 2,
-                "cost": 2,
-                "accuracy": 0.9661655798734012
+                "dmg": 25,
+                "cost": 1,
+                "accuracy": 0.8837102523558481,
+                "hits": 1
             },
             {
-                "dmg": 64,
+                "dmg": 103,
                 "hits": 1,
-                "cost": 0,
-                "accuracy": 0.911346091053169
+                "cost": 5,
+                "accuracy": 0.7270026209480612
             },
             {
+                "cost": 1,
+                "accuracy": 0.9797789299251316
+            },
+            {
+                "healAmount": 15,
                 "cost": 6,
-                "accuracy": 0.8963041567877547
-            },
-            {
-                "healAmount": 10,
-                "cost": 4,
-                "accuracy": 0.8565491128606814
+                "accuracy": 0.8471121599924655
             }
         ]
     },
@@ -633,25 +632,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 47,
-                "hits": 4,
-                "cost": 6,
-                "accuracy": 0.8851806007271171
-            },
-            {
-                "dmg": 116,
+                "dmg": 42,
                 "hits": 3,
                 "cost": 0,
-                "accuracy": 0.7813615683629304
+                "accuracy": 0.6454831159831952
             },
             {
-                "healAmount": 18,
+                "dmg": 133,
+                "hits": 4,
                 "cost": 6,
-                "accuracy": 0.8914800509273043
+                "accuracy": 0.6765143663324027
             },
             {
-                "cost": 5,
-                "accuracy": 0.7998459874777695
+                "healAmount": 78,
+                "cost": 6,
+                "accuracy": 0.9406358656893689
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.9692147273236219
             }
         ]
     },
@@ -659,25 +658,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 48,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.6948784384648777
+                "dmg": 73,
+                "hits": 3,
+                "cost": 6,
+                "accuracy": 0.7988458857761462
             },
             {
-                "dmg": 180,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.7462475456709369
-            },
-            {
-                "cost": 5,
-                "accuracy": 0.8726080479271914
-            },
-            {
-                "healAmount": 38,
+                "dmg": 168,
+                "hits": 1,
                 "cost": 3,
-                "accuracy": 0.9512531302835996
+                "accuracy": 0.8318403857683097
+            },
+            {
+                "cost": 6,
+                "accuracy": 0.9391594550350152
+            },
+            {
+                "healAmount": 47,
+                "cost": 6,
+                "accuracy": 0.8559103594338101
             }
         ]
     },
@@ -685,25 +684,25 @@ const optimizedCardOverrides = {
         "maxHp": 220,
         "attacks": [
             {
-                "healAmount": 39,
-                "cost": 4,
-                "accuracy": 0.9436063013612316
-            },
-            {
-                "dmg": 78,
-                "hits": 3,
-                "cost": 2,
-                "accuracy": 0.8594164913615155
-            },
-            {
-                "dmg": 152,
-                "hits": 4,
-                "cost": 6,
-                "accuracy": 0.7977984671199904
-            },
-            {
+                "healAmount": 67,
                 "cost": 0,
-                "accuracy": 0.7198027531637624
+                "accuracy": 0.9804615511320334
+            },
+            {
+                "dmg": 55,
+                "cost": 1,
+                "accuracy": 0.5,
+                "hits": 3
+            },
+            {
+                "dmg": 139,
+                "hits": 1,
+                "cost": 3,
+                "accuracy": 0.5060257178299383
+            },
+            {
+                "cost": 4,
+                "accuracy": 0.7588613809903646
             }
         ]
     },
@@ -711,25 +710,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "healAmount": 28,
-                "cost": 3,
-                "accuracy": 0.9470547482805275
-            },
-            {
-                "dmg": 88,
-                "hits": 2,
-                "cost": 5,
-                "accuracy": 0.737172350847295
-            },
-            {
-                "dmg": 115,
-                "hits": 2,
+                "healAmount": 33,
                 "cost": 1,
-                "accuracy": 0.7211119827128508
+                "accuracy": 0.9098163297915178
             },
             {
-                "cost": 6,
-                "accuracy": 1
+                "dmg": 51,
+                "hits": 1,
+                "cost": 3,
+                "accuracy": 0.8905705172510484
+            },
+            {
+                "dmg": 148,
+                "hits": 3,
+                "cost": 4,
+                "accuracy": 0.6442363493233273
+            },
+            {
+                "cost": 0,
+                "accuracy": 0.8956790291052444
             }
         ]
     },
@@ -737,26 +736,26 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 73,
-                "hits": 4,
-                "cost": 1,
-                "accuracy": 0.8698311333490943
-            },
-            {
-                "dmg": 114,
-                "hits": 4,
-                "cost": 1,
-                "accuracy": 0.583750391164784
-            },
-            {
-                "cost": 5,
-                "accuracy": 0.9808317029237403
-            },
-            {
-                "dmg": 26,
-                "hits": 4,
+                "dmg": 24,
+                "hits": 1,
                 "cost": 0,
-                "accuracy": 0.5396839649758596
+                "accuracy": 0.8612029133714028
+            },
+            {
+                "dmg": 108,
+                "hits": 4,
+                "cost": 4,
+                "accuracy": 0.9638100322600599
+            },
+            {
+                "cost": 3,
+                "accuracy": 1
+            },
+            {
+                "dmg": 18,
+                "hits": 4,
+                "cost": 6,
+                "accuracy": 0.9090257182562125
             }
         ]
     },
@@ -764,25 +763,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 69,
-                "hits": 2,
-                "cost": 2,
-                "accuracy": 0.9499594479033799
+                "dmg": 94,
+                "cost": 5,
+                "accuracy": 0.8117846953503963,
+                "hits": 2
             },
             {
-                "dmg": 111,
-                "hits": 2,
+                "dmg": 150,
+                "hits": 3,
                 "cost": 2,
-                "accuracy": 0.7383351879490899
+                "accuracy": 0.5327422219389971
             },
             {
                 "cost": 6,
-                "accuracy": 0.8560366784746402
+                "accuracy": 1
             },
             {
-                "healAmount": 69,
+                "healAmount": 13,
                 "cost": 3,
-                "accuracy": 0.9258743336904847
+                "accuracy": 0.8389959635563894
             }
         ]
     },
@@ -790,26 +789,26 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 82,
-                "hits": 3,
-                "cost": 3,
-                "accuracy": 0.7992092822318394
-            },
-            {
-                "dmg": 128,
-                "hits": 1,
-                "cost": 1,
-                "accuracy": 0.8210618897704285
-            },
-            {
+                "dmg": 15,
+                "hits": 2,
                 "cost": 0,
-                "accuracy": 0.9090687947226547
+                "accuracy": 1
             },
             {
-                "dmg": 63,
-                "hits": 3,
-                "cost": 3,
-                "accuracy": 0.8173064250919931
+                "dmg": 116,
+                "hits": 2,
+                "cost": 5,
+                "accuracy": 0.5
+            },
+            {
+                "cost": 4,
+                "accuracy": 0.879607658485679
+            },
+            {
+                "dmg": 18,
+                "hits": 4,
+                "cost": 0,
+                "accuracy": 0.8958734786274952
             }
         ]
     },
@@ -817,25 +816,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 80,
+                "dmg": 67,
                 "hits": 2,
                 "cost": 2,
-                "accuracy": 1
+                "accuracy": 0.774012920883817
             },
             {
-                "dmg": 104,
-                "hits": 2,
-                "cost": 1,
-                "accuracy": 0.5625911884971865
+                "dmg": 142,
+                "hits": 3,
+                "cost": 6,
+                "accuracy": 0.5663939344498342
             },
             {
                 "cost": 5,
-                "accuracy": 0.7959177108128354
+                "accuracy": 0.9979996195097564
             },
             {
-                "healAmount": 45,
-                "cost": 2,
-                "accuracy": 0.7488400600633576
+                "healAmount": 37,
+                "cost": 5,
+                "accuracy": 0.991327982774128
             }
         ]
     },
@@ -843,26 +842,26 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 98,
+                "dmg": 69,
+                "hits": 2,
+                "cost": 1,
+                "accuracy": 0.6520470755332529
+            },
+            {
+                "dmg": 111,
+                "hits": 1,
+                "cost": 3,
+                "accuracy": 0.6322372271920558
+            },
+            {
+                "cost": 1,
+                "accuracy": 0.9423315113592695
+            },
+            {
+                "dmg": 62,
                 "hits": 1,
                 "cost": 6,
-                "accuracy": 0.6123764114511319
-            },
-            {
-                "dmg": 106,
-                "hits": 3,
-                "cost": 1,
-                "accuracy": 0.9378987623400907
-            },
-            {
-                "cost": 2,
                 "accuracy": 1
-            },
-            {
-                "dmg": 22,
-                "hits": 2,
-                "cost": 6,
-                "accuracy": 0.9730015919450766
             }
         ]
     },
@@ -870,25 +869,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 23,
-                "hits": 2,
-                "cost": 4,
-                "accuracy": 0.8580224993612526
+                "dmg": 22,
+                "hits": 1,
+                "cost": 5,
+                "accuracy": 0.6280937349802379
             },
             {
-                "dmg": 104,
+                "dmg": 95,
                 "hits": 4,
-                "cost": 1,
-                "accuracy": 0.9735356653208871
+                "cost": 2,
+                "accuracy": 0.520686276173091
             },
             {
-                "healAmount": 50,
-                "cost": 1,
-                "accuracy": 0.8241606826804437
+                "healAmount": 46,
+                "cost": 6,
+                "accuracy": 0.9261418835083594
             },
             {
                 "cost": 4,
-                "accuracy": 0.8446479567975935
+                "accuracy": 1
             }
         ]
     },
@@ -896,25 +895,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 156,
-                "hits": 4,
-                "cost": 2,
-                "accuracy": 0.5696695315045027
-            },
-            {
-                "dmg": 85,
-                "hits": 3,
-                "cost": 4,
-                "accuracy": 0.6799930263149043
-            },
-            {
-                "cost": 5,
-                "accuracy": 0.9889986997226492
-            },
-            {
-                "healAmount": 45,
+                "dmg": 71,
+                "hits": 2,
                 "cost": 1,
-                "accuracy": 0.9438161719165867
+                "accuracy": 0.6486723547551243
+            },
+            {
+                "dmg": 120,
+                "hits": 3,
+                "cost": 6,
+                "accuracy": 0.7317568727486738
+            },
+            {
+                "cost": 6,
+                "accuracy": 0.8667076238580359
+            },
+            {
+                "healAmount": 86,
+                "cost": 6,
+                "accuracy": 0.9608723219655525
             }
         ]
     },
@@ -922,25 +921,25 @@ const optimizedCardOverrides = {
         "maxHp": 300,
         "attacks": [
             {
-                "cost": 4,
-                "accuracy": 1
-            },
-            {
-                "dmg": 158,
-                "hits": 4,
                 "cost": 3,
-                "accuracy": 0.5701963474323003
+                "accuracy": 0.8108680711119951
             },
             {
-                "dmg": 265,
+                "dmg": 177,
                 "hits": 2,
-                "cost": 6,
-                "accuracy": 0.8231030999667261
+                "cost": 4,
+                "accuracy": 0.5783336767223295
             },
             {
-                "healAmount": 69,
-                "cost": 4,
-                "accuracy": 0.9581758377982524
+                "dmg": 226,
+                "hits": 2,
+                "cost": 3,
+                "accuracy": 0.541033092824387
+            },
+            {
+                "healAmount": 70,
+                "cost": 3,
+                "accuracy": 0.7778349769891102
             }
         ]
     },
@@ -948,25 +947,25 @@ const optimizedCardOverrides = {
         "maxHp": 300,
         "attacks": [
             {
+                "cost": 4,
+                "accuracy": 0.5848698965373769
+            },
+            {
+                "dmg": 190,
+                "hits": 3,
                 "cost": 5,
-                "accuracy": 1
+                "accuracy": 0.5866127713713506
             },
             {
-                "dmg": 171,
-                "hits": 2,
-                "cost": 3,
-                "accuracy": 0.7686491196364856
+                "dmg": 220,
+                "hits": 4,
+                "cost": 4,
+                "accuracy": 0.6937592550449784
             },
             {
-                "dmg": 229,
-                "hits": 2,
-                "cost": 3,
-                "accuracy": 0.8204653304999491
-            },
-            {
-                "healAmount": 35,
-                "cost": 0,
-                "accuracy": 0.9094246527208067
+                "healAmount": 13,
+                "cost": 1,
+                "accuracy": 0.9864765288312795
             }
         ]
     },
@@ -974,25 +973,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 60,
-                "hits": 2,
-                "cost": 2,
-                "accuracy": 0.8875596518470799
+                "dmg": 55,
+                "hits": 1,
+                "cost": 0,
+                "accuracy": 0.8879878074663292
             },
             {
-                "dmg": 227,
-                "hits": 2,
-                "cost": 1,
-                "accuracy": 0.6944377724827345
+                "dmg": 200,
+                "hits": 1,
+                "cost": 2,
+                "accuracy": 0.5834405081194781
             },
             {
                 "cost": 6,
-                "accuracy": 1
+                "accuracy": 0.8218331236371564
             },
             {
-                "healAmount": 30,
+                "healAmount": 51,
                 "cost": 3,
-                "accuracy": 0.7805273161773205
+                "accuracy": 0.8041887794572989
             }
         ]
     },
@@ -1000,25 +999,25 @@ const optimizedCardOverrides = {
         "maxHp": 160,
         "attacks": [
             {
-                "dmg": 222,
-                "hits": 4,
-                "cost": 0,
-                "accuracy": 0.6661299117839025
-            },
-            {
-                "dmg": 95,
-                "hits": 4,
-                "cost": 3,
-                "accuracy": 0.6603233898592749
-            },
-            {
-                "cost": 1,
-                "accuracy": 0.9600366303646719
-            },
-            {
-                "healAmount": 28,
+                "dmg": 178,
+                "hits": 1,
                 "cost": 6,
-                "accuracy": 1
+                "accuracy": 0.6096479655872971
+            },
+            {
+                "dmg": 44,
+                "hits": 2,
+                "cost": 0,
+                "accuracy": 0.5922299334639576
+            },
+            {
+                "cost": 4,
+                "accuracy": 0.8473099282746782
+            },
+            {
+                "healAmount": 24,
+                "cost": 1,
+                "accuracy": 0.9862123797647306
             }
         ]
     }

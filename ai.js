@@ -1,82 +1,103 @@
 /**
  * AI ellenfél logikája.
- * Ez a fájl tartalmazza az AI döntéshozatali mechanizmusát,
- * de még nincs bekötve a fő játéklogikába.
  */
 
 /**
  * Az AI számára kiválasztja a következő lépést.
  *
- * @param {object} aiPlayerState Az AI játékos aktuális állapota (pl. gameState.p1 vagy gameState.p2).
- * @param {object} opponentPlayerState Az ellenfél játékos aktuális állapota.
+ * @param {object} myState Az AI játékos aktuális állapota (pl. gameState.p1 vagy gameState.p2).
+ * @param {object} oppState Az ellenfél játékos aktuális állapota.
  * @returns {string|number} A kiválasztott támadás indexe (0-tól n-ig) vagy 'charge' az AP gyűjtéshez.
  */
-function getAIMove(aiPlayerState, opponentPlayerState) {
-    const aiCard = aiPlayerState.team[aiPlayerState.activeIndex];
-    const oppCard = opponentPlayerState.team[opponentPlayerState.activeIndex];
+function getAIMove(myState, oppState) {
+    const myCard = myState.team[myState.activeIndex];
+    const oppCard = oppState.team[oppState.activeIndex];
 
-    // Ha az AI kártyája bénult, akkor nincs mit tenni, a kör kimarad.
-    // Ezt a fő játéklogika kezeli, de itt is érdemes figyelembe venni, ha az AI-nak kellene döntést hoznia.
-    if (aiCard.isParalyzed) {
-        // Az AI nem tud lépni, a játéklogika majd átugorja a körét.
-        // Itt egy "pass" vagy "skip" jelzést adhatnánk vissza, ha a játéklogika ezt kezelné.
-        // Jelenleg a játéklogika automatikusan átugorja a bénult kártya körét.
-        return null; 
+    if (myCard.isParalyzed) {
+        return null;
     }
 
-    // Ha van item a kezében és még nem használt ebben a körben, elhasználja az elsőt
-    if (aiPlayerState.items && aiPlayerState.items.length > 0 && !aiPlayerState.itemUsedThisTurn) {
-        return { type: 'item', itemIndex: 0 };
-    }
-
-    // Stratégia:
-    // 1. Ha kevés az AP, és van még mit tölteni, akkor töltsön.
-    // 2. Ha az AI kártyája nagyon alacsony HP-n van, és van gyógyító képessége, használja azt.
-    // 3. Ha az ellenfél kártyája nagyon alacsony HP-n van, próbálja meg befejezni.
-    // 4. Ha van pajzs képessége, és nincs pajzsa, használja.
-    // 5. Egyébként válasszon egy random támadást, ami megfizethető.
-
-    // AP töltés, ha kevés van
-    if (aiPlayerState.ap < 3 && aiPlayerState.ap < 10) { // Pl. 3 AP alatt töltsön
-        return 'charge';
-    }
-
-    // Csak a létező és megfizethető képességeket vesszük figyelembe
-    const availableMoves = aiCard.attacks
-        .map((move, index) => ({ move, index }))
-        .filter(item => item.move && aiPlayerState.ap >= item.move.cost);
-
-    // Ha nincs elérhető mozdulat, töltsön AP-t
-    if (availableMoves.length === 0) {
-        return 'charge';
-    }
-
-    // Gyógyítás, ha az AI kártyája alacsony HP-n van
-    if (aiCard.hp / aiCard.maxHp < 0.4) { // 40% HP alatt
-        const healMove = availableMoves.find(item => item.move.type === 'heal');
-        if (healMove) {
-            // Ne spammelje be a végtelenségig, adjunk esélyt a támadásnak is
-            if (Math.random() < 0.8) return healMove.index;
+    // 1. TÁRGYAK HASZNÁLATA (Ha van és még nem használt)
+    if (!myState.itemUsedThisTurn && myState.items && myState.items.length > 0) {
+        // Ha kevés a HP, vagy 20% eséllyel meglepetésszerűen elnyom egy tárgyat
+        if (myCard.hp < myCard.maxHp * 0.4 || Math.random() < 0.2) {
+            return { type: 'item', itemIndex: 0 }; 
         }
     }
 
-    // Pajzs használata, de ne spammelje mindig, hogy tudjon támadni is
-    if (aiCard.shields < 2) {
-        const shieldMove = availableMoves.find(item => item.move.type === 'shield');
-        if (shieldMove) {
-            // Ha nincs pajzsa, 80% eséllyel használja. Ha már van 1, csak 30% eséllyel.
-            let useShieldChance = aiCard.shields === 0 ? 0.8 : 0.3;
-            if (Math.random() < useShieldChance) return shieldMove.index;
+    let bestMove = null;
+    let bestScorePerAp = -Infinity;
+    let targetCost = 0;
+
+    // 2. KÉPESSÉGEK KIÉRTÉKELÉSE (AP-tól függetlenül!)
+    myCard.attacks.forEach((move, index) => {
+        if (!move) return;
+        
+        let score = 0;
+        
+        if (move.type === 'dmg') {
+            // Alap várható sebzés (sebzés * ütések * pontosság)
+            let expectedDmg = move.dmg * (move.hits || 1) * (move.accuracy !== undefined ? move.accuracy : 1);
+            
+            // Szinergia bónusz (ha a célpont meg van jelölve)
+            if (oppCard.isMarked && move.synergy === 'mark') expectedDmg *= 1.5;
+            
+            score += expectedDmg;
+
+            // KILL SHOT: Ha ez a támadás valószínűleg kiüti az ellenfelet, kapjon óriási prioritást
+            if (expectedDmg >= oppCard.hp && (oppCard.shields || 0) === 0) {
+                score += 500;
+            }
+            
+            // Státusz effektek súlyozása
+            if (move.effect === 'burn' || move.effect === 'poison') score += 15;
+            // Csak akkor pontozzuk, ha még nincs kimaxolva a stack (max 3)
+            if (move.effect === 'burn' && (oppCard.burnStacks || 0) < 3) score += 15;
+            if (move.effect === 'poison' && (oppCard.poisonStacks || 0) < 3) score += 15;
+            // Csak akkor kap pontot a bénításra, ha nem immunis az ellenfél
+            if (move.effect === 'paralyze') score += oppCard.paraImmune ? 0 : 25;
+            if (move.effect === 'lifesteal') score += 20;
+            if (move.effect === 'counter') score += 15;
+            if (move.effect === 'mark' && !oppCard.isMarked) score += 20;
+
+        } else if (move.type === 'heal') {
+            // Csak akkor ér sokat, ha tényleg szükség van rá
+            if (myCard.hp < myCard.maxHp * 0.5) score += move.healAmount * 1.5;
+            else score -= 100;
+
+        } else if (move.type === 'shield') {
+            if (myCard.shields < 2) score += 25;
+            else score -= 100;
+        }
+
+        // AP Hatékonyság számítása
+        let efficiency = score / Math.max(1, move.cost);
+
+        if (efficiency > bestScorePerAp) {
+            bestScorePerAp = efficiency;
+            bestMove = index;
+            targetCost = move.cost;
+        }
+    });
+
+    // 3. DÖNTÉSHOZATAL
+    if (bestMove !== null) {
+        if (myState.ap >= targetCost) {
+            // Van elég AP a leghatékonyabb mozdulathoz
+            return bestMove;
+        } else {
+            // Ha kevés a HP, ne spóroljunk, üssünk amivel tudunk
+            if (myCard.hp < myCard.maxHp * 0.25) {
+                const affordable = myCard.attacks
+                    .map((m, i) => ({m, i}))
+                    .filter(item => item.m && myState.ap >= item.m.cost && item.m.type !== 'shield');
+                if (affordable.length > 0) return affordable[0].i;
+            }
+            
+            // Különben spóroljunk a nagy ütésre
+            return 'charge';
         }
     }
 
-    // Támadás, ha az ellenfél alacsony HP-n van, vagy csak simán támadni kell
-    const damageMoves = availableMoves.filter(item => item.move.type === 'dmg');
-    if (damageMoves.length > 0) {
-        // Válasszon egy random sebző támadást
-        return damageMoves[Math.floor(Math.random() * damageMoves.length)].index;
-    }
-
-    // Ha semmi más, akkor töltsön AP-t (ez elvileg már fentebb lekezelődik, de biztonság kedvéért)
-    return 'charge';
+    return 'charge'; 
 }
