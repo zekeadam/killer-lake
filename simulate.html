@@ -281,8 +281,10 @@
                         if (Math.random() > hitChance) return;
 
                         const isCrit = Math.random() < 0.15;
-                        let variance = move.dmg * 0.2;
-                        let dmgPerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+                        const hitCount = move.hits || 1;
+                        let baseDmgPerHit = move.dmg / hitCount;
+                        let variance = baseDmgPerHit * 0.2;
+                        let dmgPerHit = Math.floor(baseDmgPerHit + (Math.random() * variance * 2) - variance);
                         if (isCrit) dmgPerHit = Math.floor(dmgPerHit * 1.5);
 
                         if (oppCard.isMarked && move.synergy === 'mark') {
@@ -290,7 +292,6 @@
                             oppCard.isMarked = false;
                         }
 
-                        const hitCount = move.hits || 1;
                         let hitsLanded = 0;
 
                         for (let i = 0; i < hitCount; i++) {
@@ -566,13 +567,12 @@
                 }
             } 
             else if (atk.type === 'dmg' || atk.dmg !== undefined) {
-                let h = atk.hits || 1;
-                let totalPotential = (atk.dmg || 0) * h;
+                let totalPotential = atk.dmg || 0;
                 
                 // Ingyenes támadás nem lehet túl erős
                 if (atk.cost === 0 && totalPotential > 40) {
-                    atk.dmg = Math.floor(40 / h);
-                    totalPotential = atk.dmg * h;
+                    atk.dmg = 40;
+                    totalPotential = 40;
                 }
                 
                 // Ha túl sokat sebez, kötelező több AP-t kérni
@@ -584,10 +584,10 @@
                 if (totalPotential > 340 && atk.cost < 6) atk.cost = 6;
                 
                 // Magas AP költséghez társuljon normális minimális sebzés is, hogy ne legyen "holt" támadás
-                if (atk.cost >= 3 && totalPotential < 70) atk.dmg = Math.floor(70 / h);
-                if (atk.cost >= 4 && totalPotential < 120) atk.dmg = Math.floor(120 / h);
-                if (atk.cost >= 5 && totalPotential < 180) atk.dmg = Math.floor(180 / h);
-                if (atk.cost >= 6 && totalPotential < 240) atk.dmg = Math.floor(240 / h);
+                if (atk.cost >= 3 && totalPotential < 70) atk.dmg = 70;
+                if (atk.cost >= 4 && totalPotential < 120) atk.dmg = 120;
+                if (atk.cost >= 5 && totalPotential < 180) atk.dmg = 180;
+                if (atk.cost >= 6 && totalPotential < 240) atk.dmg = 240;
                 
                 atk.accuracy = Math.max(0.5, Math.min(1.0, atk.accuracy || 1.0));
                 delete atk.healAmount;

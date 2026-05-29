@@ -25,7 +25,10 @@ const soundURLs = {
     miss: "https://www.myinstants.com/media/sounds/woosh_s21KzKN.mp3",        // MEGSZÓLAL: Amikor a támadás célt téveszt vagy kikerülik.
     shield: "https://www.myinstants.com/media/sounds/energy-generator-bounce.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
     heal: "https://www.myinstants.com/media/sounds/health-potion.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
-    charge: "https://www.myinstants.com/media/sounds/z-charge.mp3"       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
+    charge: "https://www.myinstants.com/media/sounds/z-charge.mp3",       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
+    game_start: "https://www.myinstants.com/media/sounds/mortal-kombat-fight.mp3", // MEGSZÓLAL: Játék kezdetekor.
+    game_over: "https://www.myinstants.com/media/sounds/final-fantasy-v-victory-fanfare.mp3", // MEGSZÓLAL: Meccs végén (Győzelem).
+    death: "https://www.myinstants.com/media/sounds/dandys-world-death-sound.mp3" // MEGSZÓLAL: Karakter halálakor (OOF)
 };
 
 const audioCache = {};
@@ -44,6 +47,10 @@ function playSound(type) {
             // A böngészők blokkolhatják az első kattintás előtti lejátszást
         });
     }
+}
+
+function playDeathSound(card) {
+    playSound('death');
 }
 
 // --- OPTIMALIZÁLT ADATOK BETÖLTÉSE ---
@@ -411,7 +418,7 @@ function confirmTeamOrder() {
 function checkStartGame() {
     if (iAmReady && oppIsReady) {
         document.getElementById('draft-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('game-screen').style.display = 'flex';
         
         let finalP1, finalP2, itemsP1, itemsP2;
 
@@ -487,6 +494,7 @@ function initGame(p1TeamIds, p2TeamIds, p1ItemIds, p2ItemIds) {
     if (nameHeader) nameHeader.style.display = 'flex';
 
     logMessage("Mindkét játékos összeállította a csapatát! A harc megkezdődött.", "log-system");
+    playSound('game_start');
     updateUI();
 }
 
@@ -858,6 +866,7 @@ function checkWin() {
     if (gameState.gameOver) return true;
     if (gameState.p1.activeIndex >= 5 || gameState.p2.activeIndex >= 5) {
         gameState.gameOver = true;
+        playSound('game_over');
         const winnerId = gameState.p1.activeIndex < 5 ? 'p1' : 'p2';
         const loserId = winnerId === 'p1' ? 'p2' : 'p1';
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
@@ -965,8 +974,10 @@ function executeMove(playerId, attackIndex) {
         isMiss = Math.random() > hitChance;
         
         if (move.type === "dmg") {
-            let variance = move.dmg * 0.2;
-            damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+            let hitCount = move.hits || 1;
+            let baseDmgPerHit = move.dmg / hitCount;
+            let variance = baseDmgPerHit * 0.2;
+            damagePerHit = Math.floor(baseDmgPerHit + (Math.random() * variance * 2) - variance);
         }
     }
 
@@ -1094,6 +1105,7 @@ function applyMove(playerId, data) {
             }
 
             if (oppCard.hp <= 0) {
+                playDeathSound(oppCard);
                 logMessage(`> ${oppCard.name} elájult (K.O.)!`, "crit");
                 oppState.activeIndex++;
                 if (oppState.activeIndex < 5) {
@@ -1156,6 +1168,7 @@ function applyMove(playerId, data) {
 
         // Ha a visszatámadás (Counter) miatt az aktuális támadó meghalt
         if (attackerCard.hp <= 0) {
+            playDeathSound(attackerCard);
             logMessage(`> ${attackerCard.name} belehalt a visszatámadásba (K.O.)!`, "crit");
             attackerState.activeIndex++;
             if (attackerState.activeIndex < 5) {
@@ -1185,6 +1198,7 @@ function endTurnPhase(currentPlayerId) {
         if (pCard.poisonTurns === 0) pCard.poisonStacks = 0;
         
         if (pCard.hp <= 0) {
+            playDeathSound(pCard);
             logMessage(`> ${pCard.name} belehalt a méregbe (K.O.)!`, "crit");
             pState.activeIndex++;
             if (pState.activeIndex < 5) {
@@ -1216,6 +1230,7 @@ function endTurnPhase(currentPlayerId) {
         }
         
         if (pCard.hp <= 0) {
+            playDeathSound(pCard);
             logMessage(`> ${pCard.name} elégett és elájult (K.O.)!`, "crit");
             pState.activeIndex++;
             if (pState.activeIndex < 5) {
@@ -1371,6 +1386,7 @@ function applyItem(playerId, data) {
     }
     
     if (oppCard.hp <= 0) {
+        playDeathSound(oppCard);
         logMessage(`> ${oppCard.name} elájult az itemtől (K.O.)!`, "crit");
         oppState.activeIndex++;
         if (oppState.activeIndex < 5) {
@@ -1394,7 +1410,7 @@ function startTestMode() {
     oppNickname = "AI 2";
     
     document.getElementById('lobby-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'block';
+    document.getElementById('game-screen').style.display = 'flex';
     
     const p1Team = getRandomTeam();
     const p2Team = getRandomTeam();
@@ -1466,8 +1482,10 @@ function runAITestMove() {
         isMiss = Math.random() > hitChance;
 
         if (move.type === "dmg") {
-            let variance = move.dmg * 0.2;
-            damagePerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+            let hitCount = move.hits || 1;
+            let baseDmgPerHit = move.dmg / hitCount;
+            let variance = baseDmgPerHit * 0.2;
+            damagePerHit = Math.floor(baseDmgPerHit + (Math.random() * variance * 2) - variance);
         }
     }
 

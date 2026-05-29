@@ -8,6 +8,7 @@ html, body {
     background-size: cover;          
     background-position: center;     
     background-repeat: no-repeat;    
+    background-attachment: fixed;
     color: #eaeaea; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     display: flex; 
@@ -19,10 +20,10 @@ html, body {
 .container {
     width: 100%;
     height: 100vh;
-    max-width: 1200px; 
+    max-width: 1920px; 
     display: flex;
     flex-direction: column;
-    padding: 10px 180px; /* Megnövelt oldalsó margó, hogy az itemek (150px) kényelmesen elférjenek */
+    padding: 10px clamp(20px, 10vw, 180px);
     box-sizing: border-box;
     position: relative;
     transition: transform 0.1s;
@@ -178,6 +179,15 @@ html, body {
 .btn-google:hover { background-color: #f8f9fa; box-shadow: 0 6px 15px rgba(255,255,255,0.2); color: #333;}
 
 /* --- JÁTÉKTÉR --- */
+#game-screen {
+    flex: 1;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 #turn-indicator { 
     font-size: 1.1rem; font-weight: bold; margin: 0 auto 15px auto; padding: 6px 25px; 
     border-radius: 20px; 
@@ -192,14 +202,15 @@ html, body {
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-.arena { display: flex; flex-direction: row; justify-content: center; gap: 50px; flex: 1; min-height: 0; align-items: center; margin-top: 40px; }
+.arena { display: flex; flex-direction: row; justify-content: center; gap: clamp(36px, 6vw, 120px); flex: 1; min-height: 0; align-items: center; margin-top: 0; width: 100%; }
 
 /* ÚJ: Kártya konténer és Csapatjelző (Roster) */
 .card-container { 
     display: flex; 
     flex-direction: row; 
     align-items: center; 
-    position: relative; /* Referencia pont az abszolút pozicionált itemeknek */
+    position: relative; 
+    gap: clamp(10px, 1.5vw, 30px);
 }
 
 .team-roster {
@@ -261,8 +272,8 @@ html, body {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-top: 2px solid rgba(197, 160, 89, 0.6);
     border-left: 2px solid rgba(197, 160, 89, 0.4);
-    border-radius: 16px; padding: 15px; 
-    display: flex; flex-direction: column; width: 360px; height: auto; min-height: 600px; box-sizing: border-box; gap: 5px;
+    border-radius: 16px; padding: clamp(12px, 2.4vh, 18px); 
+    display: flex; flex-direction: column; width: clamp(336px, 30vw, 456px); height: auto; min-height: clamp(576px, 78vh, 780px); box-sizing: border-box; gap: 6px;
     transition: transform 0.2s ease, box-shadow 0.2s, filter 0.3s;
     position: relative; z-index: 1; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
     overflow: visible; /* Engedi, hogy a körök kilógjanak a sarkokon */
@@ -273,20 +284,17 @@ html, body {
 .item-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: clamp(8px, 1.2vh, 12px);
     margin-top: 0;
     justify-content: center;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 150px;
+    width: clamp(140px, 12vw, 190px);
     z-index: 5;
 }
 #p1-items { 
-    right: calc(100% + 30px); /* A P1 kártyától pontosan 30px-re balra */
+    order: -1; 
 }
 #p2-items { 
-    left: calc(100% + 30px); /* A P2 kártyától pontosan 30px-re jobbra */
+    order: 1; 
 }
 
 .item-btn {
@@ -299,12 +307,13 @@ html, body {
     flex-direction: column;
     align-items: flex-start;
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 150px;
+    width: 100%;
     color: white;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: bold;
     text-align: left;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    box-sizing: border-box;
 }
 .item-btn:hover:not(:disabled) {
     transform: scale(1.05);
@@ -315,15 +324,15 @@ html, body {
     filter: grayscale(100%); opacity: 0.5; cursor: not-allowed;
 }
 .item-img {
-    width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;
+    width: 100%; height: clamp(70px, 10vh, 120px); object-fit: cover; border-radius: 4px; margin-bottom: 8px;
 }
 
 .card-header { 
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    margin: -15px -15px 8px -15px; 
-    padding: 10px 5px;
+    margin: calc(-1 * clamp(12px, 2.4vh, 18px)) calc(-1 * clamp(12px, 2.4vh, 18px)) 10px calc(-1 * clamp(12px, 2.4vh, 18px));
+    padding: clamp(7px, 1.8vh, 12px) 6px;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(197, 160, 89, 0.3);
@@ -332,16 +341,16 @@ html, body {
     order: 1; 
     height: auto; 
 }
-.card h2 { margin: 0; font-size: 1rem; color: #fff; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px; border-bottom: none; width: 100%; text-align: center; display: flex; justify-content: center; overflow: hidden;}
+.card h2 { margin: 0; font-size: clamp(1.08rem, 2.4vh, 1.32rem); color: #fff; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 1px; border-bottom: none; width: 100%; text-align: center; display: flex; justify-content: center; overflow: hidden;}
 .card-stats { font-size: 0; color: transparent; position: static; } 
 
 /* --- ÚJ: Látványos sarok körök a HP és AP számára --- */
 #p1-hp, #p2-hp, #p1-ap, #p2-ap {
-    position: absolute; top: -25px; width: 64px; height: 64px;
+    position: absolute; top: clamp(-24px, -3.6vh, -30px); width: clamp(60px, 9.6vh, 76px); height: clamp(60px, 9.6vh, 76px);
     border: 2px solid rgba(197, 160, 89, 0.7); border-radius: 50%; display: flex !important;
     flex-direction: column; align-items: center; justify-content: center;
     font-weight: 900; z-index: 20; box-shadow: 0 6px 15px rgba(0,0,0,0.7);
-    color: #fff !important; font-size: 1.3rem; visibility: visible !important;
+    color: #fff !important; font-size: clamp(1.2rem, 3vh, 1.56rem); visibility: visible !important;
     line-height: 1; padding-bottom: 8px; box-sizing: border-box;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     backdrop-filter: blur(15px);
@@ -369,7 +378,7 @@ html, body {
 .hp-bar { width: 100%; height: 14px; background-color: #222; border-radius: 7px; margin: 2px 0; overflow: hidden; border: 1px solid #444; order: 3; flex-shrink: 0; }
 .hp-fill { height: 100%; background-color: #2ecc71; transition: width 0.4s ease-in-out, background-color 0.4s; }
 
-.card-body { width: 80%; aspect-ratio: 2 / 3; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; order: 2; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); overflow: visible; align-self: center; }
+.card-body { width: 85%; max-height: 45vh; aspect-ratio: 2 / 3; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 10px; order: 2; border-radius: 10px; border: 2px solid #0f3460; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); overflow: visible; align-self: center; flex-shrink: 1; }
 .card-image { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px; }
 
 .status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 25; display: block; margin-top: 0; }
@@ -415,10 +424,10 @@ html, body {
 /* KÉPESSÉG RÁCS */
 .attacks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; order: 4; width: 100%; box-sizing: border-box; }
 .attacks button { 
-    width: 100%; min-width: 0; min-height: 58px; height: auto; padding: 5px 8px; 
+    width: 100%; min-width: 0; min-height: clamp(57px, 8.4vh, 74px); height: auto; padding: 6px 10px; 
     background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%); 
     color: white; border: 1px solid #2a4a7a; border-radius: 10px; 
-    cursor: pointer; font-weight: 800; font-size: 0.7rem; 
+    cursor: pointer; font-weight: 800; font-size: 0.75rem; 
     display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; 
     line-height: 1.2; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
     box-sizing: border-box; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
@@ -428,8 +437,8 @@ html, body {
     word-break: break-word;
     flex-shrink: 0;
 }
-.btn-title { width: 100%; text-align: left; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; margin-bottom: 2px; display: flex; align-items: center; overflow: hidden; }
-.btn-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.6rem; color: #4cc9f0; font-weight: 700; }
+.btn-title { width: 100%; text-align: left; font-size: 0.80rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2px; margin-bottom: 2px; display: flex; align-items: center; overflow: hidden; }
+.btn-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.70rem; color: #4cc9f0; font-weight: 700; }
 .btn-row span { flex: 1; text-align: left; }
 .btn-row span:last-child { text-align: right; }
 .btn-eff { color: #f1c40f !important; font-style: italic; }
@@ -440,7 +449,7 @@ html, body {
     box-shadow: 0 6px 15px rgba(233, 69, 96, 0.4);
 }
 .attacks button:active:not(:disabled) { transform: translateY(0); }
-.attacks button > span { font-size: 0.6rem; color: #4cc9f0; margin-top: 4px; font-weight: 700; opacity: 0.9; display: block; width: 100%; }
+.attacks button > span { font-size: 0.70rem; color: #4cc9f0; margin-top: 5px; font-weight: 700; opacity: 0.9; display: block; width: 100%; }
 .attacks button:disabled { 
     background: #1a1a2e; color: #444; border: 1px solid #111; 
     cursor: not-allowed; box-shadow: none; filter: grayscale(0.8); 
@@ -448,25 +457,25 @@ html, body {
 
 .attacks .charge-btn { 
     grid-column: span 2; background: linear-gradient(90deg, #d35400 0%, #e67e22 100%); 
-    color: #fff; padding: 8px 5px; font-size: 0.8rem; border: 1px solid #ff9f43; 
+    color: #fff; padding: 10px 6px; font-size: 0.85rem; border: 1px solid #ff9f43; 
     box-shadow: 0 4px 12px rgba(211, 84, 0, 0.4);
     line-height: 1.3;
-    min-height: 48px;
+    min-height: 57px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 8px;
 }
-.attacks .charge-btn span { color: #fff; opacity: 1; font-weight: 900; font-size: 0.7rem; margin-top: 4px; }
+.attacks .charge-btn span { color: #fff; opacity: 1; font-weight: 900; font-size: 0.75rem; margin-top: 5px; }
 .attacks .charge-btn:disabled { background: #222; border-color: #333; color: #555; }
 
 /* LOG */
 #log-container { 
     width: 100%; 
-    max-width: 770px;
-    height: 120px; 
-    margin: 15px auto 5px auto;
+    max-width: 924px;
+    height: clamp(96px, 18vh, 168px); 
+    margin: 18px auto 6px auto;
 }
 
 #log { 

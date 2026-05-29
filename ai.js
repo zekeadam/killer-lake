@@ -36,8 +36,8 @@ function getAIMove(myState, oppState) {
         let score = 0;
         
         if (move.type === 'dmg') {
-            // Alap várható sebzés (sebzés * ütések * pontosság)
-            let expectedDmg = move.dmg * (move.hits || 1) * (move.accuracy !== undefined ? move.accuracy : 1);
+            // Alap várható sebzés (sebzés * pontosság - a dmg immár az összesített sebzés!)
+            let expectedDmg = move.dmg * (move.accuracy !== undefined ? move.accuracy : 1);
             
             // Szinergia bónusz (ha a célpont meg van jelölve)
             if (oppCard.isMarked && move.synergy === 'mark') expectedDmg *= 1.5;
