@@ -35,6 +35,10 @@
                     <input type="text" id="opponent-id-input" placeholder="Illeszd be a kapott kódot ide">
                     <button id="connect-btn" onclick="connectToPeer()">Csatlakozás</button>
                 </div>
+
+                <div class="lobby-section">
+                    <button id="leaderboard-btn" onclick="showLeaderboard()">🏆 Globális Ranglista</button>
+                </div>
                 
                 <div id="connection-status">Rendszer inicializálása...</div>
             </div>
@@ -155,6 +159,15 @@
                     <button id="copy-log-btn" class="btn-blue" onclick="copyBattleLog()" style="display: none;">Napló Másolása</button>
                     <button class="btn-red" onclick="location.reload()">Új Játék</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Ranglista Modal -->
+        <div id="leaderboard-modal" style="display: none;">
+            <div class="leaderboard-box">
+                <h2>🏆 Dicsőséglista 🏆</h2>
+                <div id="leaderboard-list"></div>
+                <button class="btn-red" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="closeLeaderboard()">Bezárás</button>
             </div>
         </div>
     </div>

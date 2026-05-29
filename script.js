@@ -797,10 +797,8 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- ÚJ: Ranglista mentés (Ne mentsünk AI vagy teszt meccset) ---
-        if (!isTestMode && winnerName !== "Gonosz AI" && !winnerName.startsWith("AI ")) {
-            saveWin(winnerName);
-        }
+        // --- Módosítva: Most már az AI vs AI (Test Mode) és a PvE győzelmeket is mentjük a ranglistára ---
+        saveWin(winnerName);
 
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
         document.getElementById('turn-indicator').innerText = "Vége";
