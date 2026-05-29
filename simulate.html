@@ -543,6 +543,61 @@
             return out;
         }
 
+        function enforceSanity(atk) {
+            if (!atk) return;
+            
+            // 1. Típus szerinti takarítás és korlátok
+            if (atk.type === 'shield') {
+                atk.cost = Math.max(0, Math.min(2, atk.cost !== undefined ? atk.cost : 1)); // Pajzs ne legyen túl drága
+                atk.accuracy = 1.0; 
+                delete atk.dmg; delete atk.healAmount; delete atk.hits;
+            } 
+            else if (atk.type === 'heal') {
+                atk.accuracy = 1.0; // Heal nem missel
+                delete atk.dmg; delete atk.hits;
+                
+                if (atk.healAmount !== undefined) {
+                    if (atk.cost === 0 && atk.healAmount > 30) atk.healAmount = 30;
+                    if (atk.healAmount > 40 && atk.cost < 1) atk.cost = 1;
+                    if (atk.healAmount > 70 && atk.cost < 2) atk.cost = 2;
+                    if (atk.healAmount > 110 && atk.cost < 3) atk.cost = 3;
+                    
+                    if (atk.cost >= 4 && atk.healAmount < 70) atk.healAmount = 70;
+                }
+            } 
+            else if (atk.type === 'dmg' || atk.dmg !== undefined) {
+                let h = atk.hits || 1;
+                let totalPotential = (atk.dmg || 0) * h;
+                
+                // Ingyenes támadás nem lehet túl erős
+                if (atk.cost === 0 && totalPotential > 40) {
+                    atk.dmg = Math.floor(40 / h);
+                    totalPotential = atk.dmg * h;
+                }
+                
+                // Ha túl sokat sebez, kötelező több AP-t kérni
+                if (totalPotential > 50 && atk.cost < 1) atk.cost = 1;
+                if (totalPotential > 100 && atk.cost < 2) atk.cost = 2;
+                if (totalPotential > 160 && atk.cost < 3) atk.cost = 3;
+                if (totalPotential > 220 && atk.cost < 4) atk.cost = 4;
+                if (totalPotential > 280 && atk.cost < 5) atk.cost = 5;
+                if (totalPotential > 340 && atk.cost < 6) atk.cost = 6;
+                
+                // Magas AP költséghez társuljon normális minimális sebzés is, hogy ne legyen "holt" támadás
+                if (atk.cost >= 3 && totalPotential < 70) atk.dmg = Math.floor(70 / h);
+                if (atk.cost >= 4 && totalPotential < 120) atk.dmg = Math.floor(120 / h);
+                if (atk.cost >= 5 && totalPotential < 180) atk.dmg = Math.floor(180 / h);
+                if (atk.cost >= 6 && totalPotential < 240) atk.dmg = Math.floor(240 / h);
+                
+                atk.accuracy = Math.max(0.5, Math.min(1.0, atk.accuracy || 1.0));
+                delete atk.healAmount;
+            }
+            
+            if (atk.cost !== undefined) {
+                atk.cost = Math.max(0, Math.min(6, atk.cost));
+            }
+        }
+
         function createInitialGenome() {
             let genome = {};
             const useOptimized = document.getElementById('use-optimized').checked || currentPhase === 2;
@@ -550,6 +605,8 @@
                 if (!card.type || card.type === 'character') {
                     let maxHp = card.maxHp;
                     let attacks = (card.attacks || []).map(a => ({ 
+                        type: a.type,
+                        effect: a.effect,
                         dmg: a.dmg, 
                         healAmount: a.healAmount,
                         hits: a.hits,
@@ -574,6 +631,9 @@
                         }
                     }
 
+                    // --- INITIAL SANITY CHECK ---
+                    attacks.forEach(atk => enforceSanity(atk));
+
                     genome[card.id] = {
                         maxHp: maxHp,
                         attacks: attacks
@@ -596,9 +656,20 @@
 
             for (let cardId in newGenome) {
                 let card = newGenome[cardId];
+                
+                // HP mutáció kikapcsolva kérésre
+                // if (Math.random() < 0.1) {
+                //     let hpChange = Math.round((Math.random() - 0.5) * 40);
+                //     card.maxHp = Math.max(50, Math.min(400, card.maxHp + hpChange));
+                // }
+
                 card.attacks.forEach(atk => {
-                    if (Math.random() < dmgHealMutateChance && atk.dmg !== undefined) atk.dmg = Math.max(10, Math.round(atk.dmg + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
-                    if (Math.random() < dmgHealMutateChance && atk.healAmount !== undefined) atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
+                    if (Math.random() < dmgHealMutateChance && atk.dmg !== undefined) {
+                        atk.dmg = Math.max(5, Math.round(atk.dmg + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
+                    }
+                    if (Math.random() < dmgHealMutateChance && atk.healAmount !== undefined) {
+                        atk.healAmount = Math.max(10, Math.round(atk.healAmount + (Math.random() * dmgHealMutateAmount - (dmgHealMutateAmount/2))));
+                    }
                     if (Math.random() < 0.05 && atk.dmg !== undefined) {
                         atk.hits = atk.hits || 1;
                         if (Math.random() < 0.5) atk.hits = Math.min(4, atk.hits + 1);
@@ -609,10 +680,12 @@
                         if (currentPhase === 1 && Math.random() < 0.2) change *= 2;
                         atk.cost = Math.max(0, Math.min(6, atk.cost + change));
                     }
-                    if (Math.random() < accChance) {
+                    if (Math.random() < accChance && atk.type === 'dmg') {
                         let accChange = currentPhase === 1 ? 0.2 : 0.1;
                         atk.accuracy = Math.min(1.0, Math.max(0.5, (atk.accuracy || 1.0) + (Math.random() * accChange - (accChange/2))));
                     }
+                    
+                    enforceSanity(atk);
                 });
             }
             return newGenome;
