@@ -192,8 +192,19 @@
                     cardDatabase.forEach(card => {
                         const override = optimizedCardOverrides[card.id];
                         if (override) {
-                            if (override.maxHp !== undefined) card.maxHp = override.maxHp;
-                            if (override.attacks) card.attacks.forEach((atk, i) => { if (override.attacks[i]) Object.assign(atk, override.attacks[i]); });
+                            if (override.maxHp !== undefined && override.maxHp !== card.maxHp) {
+                                card.origMaxHp = card.maxHp;
+                                card.maxHp = override.maxHp;
+                            }
+                            if (override.attacks) {
+                                card.attacks.forEach((atk, i) => {
+                                    if (override.attacks[i]) {
+                                        if (override.attacks[i].dmg !== undefined && override.attacks[i].dmg !== atk.dmg) atk.origDmg = atk.dmg;
+                                        if (override.attacks[i].accuracy !== undefined && override.attacks[i].accuracy !== atk.accuracy) atk.origAccuracy = atk.accuracy;
+                                        Object.assign(atk, override.attacks[i]);
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -227,8 +238,13 @@
 
                         if (attack.type === 'dmg') {
                             const acc = Math.round((attack.accuracy !== undefined ? attack.accuracy : 1.0) * 100);
-                            statText = `💥${attack.dmg}`;
-                            hitText = `🎯${attack.hits || 1}x | 🎲${acc}%`;
+                            const origAcc = attack.origAccuracy !== undefined ? Math.round(attack.origAccuracy * 100) : acc;
+                            
+                            let dmgDisplay = attack.origDmg !== undefined ? `<s>${attack.origDmg}</s> <span style="color: #ff4d4d;">${attack.dmg}</span>` : `${attack.dmg}`;
+                            let accDisplay = attack.origAccuracy !== undefined ? `<s>${origAcc}%</s> <span style="color: #ff4d4d;">${acc}%</span>` : `${acc}%`;
+
+                            statText = `💥${dmgDisplay}`;
+                            hitText = `🎯${attack.hits || 1}x | 🎲${accDisplay}`;
                             if (attack.effect === 'burn') icon = "🔥";
                             if (attack.effect === 'paralyze') icon = "⚡";
                         } else if (attack.type === 'heal') {
@@ -249,12 +265,14 @@
                     attacksHtml += '</ul></div>';
                 }
 
+                let hpDisplay = card.origMaxHp !== undefined ? `<s>${card.origMaxHp}</s> <span style="color: #ff4d4d;">${card.maxHp}</span>` : `${card.maxHp}`;
+
                 cardEl.innerHTML = `
                     <div class="card-index">#${index}</div>
                     <img src="${card.image}" alt="${card.name}">
                     <div class="card-header-row">
                         <h3 class="tooltip-bottom"><span class="truncate-text">${card.name}</span></h3>
-                        ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${card.maxHp} HP</span>`}
+                        ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${hpDisplay} HP</span>`}
                     </div>
                     ${attacksHtml}
                 `;

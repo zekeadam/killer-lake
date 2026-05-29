@@ -35,21 +35,21 @@
         
         <div class="controls">
             <label for="pop-size" style="font-weight: bold;">Variációk:</label>
-            <input type="number" id="pop-size" value="20" title="Kártya variációk száma generációnként">
+            <input type="number" id="pop-size" value="50" title="Kártya variációk száma generációnként">
             <label for="gen-count" style="font-weight: bold;">Generációk:</label>
-            <input type="number" id="gen-count" value="10" title="Hány alkalommal mutálódjon a populáció">
+            <input type="number" id="gen-count" value="50" title="Hány alkalommal mutálódjon a populáció">
             <label for="sim-count" style="font-weight: bold;">Meccsek:</label>
-            <input type="number" id="sim-count" value="50" title="Hány meccset játsszon egy variáció a teszteléshez">
+            <input type="number" id="sim-count" value="100" title="Hány meccset játsszon egy variáció a teszteléshez">
             
             <button onclick="startEvolution()">Evolúció Indítása</button>
             <button id="download-btn" onclick="downloadJS()" style="display:none;">Optimalizált JS Letöltése</button>
         </div>
         
-        <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 10 000 mérkőzés</p>
+        <p id="calc-info" style="font-weight: bold; color: #4cc9f0; margin-bottom: 5px;">Összes kalkuláció: 250 000 mérkőzés</p>
         <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
         <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
 
-        <div id="output">Az algoritmus a legkisebb eltérésű (legjobb balance) variációt keresi...</div>
+        <div id="output">Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...</div>
     </div>
 
     <script src="cards.js"></script>
@@ -62,20 +62,20 @@
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
         
-        let currentTracker = { totalMatches: 0, cards: {} };
+        let currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
         
         // Segédfüggvény a kalkulációk frissítéséhez
         function updateCalcInfo() {
-            const p = parseInt(document.getElementById('pop-size').value) || 20;
-            const g = parseInt(document.getElementById('gen-count').value) || 10;
-            const m = parseInt(document.getElementById('sim-count').value) || 50;
+            const p = parseInt(document.getElementById('pop-size').value) || 50;
+            const g = parseInt(document.getElementById('gen-count').value) || 50;
+            const m = parseInt(document.getElementById('sim-count').value) || 100;
             document.getElementById('calc-info').innerText = `Összes kalkuláció: ${(p * g * m).toLocaleString('hu-HU')} mérkőzés`;
         }
         document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
         window.addEventListener('DOMContentLoaded', updateCalcInfo);
 
         function initTrackerForGenome() {
-            currentTracker = { totalMatches: 0, cards: {} };
+            currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
             cardDatabase.forEach(c => {
                 if (c.type === 'item' || c.type === 'supporter') {
                 } else {
@@ -263,7 +263,13 @@
                     }
                 }
 
-                // Fitness: Mennyire van balance-ban az összes kártya (Winrate ~ 50%)
+                // Izgalom faktor: a meccsek átlagos hossza legyen az ideális közelében (pl. 35 kör)
+                // Ha egy meccs csak 10 kör, vagy 100+ körig tart, azt büntetjük!
+                let avgTurns = currentTracker.totalMatches > 0 ? currentTracker.totalTurns / currentTracker.totalMatches : 0;
+                let optimalTurns = 35; 
+                let turnPenalty = Math.abs(optimalTurns - avgTurns) / 100;
+
+                // Balance faktor: Mennyire van balance-ban az összes kártya (Winrate ~ 50%)
                 let totalWinDiff = 0;
                 let cardCount = 0;
                 for (let id in currentTracker.cards) {
@@ -273,13 +279,15 @@
                     cardCount++;
                 }
                 
-                let fitness = -(totalWinDiff / cardCount); // Minél közelebb a 0-hoz, annál jobb
+                // A fitness a kettő ötvözete. Minél közelebb a 0-hoz, annál jobb.
+                let balanceScore = totalWinDiff / cardCount;
+                let fitness = -balanceScore - turnPenalty; 
                 population[currentGenome].fitness = fitness;
                 
                 if (fitness > bestOverallFitness) {
                     bestOverallFitness = fitness;
                     bestOverallGenome = JSON.parse(JSON.stringify(genome));
-                    document.getElementById('output').innerText = `Új legjobb variáció megtalálva (Fitness: ${fitness.toFixed(4)})`;
+                    document.getElementById('output').innerText = `🏆 Új legjobb variáció megtalálva!\nFitness: ${fitness.toFixed(4)}\n\n📊 Balance (eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)`;
                 }
             }
             evolvePopulation();
@@ -338,6 +346,8 @@
                 else { applyMoveHeadless(state, pId, move); if (!state.gameOver) endTurnPhaseHeadless(state, pId); }
                 turns++;
             }
+            currentTracker.totalTurns += turns;
+            currentTracker.totalMatches++;
             if (state.winner) state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
         }
 
