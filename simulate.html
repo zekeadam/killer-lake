@@ -81,6 +81,7 @@
         let currentGen = 0;
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
+        let bestOverallBalanceScore = 0;
         let generationsSinceLastImprovement = 0;
         let lastSignificantFitness = -Infinity;
         
@@ -117,7 +118,18 @@
                         borderWidth: 2,
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 0
+                        pointRadius: 0,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Átlagos WR Eltérés (%)',
+                        data: [],
+                        borderColor: '#e94560',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.3,
+                        pointRadius: 0,
+                        yAxisID: 'y1'
                     }]
                 },
                 options: {
@@ -125,11 +137,25 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: { display: true, grid: { color: '#222' }, title: { display: true, text: 'Generációk', color: '#666' } },
-                        y: { display: true, grid: { color: '#222' }, title: { display: true, text: 'Fitness Érték', color: '#666' } }
+                        y: { 
+                            display: true, 
+                            position: 'left',
+                            grid: { color: '#222' }, 
+                            title: { display: true, text: 'Fitness Érték', color: '#4cc9f0' },
+                            ticks: { color: '#4cc9f0' }
+                        },
+                        y1: {
+                            display: true,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'WR Eltérés %', color: '#e94560' },
+                            ticks: { color: '#e94560' },
+                            suggestedMin: 0
+                        }
                     },
                     plugins: {
                         legend: { labels: { color: '#ccc' } },
-                        tooltip: { enabled: true }
+                        tooltip: { mode: 'index', intersect: false }
                     }
                 }
             });
@@ -339,6 +365,7 @@
             
             currentGen = 0;
             bestOverallFitness = -Infinity;
+            bestOverallBalanceScore = 0;
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
             matchesCompleted = 0;
@@ -478,6 +505,7 @@
                             if (fitness > bestOverallFitness) {
                                 let improvement = bestOverallFitness === -Infinity ? 0 : fitness - bestOverallFitness;
                                 bestOverallFitness = fitness;
+                                bestOverallBalanceScore = balanceScore;
                                 bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
                                 
                                 let cardStats = Object.values(tracker.cards).map(c => ({ 
@@ -517,6 +545,7 @@
                             if (fitnessChart) {
                                 fitnessChart.data.labels.push(currentGen + 1);
                                 fitnessChart.data.datasets[0].data.push(bestOverallFitness === -Infinity ? null : bestOverallFitness);
+                                fitnessChart.data.datasets[1].data.push(bestOverallFitness === -Infinity ? null : bestOverallBalanceScore * 100);
                                 fitnessChart.update('none'); // 'none' a jobb teljesítményért 1000 generációnál
                             }
 
