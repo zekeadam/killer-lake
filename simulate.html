@@ -84,6 +84,8 @@
         let bestOverallBalanceScore = 0;
         let generationsSinceLastImprovement = 0;
         let lastSignificantFitness = -Infinity;
+        let currentBestLog = "";
+        let milestoneLog = [];
         
         let workers = [];
         let numWorkers = navigator.hardwareConcurrency || 4;
@@ -366,6 +368,8 @@
             currentGen = 0;
             bestOverallFitness = -Infinity;
             bestOverallBalanceScore = 0;
+            currentBestLog = "";
+            milestoneLog = [];
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
             matchesCompleted = 0;
@@ -380,6 +384,15 @@
             
             document.getElementById('output').innerText = "Evolúció elindítva (" + numWorkers + " szálon)...";
             runGeneration();
+        }
+
+        function updateOutput() {
+            let out = currentBestLog || "Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...";
+            if (milestoneLog.length > 0) {
+                out += "\n\n--- Időközi Mérföldkövek (50 generációnként) ---\n";
+                out += milestoneLog.join('\n');
+            }
+            document.getElementById('output').innerText = out;
         }
 
         function createInitialGenome() {
@@ -501,6 +514,7 @@
                             let balanceScore = totalWinDiff / cardCount;
                             let fitness = -balanceScore - turnPenalty; 
                             population[genomeIndex].fitness = fitness;
+                            population[genomeIndex].stats = { balanceScore, avgTurns };
                             
                             if (fitness > bestOverallFitness) {
                                 let improvement = bestOverallFitness === -Infinity ? 0 : fitness - bestOverallFitness;
@@ -508,7 +522,8 @@
                                 bestOverallBalanceScore = balanceScore;
                                 bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
                                 
-                                let cardStats = Object.values(tracker.cards).map(c => ({ 
+                                let cardStats = Object.entries(tracker.cards).map(([id, c]) => ({ 
+                                    id: id,
                                     name: c.name, 
                                     wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50,
                                     wins: c.wins,
@@ -530,13 +545,14 @@
                                 logText += `🔄 Összes lejátszott meccs: ${matchesCompleted.toLocaleString('hu-HU')}\n\n`;
                                 
                                 logText += `Kártya Statisztikák (Winrate szerint):\n`;
-                                logText += ` WR %  |  W/M    | Név\n`;
+                                logText += ` WR %  |  W/M    | Név (ID)\n`;
                                 logText += `-------|---------|----------------------\n`;
                                 logText += cardStats.map(c => 
-                                    `${c.wr.toFixed(1).padStart(5)}% | ${c.wins.toString().padStart(3)}/${c.matches.toString().padEnd(3)} | ${c.name}`
+                                    `${c.wr.toFixed(1).padStart(5)}% | ${c.wins.toString().padStart(3)}/${c.matches.toString().padEnd(3)} | ${c.name} (${c.id})`
                                 ).join('\n');
                                 
-                                document.getElementById('output').innerText = logText;
+                                currentBestLog = logText;
+                                updateOutput();
                             }
                         });
                         
@@ -547,6 +563,15 @@
                                 fitnessChart.data.datasets[0].data.push(bestOverallFitness === -Infinity ? null : bestOverallFitness);
                                 fitnessChart.data.datasets[1].data.push(bestOverallFitness === -Infinity ? null : bestOverallBalanceScore * 100);
                                 fitnessChart.update('none'); // 'none' a jobb teljesítményért 1000 generációnál
+                            }
+
+                            // Mérföldkő mentése 50 generációnként
+                            population.sort((a, b) => b.fitness - a.fitness);
+                            if ((currentGen + 1) % 50 === 0) {
+                                const best = population[0];
+                                const milestone = `📍 [${currentGen + 1}. Gen] Fitness: ${best.fitness.toFixed(4)} | WR Eltérés: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
+                                milestoneLog.unshift(milestone);
+                                updateOutput();
                             }
 
                             if (bestOverallFitness > lastSignificantFitness + 0.0001) {
