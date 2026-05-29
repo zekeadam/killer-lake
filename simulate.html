@@ -85,6 +85,10 @@
         <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
         <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
 
+        <div style="margin: 15px 0; font-size: 1.2rem; font-weight: bold; border-top: 1px solid #333; padding-top: 10px;">
+            Egyensúly minősége: <span id="stat-assessment" style="color: #ccc;">Várakozás...</span>
+        </div>
+
         <div id="live-stats" style="margin: 10px 0; font-size: 1.1rem; font-weight: bold; display: flex; justify-content: center; gap: 30px;">
             <span style="color: #4cc9f0;">Legjobb Fitness: <span id="stat-fitness">-</span></span>
             <span style="color: #e94560;">WR Eltérés: <span id="stat-wr">-</span>%</span>
@@ -444,6 +448,8 @@
             bestOverallBalanceScore = 0;
             document.getElementById('stat-fitness').innerText = "-";
             document.getElementById('stat-wr').innerText = "-";
+            document.getElementById('stat-assessment').innerText = "Számítás...";
+            document.getElementById('stat-assessment').style.color = "#ccc";
             document.getElementById('stat-turns').innerText = "-";
             document.getElementById('stat-range').innerText = "-";
             generationsSinceLastImprovement = 0;
@@ -528,7 +534,11 @@
 
         function mutateGenome(genome) {
             let newGenome = JSON.parse(JSON.stringify(genome));
-            let dmgHealMutateAmount = currentPhase === 1 ? 20 : 10;
+            
+            // Adaptív mutáció: ha stagnálunk, finomítunk a lépésközön
+            let stagnationScale = currentPhase === 2 ? Math.max(0.2, 1 - (generationsSinceLastImprovement / 100)) : 1;
+            let dmgHealMutateAmount = (currentPhase === 1 ? 20 : 10) * stagnationScale;
+            
             let dmgHealMutateChance = currentPhase === 1 ? 0.2 : 0.1;
             let apCostChance = currentPhase === 1 ? 0.3 : 0.1;
             let accChance = currentPhase === 1 ? 0.1 : 0.05;
@@ -658,6 +668,18 @@
                                 document.getElementById('stat-wr').innerText = (balanceScore * 100).toFixed(2);
                                 document.getElementById('stat-turns').innerText = avgTurns.toFixed(1);
                                 document.getElementById('stat-range').innerText = (maxWR - minWR).toFixed(1);
+
+                                // Szöveges értékelés logika
+                                let wrDiff = balanceScore * 100;
+                                let assessment = "";
+                                let assessColor = "";
+                                if (wrDiff < 3) { assessment = "Kiváló (E-sport szint)"; assessColor = "#2ecc71"; }
+                                else if (wrDiff < 5) { assessment = "Nagyon jó (Profi egyensúly)"; assessColor = "#a3cb38"; }
+                                else if (wrDiff < 8) { assessment = "Jó (Stabil mezőny)"; assessColor = "#f1c40f"; }
+                                else if (wrDiff < 12) { assessment = "Közepes (Még finomítható)"; assessColor = "#e67e22"; }
+                                else { assessment = "Gyenge (Kiegyensúlyozatlan)"; assessColor = "#e94560"; }
+                                document.getElementById('stat-assessment').innerText = assessment;
+                                document.getElementById('stat-assessment').style.color = assessColor;
                                 
                                 currentBestLog = logText;
                                 updateOutput();
@@ -677,7 +699,8 @@
                             population.sort((a, b) => b.fitness - a.fitness);
                             if ((currentPhaseGens + 1) % 10 === 0) {
                                 const best = population[0];
-                                const milestone = `📍 [${currentGen + 1}. Gen] Fitness (Gen/Max): ${best.fitness.toFixed(4)} / ${bestOverallFitness.toFixed(4)} | WR: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
+                                const isNewRecord = best.fitness >= bestOverallFitness;
+                                const milestone = `${isNewRecord ? '⭐' : '📍'} [${currentGen + 1}. Gen] Fitness (Gen/Max): ${best.fitness.toFixed(4)} / ${bestOverallFitness.toFixed(4)} | WR: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
                                 milestoneLog.unshift(milestone);
                                 updateOutput();
                             }
@@ -724,9 +747,16 @@
             population.sort((a, b) => b.fitness - a.fitness); // Legjobbak elöl
             let nextPop = [];
             
+            // Hall of Fame: Az eddigi abszolút legjobb genom mindig kerüljön be (megvédi a stagnálástól)
+            if (bestOverallGenome) nextPop.push({ genome: JSON.parse(JSON.stringify(bestOverallGenome)), fitness: 0, stats: null });
+
             // Elitizmus (A legjobb 10% továbbjut módosítás nélkül)
             let eliteCount = Math.max(1, Math.floor(popSize * 0.1));
-            for(let i=0; i<eliteCount; i++) nextPop.push({ genome: JSON.parse(JSON.stringify(population[i].genome)), fitness: 0, stats: null });
+            for(let i=0; i<eliteCount; i++) {
+                if (nextPop.length < popSize) {
+                    nextPop.push({ genome: JSON.parse(JSON.stringify(population[i].genome)), fitness: 0, stats: null });
+                }
+            }
             
             // Crossover & Mutation
             while(nextPop.length < popSize) {
