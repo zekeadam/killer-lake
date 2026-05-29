@@ -383,12 +383,14 @@ h1 { display: none; }
 
 /* A korábbi [style*="..."] szelektorokat eltávolítottuk a stabilitás érdekében */
 
-.badge-para, .badge-burn { 
+.badge-para, .badge-burn, .badge-poison, .badge-mark, .badge-counter { 
     width: 38px; height: 38px; border-radius: 50%; position: absolute; right: -20px; 
 }
 .badge-para { background-color: #f1c40f; top: 60px; }
-
 .badge-burn { background-color: #e74c3c; color: white; top: 110px; }
+.badge-poison { background-color: #9b59b6; color: white; top: 160px; }
+.badge-mark { background-color: #e67e22; color: white; top: 210px; }
+.badge-counter { background-color: #95a5a6; color: black; top: 260px; }
 
 .badge-shield { 
     background-color: transparent; 
