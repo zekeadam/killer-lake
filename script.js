@@ -798,7 +798,8 @@ function checkWin() {
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
         // --- Módosítva: Most már az AI vs AI (Test Mode) és a PvE győzelmeket is mentjük a ranglistára ---
-        saveWin(winnerName);
+        updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
+        updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
 
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
         document.getElementById('turn-indicator').innerText = "Vége";
@@ -1470,22 +1471,28 @@ function downloadBattleLog() {
 // IDE MÁSOLD BE A SAJÁT FIREBASE LINKEDET! (Ne felejtsd el a végét: /leaderboard)
 const LEADERBOARD_API_URL = 'https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app/leaderboard';
 
-async function saveWin(playerName) {
+async function updateGlobalStats(playerName, isWinner, damageDealt) {
     if (!playerName) return;
     
-    // A Firebase nem enged bizonyos karaktereket a kulcsokban, ezért eltávolítjuk őket
     const safeName = playerName.replace(/[.#$\[\]/]/g, '').trim();
     
     try {
-        // 1. Lekérjük a játékos eddigi pontjait a szerverről
         const res = await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`);
-        let currentWins = await res.json();
-        if (currentWins === null) currentWins = 0;
+        let stats = await res.json() || { wins: 0, losses: 0, matches: 0, damage: 0 };
         
-        // 2. Hozzáadunk egyet, és visszaküldjük
+        // Ha régi formátumú adat (csak egy szám) volt ott, alakítsuk át
+        if (typeof stats === 'number') {
+            stats = { wins: stats, losses: 0, matches: stats, damage: 0 };
+        }
+
+        stats.matches += 1;
+        stats.damage += (damageDealt || 0);
+        if (isWinner) stats.wins += 1;
+        else stats.losses += 1;
+        
         await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`, {
             method: 'PUT',
-            body: JSON.stringify(currentWins + 1)
+            body: JSON.stringify(stats)
         });
     } catch (error) {
         console.error('Nem sikerült menteni a szerverre:', error);
@@ -1504,18 +1511,39 @@ async function showLeaderboard() {
         const res = await fetch(`${LEADERBOARD_API_URL}.json`);
         let leaderboard = await res.json() || {};
         
-        const sorted = Object.entries(leaderboard).sort((a, b) => b[1] - a[1]);
+        // Rendezés: Elsősorban Wins, másodsorban összes sebzés
+        const sorted = Object.entries(leaderboard).sort((a, b) => {
+            const aWins = typeof a[1] === 'object' ? a[1].wins : a[1];
+            const bWins = typeof b[1] === 'object' ? b[1].wins : b[1];
+            if (bWins !== aWins) return bWins - aWins;
+            return (b[1].damage || 0) - (a[1].damage || 0);
+        });
         
         list.innerHTML = '';
         if (sorted.length === 0) {
             list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Még nincsenek győzelmek rögzítve globálisan.</p>';
         } else {
-            sorted.forEach(([name, wins], index) => {
+            // Fejléc hozzáadása
+            list.innerHTML = `
+                <div class="leaderboard-entry leaderboard-header">
+                    <span class="rank">#</span>
+                    <span class="name">Név</span>
+                    <span class="stat">W</span>
+                    <span class="stat">L</span>
+                    <span class="stat">M</span>
+                    <span class="stat">Dmg</span>
+                </div>`;
+
+            sorted.forEach(([name, data], index) => {
+                const s = typeof data === 'object' ? data : { wins: data, losses: 0, matches: data, damage: 0 };
                 list.innerHTML += `
                     <div class="leaderboard-entry">
                         <span class="rank">#${index + 1}</span>
                         <span class="name truncate-text">${name}</span>
-                        <span class="wins">${wins} Win</span>
+                        <span class="wins">${s.wins}</span>
+                        <span class="stat">${s.losses || 0}</span>
+                        <span class="stat">${s.matches || s.wins}</span>
+                        <span class="dmg">${(s.damage || 0).toLocaleString()}</span>
                     </div>
                 `;
             });
