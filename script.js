@@ -855,6 +855,7 @@ function updateUI() {
 }
 
 function checkWin() {
+    if (gameState.gameOver) return true;
     if (gameState.p1.activeIndex >= 5 || gameState.p2.activeIndex >= 5) {
         gameState.gameOver = true;
         const winnerId = gameState.p1.activeIndex < 5 ? 'p1' : 'p2';
@@ -862,8 +863,8 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- A PVP és AI vs AI (Test Mode) meccseket mentjük a ranglistára (PvE-t nem) ---
-        if (!isPvEMode) {
+        // --- Csak a befejezett PVP meccseket mentjük a ranglistára (PvE-t és Test módot nem) ---
+        if (!isPvEMode && !isTestMode) {
             updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
             updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
         }
