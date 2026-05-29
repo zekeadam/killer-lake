@@ -1115,12 +1115,7 @@ function applyMove(playerId, data) {
                 }
             } else {
                 if (move.effect === "paralyze" || move.effect === "burn" || move.effect === "poison" || move.effect === "mark") {
-                    if (oppCard.shields > 0) {
-                        oppCard.shields--;
-                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
-                        playSound('shield_break');
-                        triggerShieldScan(oppId);
-                    } else {
+                    if (hitsLanded > 0) {
                         if (move.effect === "paralyze") {
                             if (oppCard.paraImmune) {
                                 logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
@@ -1140,6 +1135,8 @@ function applyMove(playerId, data) {
                             oppCard.isMarked = true;
                             logMessage(`> ${oppCard.name} Célkeresztbe került (Megjelölve)!`, "status-effect");
                         }
+                    } else if (shieldsBroken > 0) {
+                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet is!`, "log-shield");
                     }
                 }
             }
@@ -1316,10 +1313,12 @@ function applyItem(playerId, data) {
 
     if (action.type === 'dmg') {
         let dmgToApply = action.dmg;
+        let itemBlockedByShield = false;
         if (oppCard.shields > 0) {
             oppCard.shields--;
             dmgToApply = 0; // A pajzs elnyeli a tárgy sebzését
             logMessage(`> ${oppCard.name} pajzsa elnyelte a tárgy sebzését!`, "log-shield");
+            itemBlockedByShield = true;
             playSound('shield_break');
             triggerShieldScan(oppId);
         } else {
@@ -1333,11 +1332,8 @@ function applyItem(playerId, data) {
 
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
         if (action.effect === 'paralyze') {
-            if (oppCard.shields > 0) {
-                oppCard.shields--;
-                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást!`, "log-shield");
-                playSound('shield_break');
-                triggerShieldScan(oppId);
+            if (itemBlockedByShield) {
+                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást is!`, "log-shield");
             } else {
                 if (oppCard.paraImmune) {
                     logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");

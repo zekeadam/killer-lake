@@ -316,8 +316,7 @@
 
                         if (oppCard.hp <= 0) oppState.activeIndex++;
                         else if (move.effect === 'paralyze' || move.effect === 'burn' || move.effect === 'poison' || move.effect === 'mark') {
-                            if (oppCard.shields > 0) oppCard.shields--;
-                            else {
+                            if (hitsLanded > 0) {
                                 if (move.effect === 'paralyze') {
                                     if (!oppCard.paraImmune) oppCard.isParalyzed = true;
                                 }
