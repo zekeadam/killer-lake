@@ -1607,8 +1607,8 @@ async function updateGlobalStats(playerName, isWinner, damageDealt, mode = 'pvp'
             stats = { wins: stats, losses: 0, matches: stats, damage: 0 };
         }
 
-        stats.matches += 1;
-        stats.damage += (damageDealt || 0);
+        stats.matches = (stats.matches || 0) + 1;
+        stats.damage = (stats.damage || 0) + (damageDealt || 0);
         if (isWinner) stats.wins = (stats.wins || 0) + 1;
         else stats.losses = (stats.losses || 0) + 1;
         
