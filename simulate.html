@@ -37,11 +37,10 @@
         
         <div class="controls">
             <label for="pop-size" style="font-weight: bold;">Variációk:</label>
-            <input type="number" id="pop-size" value="50" title="Kártya variációk száma generációnként">
+            <input type="number" id="pop-size" value="100" title="Kártya variációk száma generációnként">
             <label for="gen-count" style="font-weight: bold;">Generációk:</label>
-            <input type="number" id="gen-count" value="50" title="Hány alkalommal mutálódjon a populáció">
-            <label for="sim-count" style="font-weight: bold;">Meccsek:</label>
-            <input type="number" id="sim-count" value="100" title="Hány meccset játsszon egy variáció a teszteléshez">
+            <input type="number" id="gen-count" value="200" title="Hány alkalommal mutálódjon a populáció">
+            <!-- A mecsek input el lett távolítva, mert fixen 1 lesz -->
             
             <button onclick="startEvolution()">Evolúció Indítása</button>
             <button id="download-btn" onclick="downloadJS()" style="display:none;">Optimalizált JS Letöltése</button>
@@ -56,6 +55,12 @@
     </div>
 
     <script src="cards.js"></script>
+    <script>
+        // Betöltjük az optimalizált értékeket (ha léteznek), így a szimuláció ezekből indul ki
+        const optScriptSim = document.createElement('script');
+        optScriptSim.src = 'optimized_cards.js';
+        document.head.appendChild(optScriptSim);
+    </script>
     <script src="ai.js"></script>
     <script>
         // Evolúciós paraméterek
@@ -71,9 +76,9 @@
         
         // Segédfüggvény a kalkulációk frissítéséhez
         function updateCalcInfo() {
-            const p = parseInt(document.getElementById('pop-size').value) || 50;
-            const g = parseInt(document.getElementById('gen-count').value) || 50;
-            const m = parseInt(document.getElementById('sim-count').value) || 100;
+            const p = parseInt(document.getElementById('pop-size').value) || 100;
+            const g = parseInt(document.getElementById('gen-count').value) || 200;
+            const m = 30; // Fixen 30 a statisztika miatt
             document.getElementById('calc-info').innerText = `Összes kalkuláció: ${(p * g * m).toLocaleString('hu-HU')} mérkőzés`;
         }
         document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
@@ -195,9 +200,9 @@
 
         // --- EVOLÚCIÓ LOGIKA ---
         function startEvolution() {
-            popSize = parseInt(document.getElementById('pop-size').value) || 20;
-            genCount = parseInt(document.getElementById('gen-count').value) || 10;
-            matchesPerGenome = parseInt(document.getElementById('sim-count').value) || 50;
+            popSize = parseInt(document.getElementById('pop-size').value) || 100;
+            genCount = parseInt(document.getElementById('gen-count').value) || 200;
+            matchesPerGenome = 30; // Legalább 30 kell a statisztikához (0% vagy 100% elkerülésére)
             
             currentGen = 0;
             bestOverallFitness = -Infinity;
@@ -219,15 +224,31 @@
             let genome = {};
             cardDatabase.forEach(card => {
                 if (!card.type || card.type === 'character') {
+                    let maxHp = card.maxHp;
+                    let attacks = (card.attacks || []).map(a => ({ 
+                        dmg: a.dmg, 
+                        healAmount: a.healAmount,
+                        hits: a.hits,
+                        cost: a.cost, 
+                        accuracy: a.accuracy || 1.0 
+                    }));
+
+                    // Alkalmazzuk az optimalizált értékeket indulásként (ha léteznek)
+                    if (typeof optimizedCardOverrides !== 'undefined' && optimizedCardOverrides[card.id]) {
+                        const override = optimizedCardOverrides[card.id];
+                        if (override.maxHp !== undefined) maxHp = override.maxHp;
+                        if (override.attacks) {
+                            attacks.forEach((atk, i) => {
+                                if (override.attacks[i]) {
+                                    Object.assign(atk, override.attacks[i]);
+                                }
+                            });
+                        }
+                    }
+
                     genome[card.id] = {
-                        maxHp: card.maxHp,
-                        attacks: (card.attacks || []).map(a => ({ 
-                            dmg: a.dmg, 
-                            healAmount: a.healAmount,
-                            hits: a.hits,
-                            cost: a.cost, 
-                            accuracy: a.accuracy || 1.0 
-                        }))
+                        maxHp: maxHp,
+                        attacks: attacks
                     };
                 }
             });
@@ -248,10 +269,11 @@
                         if (Math.random() < 0.5) atk.hits = Math.min(4, atk.hits + 1);
                         else atk.hits = Math.max(1, atk.hits - 1);
                     }
-                    // AP Költség mutáció
-                    if (Math.random() < 0.1 && atk.cost !== undefined) {
-                        if (Math.random() < 0.5) atk.cost = Math.min(5, atk.cost + 1);
-                        else atk.cost = Math.max(0, atk.cost - 1);
+                    // AP Költség mutáció - sokkal agresszívabb optimalizálás
+                    if (Math.random() < 0.3 && atk.cost !== undefined) {
+                        let change = Math.random() < 0.5 ? 1 : -1;
+                        if (Math.random() < 0.2) change *= 2; // 20% eséllyel 2 AP-t is ugorhat
+                        atk.cost = Math.max(0, Math.min(6, atk.cost + change));
                     }
                     if (Math.random() < 0.1) atk.accuracy = Math.min(1.0, Math.max(0.5, (atk.accuracy || 1.0) + (Math.random() * 0.2 - 0.1)));
                 });
@@ -326,6 +348,15 @@
                     document.getElementById('output').innerText = logText;
                 }
             }
+            
+            // Early stopping logika
+            if (bestOverallFitness > lastSignificantFitness + 0.0001) {
+                lastSignificantFitness = bestOverallFitness;
+                generationsSinceLastImprovement = 0;
+            } else {
+                generationsSinceLastImprovement++;
+            }
+            
             evolvePopulation();
         }
 
