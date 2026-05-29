@@ -26,8 +26,8 @@ const soundURLs = {
     shield: "https://www.myinstants.com/media/sounds/energy-generator-bounce.mp3",     // MEGSZÓLAL: Amikor a karakter pajzsot (Shield) kap (saját támadásból vagy itemből).
     heal: "https://www.myinstants.com/media/sounds/health-potion.mp3",        // MEGSZÓLAL: Életerő (HP) visszatöltésekor, legyen az képesség vagy gyógyító item.
     charge: "https://www.myinstants.com/media/sounds/z-charge.mp3",       // MEGSZÓLAL: Amikor a játékos az "ENERGIA TÖLTÉS" (+1 AP, kör kimaradása) gombra kattint.
-    game_start: "https://www.myinstants.com/media/sounds/mortal-kombat-fight.mp3", // MEGSZÓLAL: Játék kezdetekor.
-    game_over: "https://www.myinstants.com/media/sounds/final-fantasy-v-victory-fanfare.mp3", // MEGSZÓLAL: Meccs végén (Győzelem).
+    game_start: "https://www.myinstants.com/media/sounds/fight-mksm.mp3", // MEGSZÓLAL: Játék kezdetekor.
+    game_over: "https://www.myinstants.com/media/sounds/fatality-announcer-mortal-kombat-9-sound-effect.mp3", // MEGSZÓLAL: Meccs végén (Győzelem).
     death: "https://www.myinstants.com/media/sounds/dandys-world-death-sound.mp3" // MEGSZÓLAL: Karakter halálakor (OOF)
 };
 
