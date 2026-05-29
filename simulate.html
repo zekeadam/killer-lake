@@ -122,7 +122,6 @@
         let currentGen = 0;
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
-        let bestOverallWR = 0;
         let bestOverallBalanceScore = 0;
         let generationsSinceLastImprovement = 0;
         let lastSignificantFitness = -Infinity;
@@ -682,7 +681,7 @@
                             if (fitness > bestOverallFitness) {
                                 let improvement = bestOverallFitness === -Infinity ? 0 : fitness - bestOverallFitness;
                                 bestOverallFitness = fitness;
-                                bestOverallWR = balanceScore * 100;
+                                bestOverallBalanceScore = balanceScore;
                                 bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
                                 
                                 let cardStats = Object.entries(tracker.cards).map(([id, c]) => ({ 
@@ -751,9 +750,7 @@
                             if ((currentPhaseGens + 1) % 10 === 0) {
                                 const best = population[0];
                                 const isNewRecord = best.fitness >= bestOverallFitness;
-                                const genWR = (best.stats.balanceScore * 100).toFixed(2);
-                                const recWR = bestOverallWR.toFixed(2);
-                                const milestone = `${isNewRecord ? '⭐' : '📍'} [${currentGen + 1}. Gen] Fitness: ${best.fitness.toFixed(4)} (Max: ${bestOverallFitness.toFixed(4)}) | WR: ${genWR}% (Best: ${recWR}%) | Körök: ${best.stats.avgTurns.toFixed(1)}`;
+                                const milestone = `${isNewRecord ? '⭐' : '📍'} [${currentGen + 1}. Gen] Fitness (Gen/Max): ${best.fitness.toFixed(4)} / ${bestOverallFitness.toFixed(4)} | WR: ${(best.stats.balanceScore * 100).toFixed(2)}% | Körök: ${best.stats.avgTurns.toFixed(1)}`;
                                 milestoneLog.unshift(milestone);
                                 updateOutput();
                             }
