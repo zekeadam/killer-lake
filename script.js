@@ -227,9 +227,12 @@ peer.on('connection', (connection) => {
 function getRandomTeam() {
     let team = [];
     const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
+    let available = [...charCards];
     for (let i = 0; i < 5; i++) {
-        const randomCard = charCards[Math.floor(Math.random() * charCards.length)];
-        team.push(randomCard.id);
+        if (available.length === 0) break;
+        const randIdx = Math.floor(Math.random() * available.length);
+        team.push(available[randIdx].id);
+        available.splice(randIdx, 1);
     }
     return team;
 }
@@ -237,10 +240,13 @@ function getRandomTeam() {
 function getRandomItems() {
     let items = [];
     const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
-    if (itemCards.length > 0) {
+    let available = [...itemCards];
+    if (available.length > 0) {
         for (let i = 0; i < 3; i++) {
-            const randomCard = itemCards[Math.floor(Math.random() * itemCards.length)];
-            items.push(randomCard.id);
+            if (available.length === 0) break;
+            const randIdx = Math.floor(Math.random() * available.length);
+            items.push(available[randIdx].id);
+            available.splice(randIdx, 1);
         }
     }
     return items;
@@ -334,20 +340,73 @@ function renderDraft() {
         const cardData = cardDatabase.find(c => c.id === id);
         
         const cardEl = document.createElement('div');
-        cardEl.className = 'draft-card tooltip-bottom';
+        cardEl.className = 'draft-card card tooltip-bottom';
         cardEl.draggable = true;
         cardEl.dataset.index = index;
         
+        let attacksHtml = '';
+        if (cardData.attacks) {
+            cardData.attacks.forEach(attack => {
+                let icon = "⚔️";
+                if (attack.type === 'heal') icon = "🧪";
+                if (attack.type === 'shield') icon = "🛡️";
+                
+                let dmgText = "---";
+                let hitText = "---";
+                let effectText = "";
+
+                if (attack.type === 'dmg') {
+                    const hits = attack.hits || 1;
+                    const acc = Math.round((attack.accuracy !== undefined ? attack.accuracy : 1.0) * 100);
+                    dmgText = `💥${attack.dmg} DMG`;
+                    hitText = `🎯${hits}x | 🎲${acc}%`;
+                    if (attack.effect === 'burn') { effectText = "🔥 ÉGÉS"; icon = "🔥"; }
+                    else if (attack.effect === 'paralyze') { effectText = "⚡ BÉNÍT"; icon = "⚡"; }
+                    else if (attack.effect === 'poison') { effectText = "☠️ MÉREG"; icon = "☠️"; }
+                    else if (attack.effect === 'mark') { effectText = "🎯 JELÖL"; icon = "🎯"; }
+                    else if (attack.effect === 'lifesteal') { effectText = "🦇 VÁMPÍR"; icon = "🦇"; }
+                    else if (attack.effect === 'counter') { effectText = "⚔️ COUNTER"; icon = "⚔️"; }
+                    if (attack.synergy === 'mark') { effectText += " (🎯+50%)"; }
+                } else if (attack.type === 'heal') {
+                    dmgText = `💚+${attack.healAmount} HP`;
+                    hitText = "🧪 GYÓGYUL";
+                    effectText = "🧪 REGEN";
+                } else if (attack.type === 'shield') {
+                    dmgText = "🛡️ VÉD";
+                    hitText = "🛡️ AKTÍV";
+                    effectText = "🛡️ PAJZS";
+                }
+
+                attacksHtml += `<button disabled style="pointer-events:none;"><div class="btn-title"><span class="truncate-text">${icon} ${attack.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${attack.cost} AP</span><span class="btn-eff">${effectText}</span></div></button>`;
+                attacksHtml += `<button style="pointer-events:none;"><div class="btn-title"><span class="truncate-text">${icon} ${attack.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${attack.cost} AP</span><span class="btn-eff">${effectText}</span></div></button>`;
+            });
+            for(let i = cardData.attacks.length; i < 4; i++) {
+                 attacksHtml += `<button disabled style="pointer-events:none;">--- <span>Üres slot</span></button>`;
+            }
+        }
+        attacksHtml += `<button class="charge-btn" disabled style="pointer-events:none;">🔋 ENERGIA TÖLTÉS (+1 AP)</button>`;
+        attacksHtml += `<button class="charge-btn" style="pointer-events:none;">🔋 ENERGIA TÖLTÉS <span>(+1 AP)</span></button>`;
+
         cardEl.innerHTML = `
+            <div class="draft-hp-badge">${cardData.maxHp}</div>
+            <div class="draft-ap-badge">2</div>
             <div class="order-badge">${index + 1}.</div>
-            <img src="${cardData.image}">
-            <div class="draft-name"><span class="truncate-text">${cardData.name}</span></div>
+            <div class="card-header" style="pointer-events: none;">
+                <h2><span class="truncate-text">${cardData.name}</span></h2>
+            </div>
+            <div class="hp-bar" style="pointer-events: none;"><div class="hp-fill" style="width: 100%; background-color: #2ecc71;"></div></div>
+            <div class="card-body" style="pointer-events: none;">
+                <img src="${cardData.image}" class="card-image" style="display: block;">
+            </div>
+            <div class="attacks" style="pointer-events: none;">
+                ${attacksHtml}
+            </div>
         `;
 
         container.appendChild(cardEl);
         
         // Tooltip ellenőrzése
-        const nameSpan = cardEl.querySelector('.truncate-text');
+        const nameSpan = cardEl.querySelector('h2 .truncate-text');
         setTooltipIfOverflows(cardEl, nameSpan, cardData.name);
 
         cardEl.addEventListener('dragstart', function(e) {

@@ -226,15 +226,21 @@
                 function getRandomTeam() {
                     let team = [];
                     const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
-                    for (let i = 0; i < 5; i++) team.push(charCards[Math.floor(Math.random() * charCards.length)].id);
+                    let f (available.length === 0) break;
+                        const randIdx = Math.floor(Math.random() * available.length);
+                        team.push(available[randIdx].id);
+                        available.splice(randIdx, 1);
+                    }
                     return team;
                 }
 
                 function getRandomItems() {
                     let items = [];
                     const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
-                    if (itemCards.length > 0) {
-                        for (let i = 0; i < 3; i++) items.push(itemCards[Math.floor(Math.random() * itemCards.length)].id);
+                    let available = [...itemCards];
+                            if (available.length === 0) break;
+                            available.splice(randIdx, 1);
+                        }
                     }
                     return items;
                 }
