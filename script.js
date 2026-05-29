@@ -797,6 +797,11 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
+        // --- ÚJ: Ranglista mentés (Ne mentsünk AI vagy teszt meccset) ---
+        if (!isTestMode && winnerName !== "Gonosz AI" && !winnerName.startsWith("AI ")) {
+            saveWin(winnerName);
+        }
+
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
         document.getElementById('turn-indicator').innerText = "Vége";
         
@@ -1460,4 +1465,68 @@ function downloadBattleLog() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// --- ÚJ: GLOBÁLIS RANGLISTA (LEADERBOARD) LOGIKA (Firebase) ---
+
+// IDE MÁSOLD BE A SAJÁT FIREBASE LINKEDET! (Ne felejtsd el a végét: /leaderboard)
+const LEADERBOARD_API_URL = 'https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app/leaderboard';
+
+async function saveWin(playerName) {
+    if (!playerName) return;
+    
+    // A Firebase nem enged bizonyos karaktereket a kulcsokban, ezért eltávolítjuk őket
+    const safeName = playerName.replace(/[.#$\[\]/]/g, '').trim();
+    
+    try {
+        // 1. Lekérjük a játékos eddigi pontjait a szerverről
+        const res = await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`);
+        let currentWins = await res.json();
+        if (currentWins === null) currentWins = 0;
+        
+        // 2. Hozzáadunk egyet, és visszaküldjük
+        await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`, {
+            method: 'PUT',
+            body: JSON.stringify(currentWins + 1)
+        });
+    } catch (error) {
+        console.error('Nem sikerült menteni a szerverre:', error);
+    }
+}
+
+async function showLeaderboard() {
+    const modal = document.getElementById('leaderboard-modal');
+    const list = document.getElementById('leaderboard-list');
+    
+    // Mutatunk egy töltőképernyőt, amíg az internetről jön az adat
+    list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Várakozás a szerverre...</p>';
+    modal.style.display = 'flex';
+    
+    try {
+        const res = await fetch(`${LEADERBOARD_API_URL}.json`);
+        let leaderboard = await res.json() || {};
+        
+        const sorted = Object.entries(leaderboard).sort((a, b) => b[1] - a[1]);
+        
+        list.innerHTML = '';
+        if (sorted.length === 0) {
+            list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Még nincsenek győzelmek rögzítve globálisan.</p>';
+        } else {
+            sorted.forEach(([name, wins], index) => {
+                list.innerHTML += `
+                    <div class="leaderboard-entry">
+                        <span class="rank">#${index + 1}</span>
+                        <span class="name truncate-text">${name}</span>
+                        <span class="wins">${wins} Win</span>
+                    </div>
+                `;
+            });
+        }
+    } catch (error) {
+        list.innerHTML = '<p style="color: #e74c3c; padding: 20px; text-align: center;">Hiba a hálózati kapcsolatban.</p>';
+    }
+}
+
+function closeLeaderboard() {
+    document.getElementById('leaderboard-modal').style.display = 'none';
 }
