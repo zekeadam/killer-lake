@@ -1490,9 +1490,7 @@ function copyInviteLink() {
     
     navigator.clipboard.writeText(url.toString()).then(() => {
         const btn = document.getElementById('copy-link-btn');
-        const originalText = btn.innerText;
-        btn.innerText = "Link másolva!";
-        setTimeout(() => btn.innerText = originalText, 2000);
+        btn.innerText = "Várakozás másik játékosra...";
     });
 }
 
