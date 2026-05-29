@@ -209,6 +209,7 @@
                                         if (override.attacks[i].accuracy !== undefined && override.attacks[i].accuracy !== atk.accuracy) atk.origAccuracy = atk.accuracy;
                                         if (override.attacks[i].healAmount !== undefined && override.attacks[i].healAmount !== atk.healAmount) atk.origHealAmount = atk.healAmount;
                                         if (override.attacks[i].hits !== undefined && override.attacks[i].hits !== (atk.hits || 1)) atk.origHits = (atk.hits || 1);
+                                        if (override.attacks[i].cost !== undefined && override.attacks[i].cost !== atk.cost) atk.origCost = atk.cost;
                                         Object.assign(atk, override.attacks[i]);
                                     }
                                 });
@@ -279,11 +280,16 @@
                             hitText = "PAJZS";
                         }
 
+                        let costDisplay = `${attack.cost}`;
+                        if (attack.origCost !== undefined) {
+                            costDisplay = `<span class="stat-old">${attack.origCost}</span><span class="${attack.cost < attack.origCost ? 'stat-buff' : 'stat-nerf'}">${attack.cost}</span>`;
+                        }
+
                         attacksHtml += `
                             <li class="tooltip-bottom">
                                 <div class="li-title"><span class="truncate-text">${icon} ${attack.name}</span></div>
                                 <div class="li-row"><span>${statText}</span><span>${hitText}</span></div>
-                                <div class="li-row"><span>⚡${attack.cost} AP</span><span class="li-eff">${effectLabel}</span></div>
+                                <div class="li-row"><span>⚡${costDisplay} AP</span><span class="li-eff">${effectLabel}</span></div>
                             </li>`;
                     });
                     attacksHtml += '</ul></div>';
