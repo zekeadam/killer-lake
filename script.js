@@ -99,6 +99,12 @@ testBtn.onclick = () => {
     btnTable.onclick = () => { menu.remove(); window.open('test_cards.html', '_blank'); };
     menu.appendChild(btnTable);
 
+    const btnSim = document.createElement('button');
+    btnSim.innerText = "📊 BATCH AI SZIMULÁCIÓ";
+    btnSim.style.cssText = "padding: 12px; background: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
+    btnSim.onclick = () => { menu.remove(); window.open('simulate.html', '_blank'); };
+    menu.appendChild(btnSim);
+
     const btnClose = document.createElement('button');
     btnClose.innerText = "BEZÁRÁS";
     btnClose.style.cssText = "padding: 8px; background: transparent; color: #555; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-top: 10px;";

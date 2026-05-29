@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Killer Lake - AI Szimuláció és Telemetria</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        html, body {
+            display: block; overflow: auto; padding: 40px;
+            height: auto; align-items: unset; justify-content: unset;
+        }
+        .sim-container {
+            max-width: 900px; margin: 0 auto; background: rgba(10,10,20,0.8);
+            padding: 30px; border-radius: 15px; border: 1px solid #e94560;
+            box-shadow: 0 0 30px rgba(233,69,96,0.3); text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .controls { margin: 20px 0; display: flex; gap: 10px; justify-content: center; align-items: center; }
+        input { padding: 12px; border-radius: 5px; border: 2px solid #0f3460; background: #111; color: #fff; font-size: 1.1rem; width: 120px; text-align: center; }
+        button { padding: 12px 25px; border-radius: 5px; border: none; font-weight: bold; font-size: 1.1rem; background: #e94560; color: #fff; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #ff4757; transform: scale(1.05); }
+        #download-btn { background: #3498db; }
+        #download-btn:hover { background: #2980b9; }
+        #output { text-align: left; background: #0a0a0a; padding: 15px; border-radius: 5px; color: #4cc9f0; font-family: monospace; white-space: pre-wrap; max-height: 400px; overflow: auto; border: 1px solid #333; }
+        .progress-bar { width: 100%; height: 25px; background: #222; border-radius: 12.5px; margin: 20px 0; overflow: hidden; border: 1px solid #444; }
+        .progress-fill { height: 100%; width: 0%; background: #2ecc71; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #000; }
+        h1 { display: block; color: #f1c40f; text-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body>
+    <div class="sim-container">
+        <h1>🤖 Batch AI Szimuláció</h1>
+        <p style="color: #ccc;">Futtass le több ezer mérkőzést a háttérben, hogy pontos statisztikákat kapj a kártyák győzelmi arányáról (Win Rate) és a támadások hatékonyságáról. A szimuláció végén a JSON fájl automatikusan letöltődik.</p>
+        
+        <div class="controls">
+            <label for="sim-count" style="font-weight: bold;">Mérkőzések száma:</label>
+            <input type="number" id="sim-count" value="1000" min="10" max="100000" step="100">
+            <button onclick="startSimulation()">Futtatás Indítása</button>
+            <button id="download-btn" onclick="downloadJSON()" style="display:none;">Eredmények Letöltése</button>
+        </div>
+        
+        <div class="progress-bar"><div class="progress-fill" id="progress">0%</div></div>
+        <p id="status-text" style="font-weight: bold; color: #f1c40f;">Készen áll a futtatásra.</p>
+
+        <div id="output">Ide kerül a statisztika előnézete...</div>
+    </div>
+
+    <script src="cards.js"></script>
+    <script src="ai.js"></script>
+    <script>
+        let tracker = { totalMatches: 0, cards: {}, items: {} };
+        
+        function initTracker() {
+            tracker = { totalMatches: 0, cards: {}, items: {} };
+            cardDatabase.forEach(c => {
+                if (c.type === 'item' || c.type === 'supporter') {
+                    tracker.items[c.id] = { name: c.name, uses: 0, matchesSeen: 0 };
+                } else {
+                    tracker.cards[c.id] = {
+                        name: c.name,
+                        matchesPlayed: 0,
+                        wins: 0,
+                        losses: 0,
+                        totalDamageDealt: 0,
+                        totalTurnsAlive: 0,
+                        attacks: {}
+                    };
+                    if (c.attacks) {
+                        c.attacks.forEach((a, i) => {
+                            tracker.cards[c.id].attacks[i] = { name: a.name, uses: 0, hits: 0, misses: 0, damageDealt: 0 };
+                        });
+                    }
+                }
+            });
+        }
+
+        function getRandomTeam() {
+            let team = [];
+            const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
+            for (let i = 0; i < 5; i++) team.push(charCards[Math.floor(Math.random() * charCards.length)].id);
+            return team;
+        }
+
+        function getRandomItems() {
+            let items = [];
+            const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
+            if (itemCards.length > 0) {
+                for (let i = 0; i < 3; i++) items.push(itemCards[Math.floor(Math.random() * itemCards.length)].id);
+            }
+            return items;
+        }
+
+        function buildTeamObjects(teamIds) {
+            return teamIds.map(id => {
+                const cardData = cardDatabase.find(c => c.id === id);
+                let card = JSON.parse(JSON.stringify(cardData));
+                card.hp = card.maxHp;
+                card.isParalyzed = false;
+                card.burnTurns = 0;
+                card.shields = 0;
+                card.turnsAlive = 0; 
+                return card;
+            });
+        }
+
+        function startSimulation() {
+            const count = parseInt(document.getElementById('sim-count').value) || 1000;
+            initTracker();
+            document.getElementById('download-btn').style.display = 'none';
+            
+            let currentMatch = 0;
+            const batchSize = 100; // Optimalizált futtatás: 100 meccs egy vizuális képkocka alatt
+            
+            function nextBatch() {
+                let limit = Math.min(currentMatch + batchSize, count);
+                for (; currentMatch < limit; currentMatch++) {
+                    runSingleMatch();
+                }
+                
+                const pct = Math.round((currentMatch / count) * 100);
+                const progFill = document.getElementById('progress');
+                progFill.style.width = pct + '%';
+                progFill.innerText = pct + '%';
+                document.getElementById('status-text').innerText = `Szimulálva: ${currentMatch} / ${count}...`;
+                
+                if (currentMatch < count) {
+                    requestAnimationFrame(nextBatch);
+                } else {
+                    finalizeSimulation();
+                }
+            }
+            nextBatch();
+        }
+
+        function runSingleMatch() {
+            const p1TeamIds = getRandomTeam();
+            const p2TeamIds = getRandomTeam();
+            const p1ItemIds = getRandomItems();
+            const p2ItemIds = getRandomItems();
+
+            [...p1TeamIds, ...p2TeamIds].forEach(id => tracker.cards[id].matchesPlayed++);
+            [...p1ItemIds, ...p2ItemIds].forEach(id => tracker.items[id].matchesSeen++);
+
+            let state = {
+                activePlayer: 'p1', gameOver: false, winner: null,
+                p1: { team: buildTeamObjects(p1TeamIds), activeIndex: 0, ap: 2, items: [...p1ItemIds], itemUsedThisTurn: false },
+                p2: { team: buildTeamObjects(p2TeamIds), activeIndex: 0, ap: 2, items: [...p2ItemIds], itemUsedThisTurn: false }
+            };
+
+            let safety = 0;
+            while (!state.gameOver && safety < 2000) {
+                safety++;
+                if(state.p1.team[state.p1.activeIndex]) state.p1.team[state.p1.activeIndex].turnsAlive++;
+                if(state.p2.team[state.p2.activeIndex]) state.p2.team[state.p2.activeIndex].turnsAlive++;
+
+                const pId = state.activePlayer;
+                const oppId = pId === 'p1' ? 'p2' : 'p1';
+                const moveResult = getAIMove(state[pId], state[oppId]);
+
+                if (moveResult === null) {
+                    endTurnPhaseHeadless(state, pId);
+                    continue;
+                }
+                if (typeof moveResult === 'object' && moveResult.type === 'item') {
+                    applyItemHeadless(state, pId, moveResult.itemIndex);
+                } else {
+                    applyMoveHeadless(state, pId, moveResult);
+                    if (!state.gameOver) endTurnPhaseHeadless(state, pId);
+                }
+            }
+
+            tracker.totalMatches++;
+            const processTeam = (playerObj, isWinner) => {
+                playerObj.team.forEach(card => {
+                    tracker.cards[card.id].totalTurnsAlive += card.turnsAlive;
+                    if (isWinner) tracker.cards[card.id].wins++;
+                    else tracker.cards[card.id].losses++;
+                });
+            };
+
+            if (state.winner === 'p1') { processTeam(state.p1, true); processTeam(state.p2, false); }
+            else if (state.winner === 'p2') { processTeam(state.p2, true); processTeam(state.p1, false); }
+        }
+
+        function checkWinHeadless(state) {
+            if (state.p1.activeIndex >= 5) { state.gameOver = true; state.winner = 'p2'; return true; }
+            if (state.p2.activeIndex >= 5) { state.gameOver = true; state.winner = 'p1'; return true; }
+            return false;
+        }
+
+        function applyMoveHeadless(state, pId, moveIdx) {
+            const oppId = pId === 'p1' ? 'p2' : 'p1';
+            const pState = state[pId]; const oppState = state[oppId];
+            const pCard = pState.team[pState.activeIndex]; const oppCard = oppState.team[oppState.activeIndex];
+
+            if (moveIdx === 'charge') { pState.ap = Math.min(10, pState.ap + 1); return; }
+
+            const move = pCard.attacks[moveIdx];
+            pState.ap -= move.cost;
+            tracker.cards[pCard.id].attacks[moveIdx].uses++;
+
+            if (move.type === 'dmg') {
+                const hitChance = move.accuracy !== undefined ? move.accuracy : 1.0;
+                if (Math.random() > hitChance) {
+                    tracker.cards[pCard.id].attacks[moveIdx].misses++;
+                    return;
+                }
+                tracker.cards[pCard.id].attacks[moveIdx].hits++;
+
+                const isCrit = Math.random() < 0.15;
+                let variance = move.dmg * 0.2;
+                let dmgPerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+                if (isCrit) dmgPerHit = Math.floor(dmgPerHit * 1.5);
+
+                const hitCount = move.hits || 1;
+                let hitsLanded = 0;
+
+                for (let i = 0; i < hitCount; i++) {
+                    if (oppCard.hp <= 0) break;
+                    if (oppCard.shields > 0) oppCard.shields--;
+                    else { oppCard.hp -= dmgPerHit; hitsLanded++; }
+                }
+                const totalDmg = hitsLanded * dmgPerHit;
+                tracker.cards[pCard.id].attacks[moveIdx].damageDealt += totalDmg;
+                tracker.cards[pCard.id].totalDamageDealt += totalDmg;
+
+                if (oppCard.hp <= 0) oppState.activeIndex++;
+                else if (move.effect === 'paralyze' || move.effect === 'burn') {
+                    if (oppCard.shields > 0) oppCard.shields--;
+                    else {
+                        if (move.effect === 'paralyze') oppCard.isParalyzed = true;
+                        if (move.effect === 'burn') oppCard.burnTurns = 3;
+                    }
+                }
+            } else if (move.type === 'heal') pCard.hp = Math.min(pCard.maxHp, pCard.hp + move.healAmount);
+              else if (move.type === 'shield') pCard.shields = Math.min(2, pCard.shields + 1);
+            
+            checkWinHeadless(state);
+        }
+
+        function applyItemHeadless(state, pId, itemIndex) {
+            const pState = state[pId]; const oppState = state[pId === 'p1' ? 'p2' : 'p1'];
+            const itemId = pState.items[itemIndex];
+            pState.itemUsedThisTurn = true;
+            tracker.items[itemId].uses++;
+            pState.items.splice(itemIndex, 1);
+        }
+
+        function endTurnPhaseHeadless(state, pId) {
+            const pState = state[pId]; const pCard = pState.team[pState.activeIndex];
+            const oppId = pId === 'p1' ? 'p2' : 'p1';
+            
+            if (pCard && pCard.burnTurns > 0) {
+                if (pCard.shields > 0) { pCard.shields--; pCard.burnTurns--; }
+                else { pCard.hp -= 20; pCard.burnTurns--; }
+                if (pCard.hp <= 0) pState.activeIndex++;
+                if (checkWinHeadless(state)) return;
+            }
+            const nextPState = state[oppId]; const nextPCard = nextPState.team[nextPState.activeIndex];
+            if (nextPCard && nextPCard.isParalyzed) {
+                nextPCard.isParalyzed = false;
+                endTurnPhaseHeadless(state, oppId);
+                return;
+            }
+            state.activePlayer = oppId;
+            nextPState.ap = Math.min(10, nextPState.ap + 1);
+            nextPState.itemUsedThisTurn = false;
+        }
+
+        function finalizeSimulation() {
+            document.getElementById('download-btn').style.display = 'inline-block';
+            document.getElementById('status-text').innerText = "Szimuláció sikeresen befejeződött!";
+            let outputJSON = { totalMatches: tracker.totalMatches, cardStats: [], itemStats: [] };
+            for (let key in tracker.cards) {
+                const c = tracker.cards[key];
+                if (c.matchesPlayed > 0) {
+                    c.winRate = ((c.wins / c.matchesPlayed) * 100).toFixed(1) + "%";
+                    c.avgDamagePerMatch = (c.totalDamageDealt / c.matchesPlayed).toFixed(1);
+                    c.avgTurnsAlive = (c.totalTurnsAlive / c.matchesPlayed).toFixed(1);
+                }
+                outputJSON.cardStats.push(c);
+            }
+            for (let key in tracker.items) outputJSON.itemStats.push(tracker.items[key]);
+            outputJSON.cardStats.sort((a, b) => parseFloat(b.winRate) - parseFloat(a.winRate));
+            document.getElementById('output').innerText = JSON.stringify(outputJSON, null, 2);
+            window.latestSimData = outputJSON;
+            downloadJSON();
+        }
+
+        function downloadJSON() {
+            if (!window.latestSimData) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.latestSimData, null, 2));
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr);
+            node.setAttribute("download", "killer_lake_telemetry.json");
+            document.body.appendChild(node); node.click(); node.remove();
+        }
+    </script>
+</body>
+</html>
