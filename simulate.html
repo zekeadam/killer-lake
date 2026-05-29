@@ -18,6 +18,7 @@
         }
         .controls { margin: 20px 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; }
         input { padding: 12px; border-radius: 5px; border: 2px solid #0f3460; background: #111; color: #fff; font-size: 1.1rem; width: 120px; text-align: center; }
+        input[type="checkbox"] { width: 20px; height: 20px; padding: 0; margin: 0; cursor: pointer; vertical-align: middle; }
         button { padding: 12px 25px; border-radius: 5px; border: none; font-weight: bold; font-size: 1.1rem; background: #e94560; color: #fff; cursor: pointer; transition: 0.2s; }
         button:hover { background: #ff4757; transform: scale(1.05); }
         #download-btn { background: #3498db; }
@@ -39,8 +40,13 @@
             <label for="pop-size" style="font-weight: bold;">Variációk:</label>
             <input type="number" id="pop-size" value="100" title="Kártya variációk száma generációnként">
             <label for="gen-count" style="font-weight: bold;">Generációk:</label>
-            <input type="number" id="gen-count" value="200" title="Hány alkalommal mutálódjon a populáció">
-            <!-- A mecsek input el lett távolítva, mert fixen 1 lesz -->
+            <input type="number" id="gen-count" value="1000" title="Hány alkalommal mutálódjon a populáció">
+            <label for="match-count" style="font-weight: bold;">Meccsek:</label>
+            <input type="number" id="match-count" value="30" title="Hány meccset játsszon egy variáció">
+
+            <label style="font-weight: bold; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="use-optimized"> Optimalizált adatokkal indít
+            </label>
             
             <button onclick="startEvolution()">Evolúció Indítása</button>
             <button id="download-btn" onclick="downloadJS()" style="display:none;">Optimalizált JS Letöltése</button>
@@ -66,148 +72,235 @@
         // Evolúciós paraméterek
         let popSize, genCount, matchesPerGenome;
         let population = [];
-        let currentGen = 0, currentGenome = 0, currentMatch = 0;
+        let currentGen = 0;
         let bestOverallGenome = null;
         let bestOverallFitness = -Infinity;
         let generationsSinceLastImprovement = 0;
         let lastSignificantFitness = -Infinity;
         
-        let currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
+        let workers = [];
+        let numWorkers = navigator.hardwareConcurrency || 4;
+        let matchesCompleted = 0;
+        let totalMatchesGoal = 0;
+        let activeWorkers = 0;
         
         // Segédfüggvény a kalkulációk frissítéséhez
         function updateCalcInfo() {
             const p = parseInt(document.getElementById('pop-size').value) || 100;
-            const g = parseInt(document.getElementById('gen-count').value) || 200;
-            const m = 30; // Fixen 30 a statisztika miatt
+            const g = parseInt(document.getElementById('gen-count').value) || 1000;
+            const m = parseInt(document.getElementById('match-count').value) || 30;
             document.getElementById('calc-info').innerText = `Összes kalkuláció: ${(p * g * m).toLocaleString('hu-HU')} mérkőzés`;
         }
         document.querySelectorAll('.controls input').forEach(inp => inp.addEventListener('input', updateCalcInfo));
         window.addEventListener('DOMContentLoaded', updateCalcInfo);
 
-        function initTrackerForGenome() {
-            currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
-            cardDatabase.forEach(c => {
-                if (c.type === 'item' || c.type === 'supporter') {
-                } else {
-                    currentTracker.cards[c.id] = { name: c.name, matchesPlayed: 0, wins: 0, totalTurnsAlive: 0 };
-                }
-            });
-        }
+        function initWorkers() {
+            if (workers.length > 0) return;
+            let href = window.location.href.split('?')[0].split('#')[0];
+            const baseUrl = href.substring(0, href.lastIndexOf('/') + 1);
+            
+            const workerScript = `
+                let optimizedCardOverrides = {};
+                try { importScripts('${baseUrl}optimized_cards.js'); } catch(e) {}
+                importScripts('${baseUrl}cards.js');
+                importScripts('${baseUrl}ai.js');
 
-        function getRandomTeam() {
-            let team = [];
-            const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
-            for (let i = 0; i < 5; i++) team.push(charCards[Math.floor(Math.random() * charCards.length)].id);
-            return team;
-        }
+                let currentTracker = null;
 
-        function getRandomItems() {
-            let items = [];
-            const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
-            if (itemCards.length > 0) {
-                for (let i = 0; i < 3; i++) items.push(itemCards[Math.floor(Math.random() * itemCards.length)].id);
-            }
-            return items;
-        }
-
-        function buildTeamObjects(teamIds) {
-            return teamIds.map(id => {
-                const cardData = cardDatabase.find(c => c.id === id);
-                let card = JSON.parse(JSON.stringify(cardData));
-                card.hp = card.maxHp;
-                card.isParalyzed = false;
-                card.burnTurns = 0;
-                card.shields = 0;
-                card.turnsAlive = 0; 
-                return card;
-            });
-        }
-
-        function checkWinHeadless(state) {
-            if (state.p1.activeIndex >= 5) { state.gameOver = true; state.winner = 'p2'; return true; }
-            if (state.p2.activeIndex >= 5) { state.gameOver = true; state.winner = 'p1'; return true; }
-            return false;
-        }
-
-        function applyMoveHeadless(state, pId, moveIdx) {
-            const oppId = pId === 'p1' ? 'p2' : 'p1';
-            const pState = state[pId]; const oppState = state[oppId];
-            const pCard = pState.team[pState.activeIndex]; const oppCard = oppState.team[oppState.activeIndex];
-
-            if (moveIdx === 'charge') { pState.ap = Math.min(10, pState.ap + 1); return; }
-
-            const move = pCard.attacks[moveIdx];
-            pState.ap -= move.cost;
-
-            if (move.type === 'dmg') {
-                const hitChance = move.accuracy !== undefined ? move.accuracy : 1.0;
-                if (Math.random() > hitChance) return;
-
-                const isCrit = Math.random() < 0.15;
-                let variance = move.dmg * 0.2;
-                let dmgPerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
-                if (isCrit) dmgPerHit = Math.floor(dmgPerHit * 1.5);
-
-                const hitCount = move.hits || 1;
-                let hitsLanded = 0;
-
-                for (let i = 0; i < hitCount; i++) {
-                    if (oppCard.hp <= 0) break;
-                    if (oppCard.shields > 0) oppCard.shields--;
-                    else { oppCard.hp -= dmgPerHit; hitsLanded++; }
+                function getRandomTeam() {
+                    let team = [];
+                    const charCards = cardDatabase.filter(c => !c.type || c.type === 'character');
+                    for (let i = 0; i < 5; i++) team.push(charCards[Math.floor(Math.random() * charCards.length)].id);
+                    return team;
                 }
 
-                if (oppCard.hp <= 0) oppState.activeIndex++;
-                else if (move.effect === 'paralyze' || move.effect === 'burn') {
-                    if (oppCard.shields > 0) oppCard.shields--;
-                    else {
-                        if (move.effect === 'paralyze') oppCard.isParalyzed = true;
-                        if (move.effect === 'burn') oppCard.burnTurns = 3;
+                function getRandomItems() {
+                    let items = [];
+                    const itemCards = cardDatabase.filter(c => c.type === 'item' || c.type === 'supporter');
+                    if (itemCards.length > 0) {
+                        for (let i = 0; i < 3; i++) items.push(itemCards[Math.floor(Math.random() * itemCards.length)].id);
                     }
+                    return items;
                 }
-            } else if (move.type === 'heal') pCard.hp = Math.min(pCard.maxHp, pCard.hp + move.healAmount);
-              else if (move.type === 'shield') pCard.shields = Math.min(2, pCard.shields + 1);
-            
-            checkWinHeadless(state);
-        }
 
-        function applyItemHeadless(state, pId, itemIndex) {
-            const pState = state[pId]; const oppState = state[pId === 'p1' ? 'p2' : 'p1'];
-            pState.itemUsedThisTurn = true;
-            pState.items.splice(itemIndex, 1);
-        }
+                function buildTeamObjects(teamIds) {
+                    return teamIds.map(id => {
+                        const cardData = cardDatabase.find(c => c.id === id);
+                        let card = JSON.parse(JSON.stringify(cardData));
+                        card.hp = card.maxHp;
+                        card.isParalyzed = false;
+                        card.burnTurns = 0;
+                        card.shields = 0;
+                        card.turnsAlive = 0; 
+                        return card;
+                    });
+                }
 
-        function endTurnPhaseHeadless(state, pId) {
-            const pState = state[pId]; const pCard = pState.team[pState.activeIndex];
-            const oppId = pId === 'p1' ? 'p2' : 'p1';
-            
-            if (pCard && pCard.burnTurns > 0) {
-                if (pCard.shields > 0) { pCard.shields--; pCard.burnTurns--; }
-                else { pCard.hp -= 20; pCard.burnTurns--; }
-                if (pCard.hp <= 0) pState.activeIndex++;
-                if (checkWinHeadless(state)) return;
+                function checkWinHeadless(state) {
+                    if (state.p1.activeIndex >= 5) { state.gameOver = true; state.winner = 'p2'; return true; }
+                    if (state.p2.activeIndex >= 5) { state.gameOver = true; state.winner = 'p1'; return true; }
+                    return false;
+                }
+
+                function applyMoveHeadless(state, pId, moveIdx) {
+                    const oppId = pId === 'p1' ? 'p2' : 'p1';
+                    const pState = state[pId]; const oppState = state[oppId];
+                    const pCard = pState.team[pState.activeIndex]; const oppCard = oppState.team[oppState.activeIndex];
+
+                    if (moveIdx === 'charge') { pState.ap = Math.min(10, pState.ap + 1); return; }
+
+                    const move = pCard.attacks[moveIdx];
+                    pState.ap -= move.cost;
+
+                    if (move.type === 'dmg') {
+                        const hitChance = move.accuracy !== undefined ? move.accuracy : 1.0;
+                        if (Math.random() > hitChance) return;
+
+                        const isCrit = Math.random() < 0.15;
+                        let variance = move.dmg * 0.2;
+                        let dmgPerHit = Math.floor(move.dmg + (Math.random() * variance * 2) - variance);
+                        if (isCrit) dmgPerHit = Math.floor(dmgPerHit * 1.5);
+
+                        const hitCount = move.hits || 1;
+                        let hitsLanded = 0;
+
+                        for (let i = 0; i < hitCount; i++) {
+                            if (oppCard.hp <= 0) break;
+                            if (oppCard.shields > 0) oppCard.shields--;
+                            else { oppCard.hp -= dmgPerHit; hitsLanded++; }
+                        }
+
+                        if (oppCard.hp <= 0) oppState.activeIndex++;
+                        else if (move.effect === 'paralyze' || move.effect === 'burn') {
+                            if (oppCard.shields > 0) oppCard.shields--;
+                            else {
+                                if (move.effect === 'paralyze') oppCard.isParalyzed = true;
+                                if (move.effect === 'burn') oppCard.burnTurns = 3;
+                            }
+                        }
+                    } else if (move.type === 'heal') pCard.hp = Math.min(pCard.maxHp, pCard.hp + move.healAmount);
+                      else if (move.type === 'shield') pCard.shields = Math.min(2, pCard.shields + 1);
+                    
+                    checkWinHeadless(state);
+                }
+
+                function applyItemHeadless(state, pId, itemIndex) {
+                    const pState = state[pId]; 
+                    pState.itemUsedThisTurn = true;
+                    pState.items.splice(itemIndex, 1);
+                }
+
+                function endTurnPhaseHeadless(state, pId) {
+                    const pState = state[pId]; const pCard = pState.team[pState.activeIndex];
+                    const oppId = pId === 'p1' ? 'p2' : 'p1';
+                    
+                    if (pCard && pCard.burnTurns > 0) {
+                        if (pCard.shields > 0) { pCard.shields--; pCard.burnTurns--; }
+                        else { pCard.hp -= 20; pCard.burnTurns--; }
+                        if (pCard.hp <= 0) pState.activeIndex++;
+                        if (checkWinHeadless(state)) return;
+                    }
+                    const nextPState = state[oppId]; const nextPCard = nextPState.team[nextPState.activeIndex];
+                    if (nextPCard && nextPCard.isParalyzed) {
+                        nextPCard.isParalyzed = false;
+                        endTurnPhaseHeadless(state, oppId);
+                        return;
+                    }
+                    state.activePlayer = oppId;
+                    nextPState.ap = Math.min(10, nextPState.ap + 1);
+                    nextPState.itemUsedThisTurn = false;
+                }
+
+                function runMatch(genome) {
+                    let state = {
+                        activePlayer: 'p1', gameOver: false,
+                        p1: { team: buildTeamObjects(getRandomTeam()), activeIndex: 0, ap: 2, items: getRandomItems() },
+                        p2: { team: buildTeamObjects(getRandomTeam()), activeIndex: 0, ap: 2, items: getRandomItems() }
+                    };
+
+                    [state.p1, state.p2].forEach(p => p.team.forEach(c => {
+                        if (genome[c.id]) {
+                            c.maxHp = genome[c.id].maxHp;
+                            c.hp = c.maxHp;
+                            c.attacks.forEach((a, i) => {
+                                if (genome[c.id].attacks[i]) {
+                                    if (genome[c.id].attacks[i].dmg !== undefined) a.dmg = genome[c.id].attacks[i].dmg;
+                                    if (genome[c.id].attacks[i].healAmount !== undefined) a.healAmount = genome[c.id].attacks[i].healAmount;
+                                    if (genome[c.id].attacks[i].hits !== undefined) a.hits = genome[c.id].attacks[i].hits;
+                                    if (genome[c.id].attacks[i].cost !== undefined) a.cost = genome[c.id].attacks[i].cost;
+                                    a.accuracy = genome[c.id].attacks[i].accuracy;
+                                }
+                            });
+                        }
+                        if (currentTracker.cards[c.id]) currentTracker.cards[c.id].matchesPlayed++;
+                    }));
+
+                    let turns = 0;
+                    while (!state.gameOver && turns < 250) { 
+                        let pId = state.activePlayer;
+                        let oppId = pId === 'p1' ? 'p2' : 'p1';
+                        let move = getAIMove(state[pId], state[oppId]);
+                        if (move === null) endTurnPhaseHeadless(state, pId);
+                        else if (typeof move === 'object' && move.type === 'item') applyItemHeadless(state, pId, move.itemIndex);
+                        else { applyMoveHeadless(state, pId, move); if (!state.gameOver) endTurnPhaseHeadless(state, pId); }
+                        turns++;
+                    }
+                    
+                    if (turns >= 250) turns += 200; 
+                    
+                    currentTracker.totalTurns += turns;
+                    currentTracker.totalMatches++;
+                    if (state.winner) state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
+                }
+
+                self.onmessage = function(e) {
+                    const { genomes, matches, startIndex } = e.data;
+                    let results = [];
+                    
+                    for (let i = 0; i < genomes.length; i++) {
+                        let genome = genomes[i];
+                        currentTracker = { totalMatches: 0, totalTurns: 0, cards: {} };
+                        cardDatabase.forEach(c => {
+                            if (c.type !== 'item' && c.type !== 'supporter') {
+                                currentTracker.cards[c.id] = { name: c.name, matchesPlayed: 0, wins: 0, totalTurnsAlive: 0 };
+                            }
+                        });
+                        
+                        for (let m = 0; m < matches; m++) {
+                            runMatch(genome);
+                            if ((m + 1) % 10 === 0) {
+                                self.postMessage({ type: 'progress', matchesDone: 10 });
+                            }
+                        }
+                        if (matches % 10 !== 0) {
+                            self.postMessage({ type: 'progress', matchesDone: matches % 10 });
+                        }
+                        
+                        results.push({ index: startIndex + i, tracker: currentTracker });
+                    }
+                    self.postMessage({ type: 'done', results });
+                };
+            `;
+            const blob = new Blob([workerScript], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            for (let i = 0; i < numWorkers; i++) {
+                workers.push(new Worker(url));
             }
-            const nextPState = state[oppId]; const nextPCard = nextPState.team[nextPState.activeIndex];
-            if (nextPCard && nextPCard.isParalyzed) {
-                nextPCard.isParalyzed = false;
-                endTurnPhaseHeadless(state, oppId);
-                return;
-            }
-            state.activePlayer = oppId;
-            nextPState.ap = Math.min(10, nextPState.ap + 1);
-            nextPState.itemUsedThisTurn = false;
         }
 
         // --- EVOLÚCIÓ LOGIKA ---
         function startEvolution() {
+            initWorkers();
             popSize = parseInt(document.getElementById('pop-size').value) || 100;
-            genCount = parseInt(document.getElementById('gen-count').value) || 200;
-            matchesPerGenome = 30; // Legalább 30 kell a statisztikához (0% vagy 100% elkerülésére)
+            genCount = parseInt(document.getElementById('gen-count').value) || 1000;
+            matchesPerGenome = parseInt(document.getElementById('match-count').value) || 30;
             
             currentGen = 0;
             bestOverallFitness = -Infinity;
             generationsSinceLastImprovement = 0;
             lastSignificantFitness = -Infinity;
+            matchesCompleted = 0;
+            totalMatchesGoal = popSize * genCount * matchesPerGenome;
             
             // Kezdeti populáció létrehozása (alap statok + mutációk)
             population = [];
@@ -216,12 +309,13 @@
                 population.push({ genome, fitness: 0, stats: null });
             }
             
-            document.getElementById('output').innerText = "Evolúció elindítva...";
+            document.getElementById('output').innerText = "Evolúció elindítva (" + numWorkers + " szálon)...";
             runGeneration();
         }
 
         function createInitialGenome() {
             let genome = {};
+            const useOptimized = document.getElementById('use-optimized').checked;
             cardDatabase.forEach(card => {
                 if (!card.type || card.type === 'character') {
                     let maxHp = card.maxHp;
@@ -234,7 +328,7 @@
                     }));
 
                     // Alkalmazzuk az optimalizált értékeket indulásként (ha léteznek)
-                    if (typeof optimizedCardOverrides !== 'undefined' && optimizedCardOverrides[card.id]) {
+                    if (useOptimized && typeof optimizedCardOverrides !== 'undefined' && optimizedCardOverrides[card.id]) {
                         const override = optimizedCardOverrides[card.id];
                         if (override.maxHp !== undefined) maxHp = override.maxHp;
                         if (override.attacks) {
@@ -289,75 +383,93 @@
             return child;
         }
 
-        async function runGeneration() {
-            let minGen = Math.max(5, Math.floor(genCount * 0.4)); // Minimum generációk száma a leállás előtt
-            if (currentGen >= genCount || (currentGen >= minGen && generationsSinceLastImprovement >= 8)) {
+        function runGeneration() {
+            if (currentGen >= genCount || generationsSinceLastImprovement >= 100) {
                 finalizeEvolution();
                 return;
             }
 
-            for (currentGenome = 0; currentGenome < popSize; currentGenome++) {
-                initTrackerForGenome();
-                let genome = population[currentGenome].genome;
+            let genomesPerWorker = Math.ceil(popSize / numWorkers);
+            activeWorkers = 0;
+
+            for (let i = 0; i < numWorkers; i++) {
+                let startIndex = i * genomesPerWorker;
+                if (startIndex >= popSize) break;
                 
-                for (currentMatch = 0; currentMatch < matchesPerGenome; currentMatch++) {
-                    runMatch(genome);
-                    // UI frissítése időközönként, hogy ne fagyjon le a böngésző
-                    if (currentMatch % 10 === 0) {
+                let endIndex = Math.min(startIndex + genomesPerWorker, popSize);
+                let workerGenomes = [];
+                for (let j = startIndex; j < endIndex; j++) {
+                    workerGenomes.push(population[j].genome);
+                }
+                
+                activeWorkers++;
+                let worker = workers[i];
+                
+                worker.onmessage = function(e) {
+                    if (e.data.type === 'progress') {
+                        matchesCompleted += e.data.matchesDone;
                         updateUIProgress();
-                        await new Promise(r => setTimeout(r, 0));
+                    } else if (e.data.type === 'done') {
+                        let results = e.data.results;
+                        results.forEach(res => {
+                            let genomeIndex = res.index;
+                            let tracker = res.tracker;
+                            
+                            let avgTurns = tracker.totalMatches > 0 ? tracker.totalTurns / tracker.totalMatches : 0;
+                            let optimalTurns = 35; 
+                            let turnDiff = Math.abs(optimalTurns - avgTurns);
+                            let turnPenalty = (turnDiff * turnDiff) / 50;
+
+                            let totalWinDiff = 0;
+                            let cardCount = 0;
+                            for (let id in tracker.cards) {
+                                let card = tracker.cards[id];
+                                let wr = card.matchesPlayed > 0 ? card.wins / card.matchesPlayed : 0.5;
+                                totalWinDiff += Math.abs(0.5 - wr);
+                                cardCount++;
+                            }
+                            
+                            let balanceScore = totalWinDiff / cardCount;
+                            let fitness = -balanceScore - turnPenalty; 
+                            population[genomeIndex].fitness = fitness;
+                            
+                            if (fitness > bestOverallFitness) {
+                                bestOverallFitness = fitness;
+                                bestOverallGenome = JSON.parse(JSON.stringify(population[genomeIndex].genome));
+                                
+                                let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\nFitness: ${fitness.toFixed(4)}\n`;
+                                logText += `\n📊 Balance (átlag eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n`;
+                                logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)\n\n`;
+                                
+                                let cardStats = Object.values(tracker.cards).map(c => ({ name: c.name, wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50 }));
+                                cardStats.sort((a, b) => b.wr - a.wr);
+                                
+                                logText += `Legjobban teljesítő kártyák:\n ${cardStats.slice(0, 3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}\n\n`;
+                                logText += `Leggyengébben teljesítő kártyák:\n ${cardStats.slice(-3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}`;
+                                
+                                document.getElementById('output').innerText = logText;
+                            }
+                        });
+                        
+                        activeWorkers--;
+                        if (activeWorkers === 0) {
+                            if (bestOverallFitness > lastSignificantFitness + 0.0001) {
+                                lastSignificantFitness = bestOverallFitness;
+                                generationsSinceLastImprovement = 0;
+                            } else {
+                                generationsSinceLastImprovement++;
+                            }
+                            evolvePopulation();
+                        }
                     }
-                }
-
-                // Izgalom faktor: a meccsek átlagos hossza legyen az ideális közelében (pl. 35 kör)
-                // Ha egy meccs csak 10 kör, vagy 100+ körig tart, azt büntetjük!
-                let avgTurns = currentTracker.totalMatches > 0 ? currentTracker.totalTurns / currentTracker.totalMatches : 0;
-                let optimalTurns = 35; 
-                let turnDiff = Math.abs(optimalTurns - avgTurns);
-                let turnPenalty = (turnDiff * turnDiff) / 50; // Kvadratikus büntetés, így a túl hosszú meccsek azonnal "kihalnak"
-
-                // Balance faktor: Mennyire van balance-ban az összes kártya (Winrate ~ 50%)
-                let totalWinDiff = 0;
-                let cardCount = 0;
-                for (let id in currentTracker.cards) {
-                    let card = currentTracker.cards[id];
-                    let wr = card.matchesPlayed > 0 ? card.wins / card.matchesPlayed : 0.5;
-                    totalWinDiff += Math.abs(0.5 - wr);
-                    cardCount++;
-                }
+                };
                 
-                // A fitness a kettő ötvözete. Minél közelebb a 0-hoz, annál jobb.
-                let balanceScore = totalWinDiff / cardCount;
-                let fitness = -balanceScore - turnPenalty; 
-                population[currentGenome].fitness = fitness;
-                
-                if (fitness > bestOverallFitness) {
-                    bestOverallFitness = fitness;
-                    bestOverallGenome = JSON.parse(JSON.stringify(genome));
-                    
-                    let logText = `🏆 Új legjobb variáció megtalálva (Generáció: ${currentGen+1})!\nFitness: ${fitness.toFixed(4)}\n`;
-                    logText += `\n📊 Balance (átlag eltérés az 50% Winrate-től): ${(balanceScore * 100).toFixed(2)}%\n`;
-                    logText += `⏱️ Átlagos meccs hossz: ${avgTurns.toFixed(1)} / ${optimalTurns} kör (Izgalom faktor)\n\n`;
-                    
-                    let cardStats = Object.values(currentTracker.cards).map(c => ({ name: c.name, wr: c.matchesPlayed > 0 ? (c.wins / c.matchesPlayed) * 100 : 50 }));
-                    cardStats.sort((a, b) => b.wr - a.wr);
-                    
-                    logText += `Legjobban teljesítő kártyák:\n ${cardStats.slice(0, 3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}\n\n`;
-                    logText += `Leggyengébben teljesítő kártyák:\n ${cardStats.slice(-3).map(c => `${c.name} (${c.wr.toFixed(1)}%)`).join('\n ')}`;
-                    
-                    document.getElementById('output').innerText = logText;
-                }
+                worker.postMessage({
+                    genomes: workerGenomes,
+                    matches: matchesPerGenome,
+                    startIndex: startIndex
+                });
             }
-            
-            // Early stopping logika
-            if (bestOverallFitness > lastSignificantFitness + 0.0001) {
-                lastSignificantFitness = bestOverallFitness;
-                generationsSinceLastImprovement = 0;
-            } else {
-                generationsSinceLastImprovement++;
-            }
-            
-            evolvePopulation();
         }
 
         function evolvePopulation() {
@@ -381,64 +493,18 @@
             runGeneration();
         }
 
-        function runMatch(genome) {
-            let state = {
-                activePlayer: 'p1', gameOver: false,
-                p1: { team: buildTeamObjects(getRandomTeam()), activeIndex: 0, ap: 2, items: getRandomItems() },
-                p2: { team: buildTeamObjects(getRandomTeam()), activeIndex: 0, ap: 2, items: getRandomItems() }
-            };
-
-            // Genome statisztikák alkalmazása
-            [state.p1, state.p2].forEach(p => p.team.forEach(c => {
-                if (genome[c.id]) {
-                    c.maxHp = genome[c.id].maxHp;
-                    c.hp = c.maxHp;
-                    c.attacks.forEach((a, i) => {
-                        if (genome[c.id].attacks[i]) {
-                            if (genome[c.id].attacks[i].dmg !== undefined) a.dmg = genome[c.id].attacks[i].dmg;
-                            if (genome[c.id].attacks[i].healAmount !== undefined) a.healAmount = genome[c.id].attacks[i].healAmount;
-                            if (genome[c.id].attacks[i].hits !== undefined) a.hits = genome[c.id].attacks[i].hits;
-                            if (genome[c.id].attacks[i].cost !== undefined) a.cost = genome[c.id].attacks[i].cost;
-                            a.accuracy = genome[c.id].attacks[i].accuracy;
-                        }
-                    });
-                }
-                if (currentTracker.cards[c.id]) currentTracker.cards[c.id].matchesPlayed++;
-            }));
-
-            let turns = 0;
-            while (!state.gameOver && turns < 250) { // Megemeltük 250-re a plafont, hogy biztosan befejeződjön a meccs
-                let pId = state.activePlayer;
-                let oppId = pId === 'p1' ? 'p2' : 'p1';
-                let move = getAIMove(state[pId], state[oppId]);
-                if (move === null) endTurnPhaseHeadless(state, pId);
-                else if (typeof move === 'object' && move.type === 'item') applyItemHeadless(state, pId, move.itemIndex);
-                else { applyMoveHeadless(state, pId, move); if (!state.gameOver) endTurnPhaseHeadless(state, pId); }
-                turns++;
-            }
-            
-            // Ha mégis kifutna az időből, gigantikus büntetést kap a turn szorzóra
-            if (turns >= 250) turns += 200; 
-            
-            currentTracker.totalTurns += turns;
-            currentTracker.totalMatches++;
-            if (state.winner) state[state.winner].team.forEach(c => { if (currentTracker.cards[c.id]) currentTracker.cards[c.id].wins++; });
-        }
-
         function updateUIProgress() {
-            const totalM = popSize * genCount * matchesPerGenome;
-            const currentM = (currentGen * popSize * matchesPerGenome) + (currentGenome * matchesPerGenome) + currentMatch;
-            const pct = Math.round((currentM / totalM) * 100);
+            const pct = Math.round((matchesCompleted / totalMatchesGoal) * 100);
             
             document.getElementById('progress').style.width = pct + '%';
             document.getElementById('progress').innerText = pct + '%';
-            document.getElementById('status-text').innerText = `Generáció: ${currentGen+1}/${genCount} | Genome: ${currentGenome+1}/${popSize} | Meccs: ${currentMatch}/${matchesPerGenome}`;
+            document.getElementById('status-text').innerText = `Generáció: ${currentGen+1}/${genCount} | Kész: ${pct}%`;
         }
 
         function finalizeEvolution() {
             document.getElementById('download-btn').style.display = 'inline-block';
             document.getElementById('copy-log-btn').style.display = 'inline-block';
-            document.getElementById('status-text').innerText = generationsSinceLastImprovement >= 8 ? "Evolúció leállt: Nincs jelentős javulás az utóbbi generációkban." : "Evolúció sikeresen befejeződött!";
+            document.getElementById('status-text').innerText = generationsSinceLastImprovement >= 100 ? "Evolúció leállt: 100 generáció óta nincs javulás." : "Evolúció sikeresen befejeződött!";
             document.getElementById('output').innerText += `\n\n✅ Folyamat vége.\nKattints az "Optimalizált JS Letöltése" gombra, majd másold a kapott fájlt a projekt mappájába!`;
         }
         
@@ -452,15 +518,41 @@
             });
         }
 
-        function downloadJS() {
+        async function downloadJS() {
             if (!bestOverallGenome) return;
             let exportStr = "const optimizedCardOverrides = " + JSON.stringify(bestOverallGenome, null, 4) + ";\n";
             
-            const dataStr = "data:text/javascript;charset=utf-8," + encodeURIComponent(exportStr);
+            // Modern böngészőkben (Chrome, Edge) a File System Access API-val kérhetünk Save As ablakot
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'optimized_cards.js',
+                        types: [{
+                            description: 'JavaScript File',
+                            accept: {'text/javascript': ['.js']},
+                        }],
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(exportStr);
+                    await writable.close();
+                    return;
+                } catch (err) {
+                    // Felhasználó bezárta az ablakot vagy hiba történt, ne csináljunk semmit vagy fallback
+                    if (err.name === 'AbortError') return;
+                    console.error("Hiba a mentés során:", err);
+                }
+            }
+
+            // Fallback módszer régebbi böngészőkhöz vagy ha a fenti hívás sikertelen volt
+            const blob = new Blob([exportStr], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
             const node = document.createElement('a');
-            node.setAttribute("href", dataStr);
+            node.setAttribute("href", url);
             node.setAttribute("download", "optimized_cards.js");
-            document.body.appendChild(node); node.click(); node.remove();
+            document.body.appendChild(node);
+            node.click();
+            node.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 100);
         }
     </script>
 </body>
