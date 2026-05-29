@@ -320,10 +320,10 @@ function setupDraft(teamIds, itemIds) {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('draft-screen').style.display = 'flex';
 
-    // Elrejtjük a Google bejelentkezést Test módban (de PvE-ben kint hagyjuk)
+    // Elrejtjük a Google bejelentkezést PvE (Gép elleni) és Test módban
     const authContainer = document.getElementById('auth-container');
     if (authContainer) {
-        authContainer.style.display = (isTestMode) ? 'none' : 'flex';
+        authContainer.style.display = (isPvEMode || isTestMode) ? 'none' : 'flex';
     }
 
     const readyBtn = document.getElementById('ready-btn');
@@ -347,80 +347,21 @@ function renderDraft() {
         const cardData = cardDatabase.find(c => c.id === id);
         
         const cardEl = document.createElement('div');
-        cardEl.className = 'card draft-card tooltip-bottom';
+        cardEl.className = 'draft-card tooltip-bottom';
         cardEl.draggable = true;
         cardEl.dataset.index = index;
         
-        // Generate attack stats HTML
-        let attacksHtml = '';
-        cardData.attacks.forEach(move => {
-            let icon = "⚔️";
-            let dmgText = "---";
-            let hitText = "---";
-            let effectText = "";
-
-            if (move.type === "dmg") {
-                const hits = move.hits || 1;
-                const acc = Math.round((move.accuracy !== undefined ? move.accuracy : 1.0) * 100);
-                dmgText = `💥${move.dmg} DMG`;
-                hitText = `🎯${hits}x | 🎲${acc}%`;
-                if (move.effect === "burn") { effectText = "🔥 ÉGÉS"; icon = "🔥"; }
-                else if (move.effect === "paralyze") { effectText = "⚡ BÉNÍT"; icon = "⚡"; }
-                else if (move.effect === "poison") { effectText = "☠️ MÉREG"; icon = "☠️"; }
-                else if (move.effect === "mark") { effectText = "🎯 JELÖL"; icon = "🎯"; }
-                else if (move.effect === "lifesteal") { effectText = "🦇 VÁMPÍR"; icon = "🦇"; }
-                else if (move.effect === "counter") { effectText = "⚔️ COUNTER"; icon = "⚔️"; }
-                
-                if (move.synergy === "mark") { effectText += " (🎯+50%)"; }
-            } else if (move.type === "heal") {
-                dmgText = `💚+${move.healAmount} HP`;
-                hitText = "🧪 GYÓGYUL";
-                effectText = "🧪 REGEN";
-                icon = "🧪";
-            } else if (move.type === "shield") {
-                dmgText = "🛡️ VÉD";
-                hitText = "🛡️ AKTÍV";
-                effectText = "🛡️ PAJZS";
-                icon = "🛡️";
-            }
-
-            attacksHtml += `
-                <button disabled>
-                    <div class="btn-title"><span class="truncate-text">${icon} ${move.name}</span></div>
-                    <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
-                    <div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>
-                </button>
-            `;
-        });
-
         cardEl.innerHTML = `
-            <div class="draft-order-tag">${index + 1}. Kártya</div>
-            <div class="hp-badge-draft"><span>${cardData.maxHp}</span></div>
-            <div class="ap-badge-draft"><span>2</span></div>
-            <div class="card-header">
-                <h2><span class="truncate-text">${cardData.name}</span></h2>
-            </div>
-            <div class="hp-bar">
-                <div class="hp-fill" style="width: 100%;"></div>
-            </div>
-            <div class="card-body">
-                <img src="${cardData.image}" class="card-image">
-            </div>
-            <div class="attacks">
-                ${attacksHtml}
-            </div>
+            <div class="order-badge">${index + 1}.</div>
+            <img src="${cardData.image}">
+            <div class="draft-name"><span class="truncate-text">${cardData.name}</span></div>
         `;
 
         container.appendChild(cardEl);
         
         // Tooltip ellenőrzése
-        const nameSpan = cardEl.querySelector('.card-header h2 .truncate-text');
-        setTooltipIfOverflows(cardEl.querySelector('.card-header h2'), nameSpan, cardData.name);
-
-        cardEl.querySelectorAll('.attacks button').forEach((item, i) => {
-            const atkSpan = item.querySelector('.truncate-text');
-            setTooltipIfOverflows(item.querySelector('.btn-title'), atkSpan, cardData.attacks[i].name);
-        });
+        const nameSpan = cardEl.querySelector('.truncate-text');
+        setTooltipIfOverflows(cardEl, nameSpan, cardData.name);
 
         cardEl.addEventListener('dragstart', function(e) {
             draggedIndex = parseInt(this.dataset.index);
@@ -455,8 +396,8 @@ function renderDraft() {
 }
 
 function confirmTeamOrder() {
-    if (!loggedInUser && !isTestMode) {
-        alert("A ranglista mentése miatt kötelező bejelentkezni a Google fiókoddal!");
+    if (!loggedInUser && !isPvEMode && !isTestMode) {
+        alert("PVP módban kötelező bejelentkezni a Google fiókoddal a ranglista miatt!");
         return;
     }
     
@@ -931,11 +872,10 @@ function checkWin() {
         const winnerName = winnerId === myRole ? myNickname : oppNickname;
         const loserName = loserId === myRole ? myNickname : oppNickname;
         
-        // --- Statisztikák mentése (PvE és PvP külön, Test módot nem mentünk) ---
-        if (!isTestMode) {
-            const type = isPvEMode ? 'pve' : 'pvp';
-            updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt, type);
-            updateGlobalStats(loserName, false, battleStats[loserId].damageDealt, type);
+        // --- Csak a befejezett PVP meccseket mentjük a ranglistára (PvE-t és Test módot nem) ---
+        if (!isPvEMode && !isTestMode) {
+            updateGlobalStats(winnerName, true, battleStats[winnerId].damageDealt);
+            updateGlobalStats(loserName, false, battleStats[loserId].damageDealt);
         }
 
         logMessage(`Mérkőzés vége! ${winnerName} megnyerte a csatát!`, "success");
@@ -1175,7 +1115,12 @@ function applyMove(playerId, data) {
                 }
             } else {
                 if (move.effect === "paralyze" || move.effect === "burn" || move.effect === "poison" || move.effect === "mark") {
-                    if (hitsLanded > 0) {
+                    if (oppCard.shields > 0) {
+                        oppCard.shields--;
+                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet!`, "log-shield");
+                        playSound('shield_break');
+                        triggerShieldScan(oppId);
+                    } else {
                         if (move.effect === "paralyze") {
                             if (oppCard.paraImmune) {
                                 logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
@@ -1195,8 +1140,6 @@ function applyMove(playerId, data) {
                             oppCard.isMarked = true;
                             logMessage(`> ${oppCard.name} Célkeresztbe került (Megjelölve)!`, "status-effect");
                         }
-                    } else if (shieldsBroken > 0) {
-                        logMessage(`> ${oppCard.name} pajzsa kivédte a státusz effektet is!`, "log-shield");
                     }
                 }
             }
@@ -1330,7 +1273,7 @@ function endTurnPhase(currentPlayerId) {
     if (battleStats) battleStats.turns++;
 
     if ((isTestMode || (isPvEMode && oppId === 'p2')) && !gameState.gameOver) {
-        setTimeout(runAITestMove, isTestMode ? 250 : 750);
+        setTimeout(runAITestMove, isTestMode ? 250 : 1000);
     }
 }
 
@@ -1373,12 +1316,10 @@ function applyItem(playerId, data) {
 
     if (action.type === 'dmg') {
         let dmgToApply = action.dmg;
-        let itemBlockedByShield = false;
         if (oppCard.shields > 0) {
             oppCard.shields--;
             dmgToApply = 0; // A pajzs elnyeli a tárgy sebzését
             logMessage(`> ${oppCard.name} pajzsa elnyelte a tárgy sebzését!`, "log-shield");
-            itemBlockedByShield = true;
             playSound('shield_break');
             triggerShieldScan(oppId);
         } else {
@@ -1392,8 +1333,11 @@ function applyItem(playerId, data) {
 
         triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
         if (action.effect === 'paralyze') {
-            if (itemBlockedByShield) {
-                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást is!`, "log-shield");
+            if (oppCard.shields > 0) {
+                oppCard.shields--;
+                logMessage(`> ${oppCard.name} pajzsa kivédte a bénítást!`, "log-shield");
+                playSound('shield_break');
+                triggerShieldScan(oppId);
             } else {
                 if (oppCard.paraImmune) {
                     logMessage(`> ${oppCard.name} ellenállt a bénításnak!`, "status-effect");
@@ -1522,7 +1466,7 @@ function runAITestMove() {
             itemIndex: moveResult.itemIndex
         };
         applyItem(pId, payload);
-        setTimeout(runAITestMove, isTestMode ? 250 : 750); 
+        setTimeout(runAITestMove, isTestMode ? 250 : 1500); 
         return;
     }
     
@@ -1611,13 +1555,13 @@ function downloadBattleLog() {
 // IDE MÁSOLD BE A SAJÁT FIREBASE LINKEDET! (Ne felejtsd el a végét: /leaderboard)
 const LEADERBOARD_API_URL = 'https://killer-lake-default-rtdb.europe-west1.firebasedatabase.app/leaderboard';
 
-async function updateGlobalStats(playerName, isWinner, damageDealt, type = 'pvp') {
+async function updateGlobalStats(playerName, isWinner, damageDealt) {
     if (!playerName) return;
     
     const safeName = playerName.replace(/[.#$\[\]/]/g, '').trim();
     
     try {
-        const res = await fetch(`${LEADERBOARD_API_URL}/${type}/${encodeURIComponent(safeName)}.json`);
+        const res = await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`);
         let stats = await res.json() || { wins: 0, losses: 0, matches: 0, damage: 0 };
         
         // Ha régi formátumú adat (csak egy szám) volt ott, alakítsuk át
@@ -1630,7 +1574,7 @@ async function updateGlobalStats(playerName, isWinner, damageDealt, type = 'pvp'
         if (isWinner) stats.wins += 1;
         else stats.losses += 1;
         
-        await fetch(`${LEADERBOARD_API_URL}/${type}/${encodeURIComponent(safeName)}.json`, {
+        await fetch(`${LEADERBOARD_API_URL}/${encodeURIComponent(safeName)}.json`, {
             method: 'PUT',
             body: JSON.stringify(stats)
         });
@@ -1639,31 +1583,17 @@ async function updateGlobalStats(playerName, isWinner, damageDealt, type = 'pvp'
     }
 }
 
-async function showLeaderboard(type = 'pvp') {
+async function showLeaderboard() {
     const modal = document.getElementById('leaderboard-modal');
     const list = document.getElementById('leaderboard-list');
-    const box = document.querySelector('.leaderboard-box');
     
-    // UI: Tabok (váltó gombok) beszúrása vagy frissítése
-    let tabContainer = document.getElementById('leaderboard-tabs');
-    if (!tabContainer) {
-        tabContainer = document.createElement('div');
-        tabContainer.id = 'leaderboard-tabs';
-        tabContainer.style.cssText = "display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;";
-        box.insertBefore(tabContainer, list);
-    }
-    
-    tabContainer.innerHTML = `
-        <button onclick="showLeaderboard('pvp')" style="flex:1; padding: 10px; border-radius: 10px; border: 1px solid #f1c40f; background: ${type === 'pvp' ? '#f1c40f' : 'transparent'}; color: ${type === 'pvp' ? '#111' : '#f1c40f'}; cursor: pointer; font-weight: bold; transition: 0.2s;">⚔️ PvP Mód</button>
-        <button onclick="showLeaderboard('pve')" style="flex:1; padding: 10px; border-radius: 10px; border: 1px solid #f1c40f; background: ${type === 'pve' ? '#f1c40f' : 'transparent'}; color: ${type === 'pve' ? '#111' : '#f1c40f'}; cursor: pointer; font-weight: bold; transition: 0.2s;">🤖 PvE Mód</button>
-    `;
-
     // Mutatunk egy töltőképernyőt, amíg az internetről jön az adat
-    list.innerHTML = `<p style="color: #aaa; padding: 20px; text-align: center;">Várakozás a ${type.toUpperCase()} szerverre...</p>`;
+    list.innerHTML = '<p style="color: #aaa; padding: 20px; text-align: center;">Várakozás a szerverre...</p>';
     modal.style.display = 'flex';
     
     try {
-        const res = await fetch(`${LEADERBOARD_API_URL}/${type}.json`);
+        console.log("Ranglista lekérése innen:", LEADERBOARD_API_URL);
+        const res = await fetch(`${LEADERBOARD_API_URL}.json`);
         if (!res.ok) throw new Error("Hálózati hiba");
         let leaderboard = await res.json() || {};
         
