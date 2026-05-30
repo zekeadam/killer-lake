@@ -104,31 +104,32 @@
 }
 
 .roster-dot {
-    width: 53px; height: 53px; border-radius: 50%; background-color: #333; 
+    width: 58px; height: 58px; border-radius: 50%; background-color: #333; 
     border: 2px solid #111; transition: all 0.3s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     position: relative;
     overflow: hidden;
 }
 .roster-img {
-    width: 100%; height: 120%; border-radius: 50%;
-    background-size: 160%; background-position: center top;
+    width: 100%; height: 130%; border-radius: 50%;
+    background-size: 192%; /* 20%-kal nagyobb zoom (eredeti: 160%) */
+    background-position: center top;
     position: absolute;
-    top: -20%;
+    top: -30%; /* 10%-kal feljebb tolva (eredeti: -20%) */
     transition: filter 0.3s;
 }
-
+ 
 .roster-dot.alive { background-color: #39a2db; border-color: #fff; box-shadow: 0 0 8px #39a2db; }
 .roster-dot.active-battler { background-color: #2ecc71; border-color: #fff; transform: scale(1.2); box-shadow: 0 0 12px #2ecc71; }
 .roster-dot.ko { border-color: #e74c3c; opacity: 0.8; }
 .roster-dot.ko .roster-img { filter: grayscale(100%) brightness(0.9); }
-
+ 
 .roster-dot.ko::before, .roster-dot.ko::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 38px;
+    width: 42px;
     height: 6px;
     background-color: #e74c3c;
     border-radius: 2px;
@@ -222,7 +223,7 @@
     gap: clamp(8px, 1.2vh, 12px);
     margin-top: 0;
     justify-content: center;
-    width: clamp(120px, 10vw, 162px);
+    width: clamp(108px, 9vw, 146px); /* 10%-kal kisebb (eredeti: clamp(120px, 10vw, 162px)) */
     z-index: 5;
 }
 #p1-items { 
@@ -249,11 +250,17 @@
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     width: 100%;
     color: white;
-    font-size: 0.85rem;
+    font-size: 0.76rem; /* 10%-kal kisebb (eredeti: 0.85rem) */
     font-weight: bold;
     text-align: left;
     box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.3) !important;
     box-sizing: border-box;
+}
+.item-btn .btn-title {
+    font-size: 0.68rem !important; /* 10%-kal kisebb a szöveg-illeszkedésért */
+}
+.item-btn .btn-row {
+    font-size: 0.58rem !important; /* 10%-kal kisebb a szöveg-illeszkedésért */
 }
 .item-btn:hover:not(:disabled) {
     transform: scale(1.05);
@@ -583,7 +590,7 @@
         gap: clamp(6px, 1.2vw, 15px);
     }
     .item-container {
-        width: clamp(94px, 8.5vw, 128px);
+        width: clamp(85px, 7.6vw, 115px); /* 10%-kal kisebb (eredeti: clamp(94px, 8.5vw, 128px)) */
     }
 }
 

@@ -82,14 +82,12 @@ function renderDraft() {
         }
 
         cardEl.innerHTML = `
-            <div class="draft-hp-badge">${cardData.maxHp}</div>
-            <div class="draft-ap-badge">2</div>
-            <div class="order-badge">${index + 1}. KÁRTYA</div>
-            <div class="card-header" style="pointer-events: none;">
-                <h2><span class="truncate-text">${cardData.name}</span></h2>
-            </div>
-            <div class="hp-bar" style="pointer-events: none;"><div class="hp-fill" style="width: 100%; background-color: #2ecc71;"></div></div>
             <div class="card-body" style="pointer-events: none;">
+                <div class="hp-bar" style="pointer-events: none;"><div class="hp-fill" style="width: 100%; background-color: #2ecc71;"></div></div>
+                <div class="card-body-stats">
+                    <div class="stat-hp">❤️ <span>${cardData.maxHp}</span></div>
+                    <div class="stat-ap">⚡ <span>2</span></div>
+                </div>
                 <img src="${cardData.image}" class="card-image" style="display: block;">
             </div>
             <div class="attacks" style="pointer-events: none;">
@@ -98,10 +96,6 @@ function renderDraft() {
         `;
 
         container.appendChild(cardEl);
-        
-        // Tooltip ellenőrzése
-        const nameSpan = cardEl.querySelector('h2 .truncate-text');
-        setTooltipIfOverflows(cardEl, nameSpan, cardData.name);
 
         cardEl.addEventListener('dragstart', function(e) {
             draggedIndex = parseInt(this.dataset.index);
