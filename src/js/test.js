@@ -28,7 +28,7 @@ testBtn.onclick = () => {
     const btnTable = document.createElement('button');
     btnTable.innerText = "📊 KÁRTYA TÁBLÁZAT";
     btnTable.style.cssText = "padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
-    btnTable.onclick = () => { menu.remove(); window.open('pages/test_cards.html', '_blank'); };
+    btnTable.onclick = () => { menu.remove(); window.location.href = 'pages/cards.html'; };
     menu.appendChild(btnTable);
 
     const btnSim = document.createElement('button');

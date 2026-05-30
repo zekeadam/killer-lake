@@ -169,9 +169,59 @@
         .stat-buff { color: #2ecc71; font-weight: 900; }
         .stat-nerf { color: #ff4d4d; font-weight: 900; }
         .stat-old { color: #888; text-decoration: line-through; margin-right: 5px; font-weight: normal; }
+        
+        #back-to-game-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #e94560 0%, #b22d42 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+        #back-to-game-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+        }
+        
+        #guide-nav-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+        #guide-nav-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
     </style>
 </head>
 <body>
+    <button id="guide-nav-btn" onclick="window.location.href='guide.html'">📖 Játékszabályok</button>
+    <button id="back-to-game-btn" onclick="window.location.href='../index.html'">🎮 Vissza a játékba</button>
     <div id="card-grid" class="card-grid-container">
         <!-- A kártyák ide kerülnek beillesztésre JavaScript segítségével -->
     </div>
@@ -302,7 +352,7 @@
 
                 cardEl.innerHTML = `
                     <div class="card-index">#${index}</div>
-                    <img src="${card.image}" alt="${card.name}">
+                    <img src="../${card.image}" alt="${card.name}">
                     <div class="card-header-row">
                         <h3 class="tooltip-bottom"><span class="truncate-text">${card.name}</span></h3>
                         ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${hpDisplay} HP</span>`}

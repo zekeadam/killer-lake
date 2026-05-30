@@ -152,5 +152,5 @@ function closeLeaderboard() {
 }
 
 function openGuide() {
-    window.open('pages/guide.html', '_blank');
+    window.location.href = 'pages/guide.html';
 }
