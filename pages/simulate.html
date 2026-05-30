@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Killer Lake - AI Szimuláció és Telemetria</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../src/css/style.css">
     <style>
         html, body {
             display: block; overflow: auto; padding: 40px;
@@ -103,14 +103,14 @@
         <div id="output">Az algoritmus a legkisebb eltérésű (legjobb balance) és ideális hosszúságú (legizgalmasabb) variációt keresi...</div>
     </div>
 
-    <script src="cards.js"></script>
+    <script src="../src/js/cards.js"></script>
     <script>
         // Betöltjük az optimalizált értékeket (ha léteznek), így a szimuláció ezekből indul ki
         const optScriptSim = document.createElement('script');
         optScriptSim.src = 'optimized_cards.js';
         document.head.appendChild(optScriptSim);
     </script>
-    <script src="ai.js"></script>
+    <script src="../src/js/ai.js"></script>
     <script>
         // Evolúciós paraméterek
         let popSize, genCount, matchesPerGenome;

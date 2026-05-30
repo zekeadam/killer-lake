@@ -3,7 +3,7 @@ const cardDatabase = [
     {
         id: "card_0",
         name: "Lángoló Tok",
-        image: "card/0.png",
+        image: "assets/card/0.png",
         maxHp: 90,
         attacks: [
             { name: "Dühös Lángcsapás", type: "dmg", dmg: 40, hits: 1, cost: 1, accuracy: 0.9 },
@@ -15,7 +15,7 @@ const cardDatabase = [
     {
         id: "card_1",
         name: "Chin-Gaze",
-        image: "card/1.png",
+        image: "assets/card/1.png",
         maxHp: 70,
         attacks: [
             { name: "Kozmikus Tok-sugár", type: "dmg", dmg: 30, cost: 1, accuracy: 0.9 },
@@ -27,7 +27,7 @@ const cardDatabase = [
     {
         id: "card_2",
         name: "Chin-Gaze",
-        image: "card/2.png",
+        image: "assets/card/2.png",
         maxHp: 70,
         attacks: [
             { name: "Tok-gúnyos", type: "shield", cost: 1, accuracy: 1.0 },
@@ -39,7 +39,7 @@ const cardDatabase = [
     {
         id: "card_3",
         name: "Üvöltő Villám",
-        image: "card/3.png",
+        image: "assets/card/3.png",
         maxHp: 120,
         attacks: [
             { name: "Plazma-Visítás", type: "dmg", dmg: 30, hits: 2, cost: 2, accuracy: 0.9 },
@@ -51,7 +51,7 @@ const cardDatabase = [
     {
         id: "card_4",
         name: "Cskiló Fény-Világ",
-        image: "card/4.png",
+        image: "assets/card/4.png",
         maxHp: 120,
         attacks: [
             { name: "Lángoló Tekintet", type: "dmg", dmg: 70, cost: 2, effect: "burn", accuracy: 0.8 },
@@ -63,7 +63,7 @@ const cardDatabase = [
     {
         id: "card_5",
         name: "Vakító Ordítás",
-        image: "card/5.png",
+        image: "assets/card/5.png",
         maxHp: 130,
         attacks: [
             { name: "Sokkos Fény-csóva", type: "dmg", dmg: 60, cost: 2, effect: "paralyze", accuracy: 0.8 },
@@ -75,7 +75,7 @@ const cardDatabase = [
     {
         id: "card_6",
         name: "Tudó Villám",
-        image: "card/6.png",
+        image: "assets/card/6.png",
         maxHp: 130,
         attacks: [
             { name: "Tervezett Túlfeszültség", type: "shield", cost: 1, accuracy: 1.0 },
@@ -87,7 +87,7 @@ const cardDatabase = [
     {
         id: "card_7",
         name: "Thievery Corp",
-        image: "card/7.png",
+        image: "assets/card/7.png",
         maxHp: 130,
         attacks: [
             { name: "Halk Tolvajlás", type: "heal", healAmount: 30, cost: 1, accuracy: 1.0 },
@@ -99,7 +99,7 @@ const cardDatabase = [
     {
         id: "card_8",
         name: "Éjszakai Vadász",
-        image: "card/8.png",
+        image: "assets/card/8.png",
         maxHp: 130,
         attacks: [
             { name: "Megjelölő Rúna", type: "dmg", dmg: 60, cost: 2, effect: "mark", accuracy: 0.8 },
@@ -111,7 +111,7 @@ const cardDatabase = [
     {
         id: "card_9",
         name: "Gábori Trükkmester",
-        image: "card/9.png",
+        image: "assets/card/9.png",
         maxHp: 50,
         attacks: [
             { name: "Kezességi Csere", type: "dmg", dmg: 20, cost: 1, accuracy: 0.9 },
@@ -123,7 +123,7 @@ const cardDatabase = [
     {
         id: "card_10",
         name: "Barna Medve",
-        image: "card/10.png",
+        image: "assets/card/10.png",
         maxHp: 120,
         attacks: [
             { name: "Békés Pofon", type: "dmg", dmg: 20, cost: 1, accuracy: 0.9 },
@@ -135,7 +135,7 @@ const cardDatabase = [
     {
         id: "card_11",
         name: "Medve Riasztás",
-        image: "card/11.png",
+        image: "assets/card/11.png",
         type: "supporter",
         description: "Megriasztja az ellenfelet: 30 sebzés és bénítás.",
         action: { type: "dmg", dmg: 30, effect: "paralyze" },
@@ -145,7 +145,7 @@ const cardDatabase = [
     {
         id: "card_12",
         name: "Gyermekláncfű Mező",
-        image: "card/12.png",
+        image: "assets/card/12.png",
         type: "supporter",
         description: "Visszatölt 60 Életerőt az aktív karakternek.",
         action: { type: "heal", healAmount: 60 },
@@ -155,7 +155,7 @@ const cardDatabase = [
     {
         id: "card_13",
         name: "Gólya",
-        image: "card/13.png",
+        image: "assets/card/13.png",
         maxHp: 110,
         attacks: [
             { name: "Szélvihar-csapkodás", type: "dmg", dmg: 30, cost: 1, accuracy: 0.9 },
@@ -167,7 +167,7 @@ const cardDatabase = [
     {
         id: "card_14",
         name: "Via Ferrata",
-        image: "card/14.png",
+        image: "assets/card/14.png",
         type: "supporter",
         description: "Ad 2 Pajzsot az aktív karakternek.",
         action: { type: "shield", amount: 2 },
@@ -177,7 +177,7 @@ const cardDatabase = [
     {
         id: "card_15",
         name: "Nincs Víz Ezért Nem Lehet Lehúzni A WC-t",
-        image: "card/15.png",
+        image: "assets/card/15.png",
         type: "supporter",
         description: "Meggyújtja az ellenfelet (Égés).",
         action: { type: "status", effect: "burn" },
@@ -187,7 +187,7 @@ const cardDatabase = [
     {
         id: "card_16",
         name: "Kutya Kula Csapda",
-        image: "card/16.png",
+        image: "assets/card/16.png",
         type: "item",
         description: "Elvesz 2 AP-t az ellenféltől.",
         action: { type: "ap_drain", amount: 2 },
@@ -197,7 +197,7 @@ const cardDatabase = [
     {
         id: "card_17",
         name: "Nicili Fusion",
-        image: "card/17.png",
+        image: "assets/card/17.png",
         maxHp: 330,
         attacks: [
             { name: "Fúziós Adrenalin", type: "heal", healAmount: 60, cost: 2, accuracy: 1.0 },
@@ -209,7 +209,7 @@ const cardDatabase = [
     {
         id: "card_18",
         name: "Gábori Pagoda",
-        image: "card/18.png",
+        image: "assets/card/18.png",
         maxHp: 160,
         attacks: [
             { name: "Villogó Bádog", type: "dmg", dmg: 50, cost: 1, effect: "paralyze", accuracy: 0.8 },
@@ -221,7 +221,7 @@ const cardDatabase = [
     {
         id: "card_19",
         name: "Tüzes Cserebogár VMAX",
-        image: "card/19.png",
+        image: "assets/card/19.png",
         maxHp: 330,
         attacks: [
             { name: "Tűzvihar-lehelet", type: "dmg", dmg: 40, cost: 2, effect: "burn", accuracy: 0.9 },
@@ -233,7 +233,7 @@ const cardDatabase = [
     {
         id: "card_20",
         name: "Alkoholizmus A Dézsában",
-        image: "card/20.png",
+        image: "assets/card/20.png",
         maxHp: 169,
         attacks: [
             { name: "Dézsa-Gőz Sokk", type: "shield", cost: 1, accuracy: 1.0 },
@@ -245,7 +245,7 @@ const cardDatabase = [
     {
         id: "card_21",
         name: "Vízi Bence",
-        image: "card/21.png",
+        image: "assets/card/21.png",
         maxHp: 169,
         attacks: [
             { name: "Kozmikus Buborék-sokk", type: "dmg", dmg: 120, cost: 3, accuracy: 0.7 },
@@ -257,7 +257,7 @@ const cardDatabase = [
     {
         id: "card_22",
         name: "Orgia A Dézsában",
-        image: "card/22.png",
+        image: "assets/card/22.png",
         maxHp: 169,
         attacks: [
             { name: "Dézsa-Ordítás", type: "dmg", dmg: 40, cost: 1, effect: "paralyze", accuracy: 0.9 },
@@ -269,7 +269,7 @@ const cardDatabase = [
     {
         id: "card_23",
         name: "Szivárvány",
-        image: "card/23.png",
+        image: "assets/card/23.png",
         maxHp: 160,
         attacks: [
             { name: "Szivárvány Fény", type: "dmg", dmg: 50, cost: 1, effect: "paralyze", accuracy: 0.8 },
@@ -281,7 +281,7 @@ const cardDatabase = [
     {
         id: "card_24",
         name: "Toyota Verso",
-        image: "card/24.png",
+        image: "assets/card/24.png",
         maxHp: 160,
         attacks: [
             { name: "Gazdaságos Út", type: "dmg", dmg: 50, cost: 1, accuracy: 0.8 },
@@ -293,7 +293,7 @@ const cardDatabase = [
     {
         id: "card_25",
         name: "Bromance",
-        image: "card/25.png",
+        image: "assets/card/25.png",
         maxHp: 220,
         attacks: [
             { name: "Összefogás", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 },
@@ -305,7 +305,7 @@ const cardDatabase = [
     {
         id: "card_26",
         name: "Pók Benó",
-        image: "card/26.png",
+        image: "assets/card/26.png",
         maxHp: 160,
         attacks: [
             { name: "Zseniális Hálózat", type: "heal", healAmount: 60, cost: 3, accuracy: 1.0 },
@@ -317,7 +317,7 @@ const cardDatabase = [
     {
         id: "card_27",
         name: "Bénó Ragu",
-        image: "card/27.png",
+        image: "assets/card/27.png",
         maxHp: 160,
         attacks: [
             { name: "Tartalmas Kavarás", type: "dmg", dmg: 50, cost: 1, accuracy: 0.8 },
@@ -329,7 +329,7 @@ const cardDatabase = [
     {
         id: "card_28",
         name: "Ai Doll",
-        image: "card/28.png",
+        image: "assets/card/28.png",
         maxHp: 160,
         attacks: [
             { name: "Nézéssel Fagyasztó", type: "dmg", dmg: 80, cost: 2, accuracy: 0.8 },
@@ -341,7 +341,7 @@ const cardDatabase = [
     {
         id: "card_29",
         name: "Náthás Kutató",
-        image: "card/29.png",
+        image: "assets/card/29.png",
         maxHp: 160,
         attacks: [
             { name: "Csiped-csípős Csapás", type: "dmg", dmg: 60, cost: 1, accuracy: 0.8 },
@@ -353,7 +353,7 @@ const cardDatabase = [
     {
         id: "card_30",
         name: "István",
-        image: "card/30.png",
+        image: "assets/card/30.png",
         maxHp: 160,
         attacks: [
             { name: "Mélyremenő Melegítés", type: "dmg", dmg: 80, cost: 3, accuracy: 0.8 },
@@ -365,7 +365,7 @@ const cardDatabase = [
     {
         id: "card_31",
         name: "Sárkány Cili",
-        image: "card/31.png",
+        image: "assets/card/31.png",
         maxHp: 160,
         attacks: [
             { name: "Forgó Energia Mező", type: "dmg", dmg: 80, cost: 3, accuracy: 0.8 },
@@ -377,7 +377,7 @@ const cardDatabase = [
     {
         id: "card_32",
         name: "Mészáros",
-        image: "card/32.png",
+        image: "assets/card/32.png",
         maxHp: 160,
         attacks: [
             { name: "Tudat-törlő Támadás", type: "dmg", dmg: 40, hits: 2, cost: 2, effect: "paralyze", accuracy: 0.9 },
@@ -389,7 +389,7 @@ const cardDatabase = [
     {
         id: "card_33",
         name: "All-Covering Pollen",
-        image: "card/33.png",
+        image: "assets/card/33.png",
         maxHp: 160,
         attacks: [
             { name: "Mérgező Spórák", type: "dmg", dmg: 80, cost: 2, effect: "poison", accuracy: 0.8 },
@@ -401,7 +401,7 @@ const cardDatabase = [
     {
         id: "card_34",
         name: "Gengszter Niki",
-        image: "card/34.png",
+        image: "assets/card/34.png",
         maxHp: 300,
         attacks: [
             { name: "Álner Védő", type: "shield", cost: 1, accuracy: 1.0 },
@@ -413,7 +413,7 @@ const cardDatabase = [
     {
         id: "card_35",
         name: "Csere Géza",
-        image: "card/35.png",
+        image: "assets/card/35.png",
         maxHp: 300,
         attacks: [
             { name: "Gyűjtői Szenvedély", type: "shield", cost: 1, accuracy: 1.0 },
@@ -425,7 +425,7 @@ const cardDatabase = [
     {
         id: "card_36",
         name: "Kedves Gergő",
-        image: "card/36.png",
+        image: "assets/card/36.png",
         maxHp: 160,
         attacks: [
             { name: "Kedves De Erős", type: "dmg", dmg: 50, cost: 1, accuracy: 0.8 },
@@ -437,7 +437,7 @@ const cardDatabase = [
     {
         id: "card_37",
         name: "Elfogy a Benzin",
-        image: "card/37.png",
+        image: "assets/card/37.png",
         maxHp: 160,
         attacks: [
             { name: "Brigád Támadás", type: "dmg", dmg: 160, cost: 4, accuracy: 0.6 },
