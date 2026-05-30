@@ -18,7 +18,7 @@ const audioCache = {};
 // Előre betöltjük a böngészőbe a linkeket, hogy azonnal szóljanak
 for (const [key, url] of Object.entries(soundURLs)) {
     audioCache[key] = new Audio(url);
-    audioCache[key].volume = 0.5; // Hangerő 50%
+    audioCache[key].volume = 0.5; // Hangerő 50% (ez az új maximum)
 }
 
 function playSound(type) {
@@ -35,3 +35,62 @@ function playSound(type) {
 function playDeathSound(card) {
     playSound('death');
 }
+
+// --- HANGERŐSZABÁLYZÓ LOGIKA ---
+let currentVolume = 1.0; // 0.0 - 1.0 (a csúszka értéke)
+let isMuted = false;
+let preMuteVolume = 1.0;
+
+function changeVolume(value) {
+    currentVolume = value / 100;
+    isMuted = currentVolume === 0;
+    updateAudioVolumes();
+    updateVolumeUI();
+}
+
+function updateAudioVolumes() {
+    const vol = (isMuted ? 0 : currentVolume) * 0.5; // A valós maximum hangerő 50% (0.5)
+    for (const [key, audio] of Object.entries(audioCache)) {
+        audio.volume = vol;
+    }
+}
+
+function toggleMute() {
+    if (isMuted) {
+        isMuted = false;
+        currentVolume = preMuteVolume > 0 ? preMuteVolume : 1.0;
+    } else {
+        preMuteVolume = currentVolume;
+        isMuted = true;
+        currentVolume = 0;
+    }
+    updateAudioVolumes();
+    updateVolumeUI();
+}
+
+function updateVolumeUI() {
+    const slider = document.getElementById('volume-slider');
+    const percentLabel = document.getElementById('volume-percentage');
+    const icon = document.getElementById('volume-icon');
+    
+    if (slider) slider.value = isMuted ? 0 : Math.round(currentVolume * 100);
+    if (percentLabel) percentLabel.textContent = (isMuted ? 0 : Math.round(currentVolume * 100)) + '%';
+    
+    if (icon) {
+        const vol = isMuted ? 0 : currentVolume;
+        if (vol === 0) {
+            icon.textContent = '🔇';
+        } else if (vol < 0.3) {
+            icon.textContent = '🔈';
+        } else if (vol < 0.7) {
+            icon.textContent = '🔉';
+        } else {
+            icon.textContent = '🔊';
+        }
+    }
+}
+
+// Inicializálás betöltődés után
+document.addEventListener("DOMContentLoaded", () => {
+    updateVolumeUI();
+});
