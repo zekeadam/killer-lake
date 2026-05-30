@@ -1,0 +1,100 @@
+/* --- ÚJ: DRAFT KÉPERNYŐ --- */
+#draft-screen {
+    flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
+}
+.draft-box {
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4); /* Most már megegyezik a connect menüvel */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6);
+    border-left: 2px solid rgba(197, 160, 89, 0.4);
+    border-radius: 24px; padding: 30px; width: 100%; max-width: 1600px;
+    box-shadow: 0 40px 100px rgba(0,0,0,1),
+                inset 0 0 30px rgba(57, 162, 219, 0.05);
+    text-align: center;
+}
+.draft-box h2 { color: #f1c40f; margin-top: 0; text-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
+.draft-team-container {
+    display: flex; flex-direction: row; justify-content: center; flex-wrap: nowrap; 
+    gap: 60px; margin: 20px 0;
+    min-height: 220px; padding: 75px 20px 20px 20px;
+    background: transparent; border: none; box-shadow: none;
+    overflow: visible;
+    align-items: flex-start;
+}
+.draft-card.card {
+    width: clamp(300px, 22vw, 360px); 
+    min-height: auto; 
+    padding: 12px;
+    cursor: grab;
+}
+.draft-card.card:active { cursor: grabbing; transform: scale(1.02); box-shadow: 0 15px 35px rgba(233,69,96,0.6); z-index: 10; border-color: #e94560; }
+.draft-card.card.drag-over { border-color: #2ecc71; transform: scale(1.02); box-shadow: 0 0 20px #2ecc71; }
+
+.draft-card.card .card-body {
+    height: 240px; 
+    max-height: none;
+    aspect-ratio: auto;
+    pointer-events: none;
+    margin-bottom: 6px;
+}
+.draft-card.card .card-image {
+    object-fit: cover;
+}
+.draft-card.card .attacks { gap: 6px; }
+.draft-card.card .attacks button {
+    min-height: 55px;
+    padding: 4px 6px;
+}
+.draft-card.card .btn-title { font-size: 0.7rem; }
+.draft-card.card .btn-row { font-size: 0.6rem; }
+.draft-card.card h2 { font-size: 0.9rem; }
+
+.draft-hp-badge, .draft-ap-badge {
+    position: absolute; top: clamp(-18px, -3vh, -24px); width: clamp(45px, 7vh, 55px); height: clamp(45px, 7vh, 55px);
+    border: 2px solid rgba(197, 160, 89, 0.7); border-radius: 50%; display: flex !important;
+    flex-direction: column; align-items: center; justify-content: center;
+    font-weight: 900; z-index: 20; box-shadow: 0 6px 15px rgba(0,0,0,0.7);
+    color: #fff !important; font-size: clamp(1rem, 2.2vh, 1.2rem);
+    line-height: 1; padding-bottom: 6px; box-sizing: border-box;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    pointer-events: none;
+}
+.draft-hp-badge { 
+    left: -15px; 
+    background: rgba(20, 50, 30, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2);
+}
+.draft-hp-badge::after, .draft-ap-badge::after {
+    position: absolute; bottom: 5px; font-size: 0.55rem; font-weight: bold; opacity: 0.9;
+}
+.draft-hp-badge::after { content: 'HP'; }
+.draft-ap-badge { 
+    right: -15px; 
+    background: rgba(20, 40, 60, 0.7);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.2);
+}
+.draft-ap-badge::after { content: 'AP'; }
+.order-badge { 
+    position: absolute; top: -65px; left: 50%; transform: translateX(-50%); 
+    background: #e94560; color: white; padding: 4px 15px; border-radius: 6px; 
+    font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: none; z-index: 30; 
+    border: 1px solid rgba(255,255,255,0.3); text-transform: uppercase; white-space: nowrap;
+}
+
+.draft-actions { margin-top: 20px; }
+#ready-btn { padding: 12px 30px; background-color: #2ecc71; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4); transition: transform 0.2s; }
+#ready-btn:hover { transform: scale(1.05); }
+#ready-btn:disabled { background-color: #555; color: #888; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-google {
+    background-color: white; color: #555; border: 1px solid #ccc;
+    padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: 0.2s; display: inline-flex; align-items: center; gap: 10px; font-family: 'Roboto', sans-serif;
+}
+.btn-google:hover { background-color: #f8f9fa; box-shadow: 0 6px 15px rgba(255,255,255,0.2); color: #333;}
+

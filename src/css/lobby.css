@@ -1,0 +1,33 @@
+/* --- LOBBY (VÁRÓTEREM) --- */
+#lobby-screen {
+    flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out;
+}
+
+.lobby-box {
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4); /* Átlátszóbb háttér */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid rgba(197, 160, 89, 0.6); /* Aranyozott díszítés */
+    border-left: 2px solid rgba(197, 160, 89, 0.4);
+    border-radius: 20px; padding: 30px; width: 100%; max-width: 550px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.9), 
+                inset 0 0 30px rgba(57, 162, 219, 0.05);
+    text-align: center;
+    position: relative;
+    animation: pulse-red-border 2s infinite;
+}
+.lobby-box h2 { 
+    margin-top: 0; margin-bottom: 30px; color: #e94560;
+    font-size: 1.1rem; border-bottom: none; padding-bottom: 0;
+    white-space: pre; font-family: 'Courier New', Courier, monospace;
+    line-height: 1.2;
+    text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+    display: inline-block;
+}
+
+.lobby-section { margin: 10px 0; }
+.lobby-section p { margin: 0 0 8px 0; font-size: 0.95rem; color: #ccc; }
+.hint { font-size: 0.75rem !important; color: #888 !important; margin-top: 5px !important; }
+.divider { margin: 25px 0; font-size: 0.8rem; color: #555; font-weight: bold; position: relative; }

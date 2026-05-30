@@ -1,0 +1,104 @@
+/* --- STÁTUSZ AURÁK --- */
+.card.status-shield { 
+    border-color: #3498db !important; 
+    box-shadow: 0 0 30px rgba(52, 152, 219, 0.9), inset 0 0 20px rgba(52, 152, 219, 0.5) !important; 
+}
+.card.status-burn { animation: auraBurn 1s infinite alternate !important; }
+.card.status-para { animation: auraPara 0.15s infinite alternate !important; }
+.card.status-poison { animation: auraPoison 1.5s infinite alternate !important; }
+.card.status-mark { box-shadow: 0 0 30px rgba(231, 76, 60, 0.8), inset 0 0 20px rgba(231, 76, 60, 0.5) !important; border-color: #e74c3c !important; }
+.card.status-counter { box-shadow: 0 0 30px rgba(189, 195, 199, 0.8), inset 0 0 20px rgba(189, 195, 199, 0.5) !important; border-color: #bdc3c7 !important; }
+
+/* ANIMÁCIÓK */
+.anim-attack { animation: lungePC 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; z-index: 10 !important; }
+.anim-damage { animation: shakePC 0.4s ease-in-out; border-color: #ff4757 !important; box-shadow: 0 0 25px #ff4757 !important; }
+.anim-heal { animation: healPulse 0.6s ease-out; }
+.anim-charge { animation: chargePulse 0.6s ease-out; }
+.screen-shake { animation: globalShake 0.3s cubic-bezier(.36,.07,.19,.97) both; transition: none !important; }
+
+@keyframes lungePC { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(-10px); } 100% { transform: scale(1); } }
+@keyframes shakePC { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+@keyframes healPulse { 50% { box-shadow: 0 0 30px rgba(46, 204, 113, 0.8); border-color: #2ecc71 !important; } }
+@keyframes chargePulse { 50% { box-shadow: 0 0 30px rgba(243, 156, 18, 0.8); border-color: #f39c12 !important; } }
+@keyframes auraBurn { from { border-color: #e67e22; box-shadow: 0 0 15px #e67e22, 0 0 30px #e74c3c; } to { border-color: #ff4d4d; box-shadow: 0 0 25px #ff4d4d, 0 0 55px #ff944d; } }
+@keyframes auraPara { 0%, 100% { border-color: #f1c40f; box-shadow: 0 0 15px #f1c40f; } 50% { border-color: #fff; box-shadow: 0 0 35px #f1c40f, 0 0 10px #fff; filter: brightness(1.2); } }
+@keyframes auraPoison { from { border-color: #8e44ad; box-shadow: 0 0 15px #8e44ad, 0 0 30px #9b59b6; } to { border-color: #2ecc71; box-shadow: 0 0 25px #2ecc71, 0 0 55px #27ae60; } }
+@keyframes globalShake { 0%, 100% { transform: translate(0, 0); } 20% { transform: translate(-8px, 5px); } 40% { transform: translate(8px, -5px); } 60% { transform: translate(-5px, -3px); } 80% { transform: translate(5px, 3px); } }
+
+/* --- LÖVEDÉK EFFEKTEK --- */
+.projectile {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    z-index: 9999;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    transition: transform 0.45s linear;
+    transform: translate(0, 0) rotate(0deg);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+}
+
+/* --- RÉSZECSKE ÉS BECSAPÓDÁS --- */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    border-radius: 50%;
+    animation: particle-fly 0.6s ease-out forwards;
+}
+
+@keyframes particle-fly {
+    0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0) rotate(360deg); opacity: 0; }
+}
+
+.impact-effect {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid white;
+    z-index: 10001;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: impact-ripple 0.4s ease-out forwards;
+}
+
+@keyframes impact-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; border-width: 10px; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; border-width: 1px; }
+}
+
+/* --- PAJZS SCANLINE EFFEKT --- */
+.shield-scanline {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to top, transparent, rgba(52, 152, 219, 0.8), transparent);
+    background-size: 100% 50px;
+    background-repeat: no-repeat;
+    z-index: 26;
+    pointer-events: none;
+    animation: shield-scan 0.7s ease-out forwards;
+}
+@keyframes shield-scan {
+    0% { background-position: 0 100%; opacity: 0; }
+    30% { opacity: 1; }
+    100% { background-position: 0 0; opacity: 0; }
+}
+
+.screen-flash {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10002;
+    opacity: 0;
+    animation: flash-anim 0.2s ease-out;
+}
+@keyframes flash-anim {
+    0% { opacity: 0.5; }
+    100% { opacity: 0; }
+}
+
