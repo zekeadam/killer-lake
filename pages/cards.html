@@ -105,44 +105,51 @@
         }
         .grid-card .attacks-list ul {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
             list-style: none;
             padding: 0;
             margin: 0;
+            width: 100%;
         }
         .grid-card .attacks-list li {
             background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%);
             border: 1px solid #2a4a7a;
             border-radius: 8px;
-            padding: 8px;
+            padding: 6px 8px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Elemek egymás után, üres hely nélkül */
+            justify-content: space-between;
+            min-height: 72px;
+            box-sizing: border-box;
             box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             text-transform: uppercase;
             border-bottom: 2px solid rgba(0,0,0,0.3);
         }
         .li-title {
-            font-size: 0.9rem; /* Nagyobb cím */
+            font-size: 0.78rem;
             color: #fff;
             font-weight: 800;
-            margin-bottom: 4px; /* Csak egy minimális távolság a következő sortól */
+            margin-bottom: 2px;
             display: flex;
             align-items: center;
+            width: 100%;
         }
         .li-row {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            font-size: 0.8rem; /* Nagyobb stat szöveg */
+            font-size: 0.68rem;
             color: #4cc9f0;
             font-weight: 700;
-            margin-bottom: 2px;
+            margin-bottom: 0;
         }
         .li-row span {
             flex: 1;
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .li-row span:last-child {
             text-align: right;
