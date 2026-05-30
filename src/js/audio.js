@@ -41,12 +41,31 @@ let currentVolume = 1.0; // 0.0 - 1.0 (a csúszka értéke)
 let isMuted = false;
 let preMuteVolume = 1.0;
 
+function loadVolumeSettings() {
+    const savedVol = parseFloat(localStorage.getItem('gameVolume'));
+    const savedMuted = localStorage.getItem('gameMuted');
+    if (!isNaN(savedVol)) {
+        currentVolume = savedVol;
+        isMuted = savedMuted === 'true';
+        // Preserve preMuteVolume for mute toggle
+        preMuteVolume = isMuted ? (currentVolume > 0 ? currentVolume : 1.0) : currentVolume;
+        // Apply volumes immediately
+        updateAudioVolumes();
+    }
+}
+
 function changeVolume(value) {
     currentVolume = value / 100;
     isMuted = currentVolume === 0;
     updateAudioVolumes();
     updateVolumeUI();
+    // Persist settings
+    try {
+        localStorage.setItem('gameVolume', currentVolume);
+        localStorage.setItem('gameMuted', isMuted);
+    } catch (e) {}
 }
+
 
 function updateAudioVolumes() {
     const vol = (isMuted ? 0 : currentVolume) * 0.5; // A valós maximum hangerő 50% (0.5)
@@ -92,5 +111,6 @@ function updateVolumeUI() {
 
 // Inicializálás betöltődés után
 document.addEventListener("DOMContentLoaded", () => {
+    loadVolumeSettings();
     updateVolumeUI();
 });
