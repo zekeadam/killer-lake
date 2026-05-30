@@ -121,20 +121,26 @@
             margin: 0;
             width: 100%;
         }
-        .grid-card .attacks-list li {
-            background: linear-gradient(180deg, #1a2a4a 0%, #0f172a 100%);
-            border: 1px solid #2a4a7a;
-            border-radius: 8px;
-            padding: 6px 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 72px;
-            box-sizing: border-box;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            text-transform: uppercase;
-            border-bottom: 2px solid rgba(0,0,0,0.3);
-        }
+        .action-btn, .energy-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+.action-btn.left, .energy-btn.left { left: 5%; }
+.action-btn.right, .energy-btn.right { right: 5%; }
+
         .li-title {
             font-size: 0.78rem;
             color: #fff;
@@ -367,9 +373,12 @@
                     hpDisplay = `<span class="stat-old">${card.origMaxHp}</span><span class="${card.maxHp > card.origMaxHp ? 'stat-buff' : 'stat-nerf'}">${card.maxHp}</span>`;
                 }
 
+                const sideClass = (index % 2 === 0) ? 'left' : 'right';
                 cardEl.innerHTML = `
                     <div class="card-index">#${index}</div>
                     <img src="../${card.image}" alt="${card.name}">
+                    <button class="action-btn ${sideClass}" title="Akció">⚔️</button>
+                    <button class="energy-btn ${sideClass}" title="Energiatöltés">⚡</button>
                     <div class="card-header-row">
                         <h3 class="tooltip-bottom"><span class="truncate-text">${card.name}</span></h3>
                         ${card.type === 'item' || card.type === 'supporter' ? `<span class="hp-label-mini" style="background: rgba(155, 89, 182, 0.5);">${card.type.toUpperCase()}</span>` : `<span class="hp-label-mini">❤️ ${hpDisplay} HP</span>`}
