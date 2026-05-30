@@ -64,7 +64,7 @@ html, body {
 .divider { margin: 25px 0; font-size: 0.8rem; color: #555; font-weight: bold; position: relative; }
 #pve-btn { width: 100%; padding: 12px; background-color: #f8961e; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(248, 150, 30, 0.4); transition: all 0.2s ease; }
 #pve-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
-#copy-link-btn { width: 100%; padding: 12px; background-color: #f3722c; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 114, 44, 0.4); transition: all 0.2s ease; }
+#copy-link-btn { position: relative; width: 100%; padding: 12px; background-color: #f3722c; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 114, 44, 0.4); transition: all 0.2s ease; }
 #copy-link-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
 #copy-link-btn .btn-subtext { display: block; font-size: 0.75rem; font-weight: normal; opacity: 0.9; margin-top: 4px; text-transform: none; }
 
@@ -951,4 +951,24 @@ html, body {
     white-space: nowrap;
     max-width: 100%;
     vertical-align: middle;
+}
+
+/* PVP várakozás spinner animáció */
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+.btn-spinner {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    box-sizing: border-box;
 }

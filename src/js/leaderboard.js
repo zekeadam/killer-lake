@@ -9,7 +9,15 @@ function copyInviteLink() {
     
     navigator.clipboard.writeText(url.toString()).then(() => {
         const btn = document.getElementById('copy-link-btn');
-        btn.innerText = "Várakozás másik játékosra...";
+        const sub = btn.querySelector('.btn-subtext');
+        if (sub) {
+            sub.innerText = "Várakozás A Másik Játékosra";
+        }
+        if (!btn.querySelector('.btn-spinner')) {
+            const spinner = document.createElement('span');
+            spinner.className = 'btn-spinner';
+            btn.appendChild(spinner);
+        }
     });
 }
 
