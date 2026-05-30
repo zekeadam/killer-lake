@@ -460,7 +460,8 @@
 
 .badge-shield { 
     background-color: transparent; 
-    position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    position: absolute; bottom: 22px; /* A kártyatesten belülre helyezve, 8px-szel a 14px-es HP bar felett (eredeti: -22px) */
+    left: 50%; transform: translateX(-50%);
     padding: 0; border-radius: 0;
     min-width: unset; gap: 3px;
     box-shadow: none;
