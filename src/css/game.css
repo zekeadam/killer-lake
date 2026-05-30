@@ -1,3 +1,41 @@
+/* --- JÁTÉKOS NEVEK (széleken fixálva) --- */
+.player-names-header {
+    display: contents; /* nem foglal helyet, a gyerekek önállóan pozicionálódnak */
+}
+
+.player-name {
+    position: fixed;
+    top: 18px;
+    z-index: 100;
+    font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #fff;
+    background: rgba(10, 10, 20, 0.55);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border: 1px solid rgba(197, 160, 89, 0.35);
+    border-top: 1.5px solid rgba(197, 160, 89, 0.6);
+    border-radius: 30px;
+    padding: 7px 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 0 12px rgba(197, 160, 89, 0.1);
+    text-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+#p1-name-display {
+    left: 15px;
+}
+
+#p2-name-display {
+    right: 15px;
+}
+
 /* --- JÁTÉKTÉR --- */
 #game-screen {
     flex: 1;
