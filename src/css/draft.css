@@ -25,32 +25,83 @@
     align-items: flex-start;
 }
 .draft-card.card {
-    width: clamp(300px, 22vw, 360px); 
-    min-height: auto; 
-    padding: 12px;
+    display: flex !important;
+    flex-direction: column !important;
+    width: clamp(300px, 22vw, 360px) !important; 
+    min-height: auto !important; 
+    padding: 12px !important;
+    margin: 0 !important;
     cursor: grab;
+    
+    /* Restore gorgeous glassmorphic card design */
+    background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.3), transparent),
+                rgba(10, 10, 20, 0.4) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-top: 2px solid rgba(197, 160, 89, 0.6) !important;
+    border-left: 2px solid rgba(197, 160, 89, 0.4) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.3) !important;
+    overflow: visible !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
-.draft-card.card:active { cursor: grabbing; transform: scale(1.02); box-shadow: 0 15px 35px rgba(233,69,96,0.6); z-index: 10; border-color: #e94560; }
-.draft-card.card.drag-over { border-color: #2ecc71; transform: scale(1.02); box-shadow: 0 0 20px #2ecc71; }
+.draft-card.card:active { 
+    cursor: grabbing; 
+    transform: scale(1.02) !important; 
+    box-shadow: 0 15px 35px rgba(233,69,96,0.6), inset 0 0 20px rgba(233,69,96,0.3) !important; 
+    z-index: 10 !important; 
+    border-color: #e94560 !important; 
+}
+.draft-card.card.drag-over { 
+    border-color: #2ecc71 !important; 
+    transform: scale(1.02) !important; 
+    box-shadow: 0 0 20px #2ecc71, inset 0 0 20px rgba(46,204,113,0.3) !important; 
+}
 
 .draft-card.card .card-body {
-    height: 240px; 
-    max-height: none;
-    aspect-ratio: auto;
+    width: 100% !important;
+    height: 240px !important; 
+    max-height: none !important;
+    aspect-ratio: auto !important;
     pointer-events: none;
-    margin-bottom: 6px;
+    margin-bottom: 6px !important;
+    padding: 0 !important;
+    
+    /* Strip game card body glass styles */
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
 }
 .draft-card.card .card-image {
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
 }
-.draft-card.card .attacks { gap: 6px; }
+.draft-card.card .attacks { 
+    gap: 6px !important; 
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    transform: none !important;
+    margin: 6px 0 0 0 !important;
+}
 .draft-card.card .attacks button {
-    min-height: 55px;
-    padding: 4px 6px;
+    height: 55px !important;
+    min-height: 55px !important;
+    max-height: 55px !important;
+    padding: 4px 6px !important;
 }
-.draft-card.card .btn-title { font-size: 0.7rem; }
-.draft-card.card .btn-row { font-size: 0.6rem; }
-.draft-card.card h2 { font-size: 0.9rem; }
+.draft-card.card .btn-title { font-size: 0.7rem !important; }
+.draft-card.card .btn-row { font-size: 0.6rem !important; }
+.draft-card.card h2 { font-size: 0.9rem !important; }
 
 .draft-hp-badge, .draft-ap-badge {
     position: absolute; top: clamp(-18px, -3vh, -24px); width: clamp(45px, 7vh, 55px); height: clamp(45px, 7vh, 55px);
