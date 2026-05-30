@@ -356,7 +356,7 @@ function updateUI() {
             }
 
             btn.innerHTML = `
-                <img src="${cardData.image}" class="item-img"> 
+                <div class="item-img-wrapper"><img src="${cardData.image}" class="item-img"></div>
             <div class="btn-title"><span class="truncate-text">${icon} ${cardData.name}</span></div>
                 <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
                 <div class="btn-row"><span>✨ INGYENES</span><span class="btn-eff">${effectText}</span></div>
