@@ -110,11 +110,7 @@ const cardDatabase = [
     },
     {
         id: "card_9",
-        name: "Gábori Trükk<div class="card-image-wrapper" style="position: relative; text-align: center;">
-    <img src="../${card.image}" alt="${card.name}" style="display: block; margin: 0 auto;">
-    <button class="action-btn" data-card-id="${card.id}" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%);">⚔️</button>
-    <button class="energy-btn" data-card-id="${card.id}" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%);">🔋</button>
-</div>",
+        name: "Gábori Trükkmester",
         image: "assets/card/9.png",
         maxHp: 50,
         attacks: [
