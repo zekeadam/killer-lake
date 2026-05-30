@@ -1688,3 +1688,7 @@ async function showLeaderboard(mode = 'pvp') {
 function closeLeaderboard() {
     document.getElementById('leaderboard-modal').style.display = 'none';
 }
+
+function openGuide() {
+    window.open('guide.html', '_blank');
+}

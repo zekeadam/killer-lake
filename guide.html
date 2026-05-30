@@ -7,7 +7,15 @@
     <link rel="stylesheet" href="style.css">
     <style>
         /* Specifikus formázás az útmutató szövegeinek, ami a fő stílust egészíti ki */
-        body { overflow-y: auto; display: block; padding: 40px 20px; height: auto; }
+        html { overflow-y: auto; height: auto; scrollbar-gutter: stable; }
+        body { display: block; padding: 40px 20px; height: auto; overflow: visible; }
+        
+        /* Görgetősáv stílusa, hogy illeszkedjen a játékhoz de a szélén maradjon */
+        html::-webkit-scrollbar { width: 10px; }
+        html::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        html::-webkit-scrollbar-thumb { background: rgba(233, 69, 96, 0.5); border-radius: 5px; }
+        html::-webkit-scrollbar-thumb:hover { background: rgba(233, 69, 96, 0.8); }
+
         .guide-container {
             max-width: 900px;
             margin: 0 auto;
@@ -31,9 +39,34 @@
         .bg-hp { background: #2ecc71; border: 1px solid #27ae60; }
         .bg-shield { background: #3498db; border: 1px solid #2980b9; }
         .highlight-red { color: #e74c3c; font-weight: bold; }
+
+        #back-to-game-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #e94560 0%, #b22d42 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            backdrop-filter: blur(5px);
+        }
+        #back-to-game-btn:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+            box-shadow: 0 8px 20px rgba(233, 69, 96, 0.4);
+        }
     </style>
 </head>
 <body>
+    <button id="back-to-game-btn" onclick="window.close()">🎮 Vissza a játékba</button>
     <div class="guide-container">
         <h1>KILLER LAKE - JÁTÉKSZABÁLYOK</h1>
         

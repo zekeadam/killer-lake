@@ -14,8 +14,7 @@
                 <h2>Multiplayer Váróterem</h2>
                 
                 <div class="lobby-section">
-                    <button id="copy-link-btn" onclick="copyInviteLink()">⚔️ PVP Mód (Meghívó link másolása)</button>
-                    <p class="hint">Küldd el a linket a barátodnak, és ha rákattint, indul a meccs!</p>
+                    <button id="copy-link-btn" onclick="copyInviteLink()">⚔️ PVP MÓD <span class="btn-subtext">meghívó link másolása vágólapra</span></button>
                 </div>
 
                 <div class="lobby-section">
@@ -24,6 +23,10 @@
 
                 <div class="lobby-section">
                     <button id="leaderboard-btn" class="btn-gold" onclick="showLeaderboard('pvp')">🏆 Globális Ranglista</button>
+                </div>
+
+                <div class="lobby-section">
+                    <button id="guide-btn" onclick="openGuide()">📖 Játékszabályok & Útmutató</button>
                 </div>
                 
                 <div id="connection-status"></div>
