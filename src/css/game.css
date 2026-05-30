@@ -48,6 +48,9 @@
     z-index: 50;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
+.team-roster:empty {
+    display: none !important;
+}
 #p1-roster { left: 15px; }
 #p2-roster { right: 15px; }
 

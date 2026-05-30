@@ -73,7 +73,6 @@
             
             <div class="arena">
                 <div class="card-container">
-                    <div class="team-roster" id="p1-roster"></div>
                     
                     <div class="card" id="p1-card">
                         <div class="card-header">
@@ -110,7 +109,6 @@
                 </div>
 
                 <div class="card-container">
-                    <div class="team-roster" id="p2-roster"></div>
 
                     <div class="card" id="p2-card">
                         <div class="card-header">
@@ -179,15 +177,19 @@
             </div>
         </div>
 
-        <!-- Hangerőszabályzó -->
-        <div id="volume-control" class="volume-control">
-            <button id="volume-mute-btn" class="volume-btn" onclick="toggleMute()" title="Némítás / Visszahangosítás">
-                <span id="volume-icon">🔊</span>
-            </button>
-            <div class="slider-wrapper">
-                <input type="range" id="volume-slider" min="0" max="100" value="100" class="volume-slider" oninput="changeVolume(this.value)">
-                <span id="volume-percentage" class="volume-percentage">100%</span>
-            </div>
+    </div>
+
+    <!-- HUD Roster és Hangerőszabályzó a body közvetlen gyermekeként (megakadályozza a screen-shake layout bugot) -->
+    <div class="team-roster" id="p1-roster"></div>
+    <div class="team-roster" id="p2-roster"></div>
+
+    <div id="volume-control" class="volume-control">
+        <button id="volume-mute-btn" class="volume-btn" onclick="toggleMute()" title="Némítás / Visszahangosítás">
+            <span id="volume-icon">🔊</span>
+        </button>
+        <div class="slider-wrapper">
+            <input type="range" id="volume-slider" min="0" max="100" value="100" class="volume-slider" oninput="changeVolume(this.value)">
+            <span id="volume-percentage" class="volume-percentage">100%</span>
         </div>
     </div>
 
