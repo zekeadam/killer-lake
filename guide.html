@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Killer Lake - Útmutató</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specifikus formázás az útmutató szövegeinek, ami a fő stílust egészíti ki */
+        body { overflow-y: auto; display: block; padding: 40px 20px; height: auto; }
+        .guide-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: radial-gradient(circle at top left, rgba(60, 60, 80, 0.4), transparent), rgba(15, 15, 25, 0.9);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid rgba(197, 160, 89, 0.8);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 25px 50px rgba(0,0,0,1);
+            color: #eaeaea;
+            line-height: 1.6;
+        }
+        .guide-container h1 { color: #e94560; text-align: center; margin-top: 0; margin-bottom: 40px; font-size: 2.2rem; letter-spacing: 2px; text-shadow: 0 0 15px rgba(233, 69, 96, 0.5); font-family: 'Courier New', Courier, monospace;}
+        .guide-container h2 { color: #f1c40f; border-bottom: 1px solid rgba(241, 196, 15, 0.3); padding-bottom: 10px; margin-top: 40px; font-size: 1.5rem; }
+        .guide-container p { margin-bottom: 15px; font-size: 1.1rem; }
+        .guide-container ul { margin-bottom: 20px; font-size: 1.1rem; padding-left: 20px; }
+        .guide-container li { margin-bottom: 15px; }
+        .guide-badge { display: inline-block; padding: 3px 10px; border-radius: 8px; font-weight: 900; font-size: 0.9rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); box-shadow: 0 4px 8px rgba(0,0,0,0.5); margin-right: 5px;}
+        .bg-ap { background: #f39c12; border: 1px solid #e67e22; }
+        .bg-hp { background: #2ecc71; border: 1px solid #27ae60; }
+        .bg-shield { background: #3498db; border: 1px solid #2980b9; }
+        .highlight-red { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="guide-container">
+        <h1>KILLER LAKE - JÁTÉKSZABÁLYOK</h1>
+        
+        <h2>🎯 A Játék Célja</h2>
+        <p>A Killer Lake egy online játszható, körökre osztott, stratégiai kártyajáték. A célod, hogy a csapatod képességeinek okos és jól időzített használatával <b>kiüsd az ellenfeled mind az 5 kártyáját</b>, mielőtt ő tenné meg ugyanezt veled.</p>
+
+        <h2>⚔️ Játékmódok</h2>
+        <ul>
+            <li><b>1 vs 1 (Hagyományos):</b> Egyszerre 1 kártya küzd 1 ellen az arénában. Ha az elöl lévő kártyád kiesik, automatikusan a következő ugrik a helyére.</li>
+            <li><b>2 vs 2 (Dupla Csata):</b> Egyszerre 2 kártyád van játékban az ellenfél 2 kártyája ellen. Képességek és tárgyak használatakor a játék megkér rá (célkereszttel), hogy <b>válaszd ki a célpontot!</b></li>
+        </ul>
+
+        <h2>⚡ Alapfogalmak</h2>
+        <ul>
+            <li><span class="guide-badge bg-hp">Életerő (HP)</span> Ha egy kártyád eléri a 0 HP-t, kiesik a játékból.</li>
+            <li><span class="guide-badge bg-ap">Akciópont (AP)</span> Minden kártyaképesség (támadás, gyógyítás, pajzs) AP-ba kerül. A játékot 2 AP-val kezded, és <b>a csapatod minden saját köre elején kap +1 AP-t</b> (Maximum 10 lehet).</li>
+            <li><span class="guide-badge bg-shield">Pajzs</span> Egy pajzs megvédi a kártyát pontosan egy ütéstől vagy debuff-tól (pl. méreg, égés), majd megsemmisül. Egy kártyán maximum 2 aktív pajzs lehet.</li>
+        </ul>
+
+        <h2>🃏 Lépések a Körödben</h2>
+        <p>Amikor te jössz, a következő opcióid vannak:</p>
+        <ul>
+            <li><b>Képességek elsütése:</b> A kártyáidon lévő 4 gomb bármelyikét megnyomhatod, amíg van elég AP-d hozzá. Egy képesség használata befejezi a körödet, így érdemes spórolni a drágább, de erősebb támadásokra.</li>
+            <li><b>Tárgyak (Item) használata:</b> A képernyő szélén lévő Tárgykártyák ingyenesek (0 AP), de <b>körönként csak egyetlen darabot használhatsz fel a csapatodnak!</b> Használatuk nem fejezi be a kört.</li>
+            <li><b>🔋 Energia Töltés (Kör Átadása):</b> Ezzel a képességgel lezárod az aktuális körödet, viszont <b>jutalmul egy extra +1 AP-t kapsz</b> (így a következő körben összesen +2-vel indítasz). Kiváló taktika egy drágább, de pusztító képesség előkészítéséhez.</li>
+        </ul>
+
+        <h2>🔥 Állapotok és Effektek</h2>
+        <ul>
+            <li><b>🔥 Égés (Burn) / ☠️ Méreg (Poison):</b> A kártya sebződik a köröd végén. A hatások halmozódnak, de idővel elmúlnak. A Pajzs képes elnyelni ezeket a találatokat!</li>
+            <li><b>⚡ Bénítás (Paralyze):</b> A legdurvább hatás. A megbénított karakter <b>nem kapja meg az AP-t a csapatnak, és a köre kimarad.</b> Utána egy kör erejéig "immunitást" kap, hogy ne lehessen végtelenül bénításban tartani.</li>
+            <li><b>🎯 Jelölés (Mark):</b> A jelölt célpont a <i>szinergikus</i> képességekből <span class="highlight-red">+50% bónusz sebzést</span> szenved el. A nagy ütés után a jelölés törlődik.</li>
+            <li><b>🦇 Vámpír (Lifesteal):</b> A célpontnak okozott sebzés felét a támadó visszakapja Életerő (HP) formájában.</li>
+            <li><b>⚔️ Visszatámadás (Counter):</b> Egy defenzív állapot. Ha bekapcsolod, minden bekapott sérülés után a karaktered 20 sebzéssel automatikusan visszacsap a támadónak!</li>
+        </ul>
+    </div>
+</body>
+</html>
