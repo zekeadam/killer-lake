@@ -539,7 +539,7 @@
     min-width: unset !important;
     padding: 0 !important; 
     border-radius: 0 !important;
-    display: flex !important;
+    display: flex; /* Removed !important to allow inline JS style="display:none;" to function */
     align-items: center !important;
     justify-content: center !important;
     gap: 3px !important;
@@ -551,6 +551,11 @@
     overflow: visible !important;
     transition: none !important;
     will-change: auto !important;
+    pointer-events: none !important; /* Disable cursor interaction to prevent hover movements */
+}
+
+.badge-shield:hover {
+    transform: translateX(-50%) !important; /* Ensure it stays centered if hovered */
 }
 
 /* KÉPESSÉG RÁCS */
