@@ -76,6 +76,125 @@ function createImpactEffect(x, y, color, isSmall = false) {
     setTimeout(() => impact.remove(), 400);
 }
 
+function getCardImageCenter(playerId) {
+    const cleanId = playerId.endsWith('-card') ? playerId : `${playerId}-card`;
+    const cardEl = document.getElementById(cleanId);
+    if (!cardEl) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const img = cardEl.querySelector('.card-image');
+    const rect = (img && img.style.display !== 'none' && img.offsetWidth > 0) ? img.getBoundingClientRect() : cardEl.getBoundingClientRect();
+    return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+    };
+}
+
+function spawnFloatingText(elementId, text, type, isCrit = false) {
+    const center = getCardImageCenter(elementId);
+    const x = center.x + (Math.random() * 60 - 30);
+    const y = center.y + (Math.random() * 40 - 20) - 20;
+
+    const f = document.createElement('div');
+    f.className = `floating-text ${type}`;
+    if (isCrit) f.classList.add('crit');
+    f.innerText = text;
+    f.style.left = `${x}px`;
+    f.style.top = `${y}px`;
+
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 1200);
+}
+
+function spawnBloodParticles(x, y, count = 18) {
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle blood';
+        const size = Math.random() * 8 + 6;
+        const colors = ['#8b0000', '#ff0000', '#b22222', '#5c0000'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.backgroundColor = color;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.boxShadow = `0 0 6px ${color}`;
+        p.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+        
+        const tx = (Math.random() - 0.5) * 140; 
+        const ty = Math.random() * 80 + 100;
+        p.style.setProperty('--x', `${tx}px`);
+        p.style.setProperty('--y', `${ty}px`);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+    }
+}
+
+function spawnShieldShatterParticles(x, y, count = 22) {
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle shield-shard';
+        const size = Math.random() * 12 + 6; 
+        const colors = ['#3498db', '#00d2d3', '#00a8ff', '#ffffff'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.backgroundColor = color;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.boxShadow = `0 0 10px ${color}`;
+        p.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's';
+        
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 120 + 60;
+        const tx = Math.cos(angle) * dist;
+        const ty = Math.sin(angle) * dist;
+        p.style.setProperty('--x', `${tx}px`);
+        p.style.setProperty('--y', `${ty}px`);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 700);
+    }
+}
+
+function spawnStatusParticles(x, y, type, count = 12) {
+    for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle status-spark';
+        const size = Math.random() * 8 + 4;
+        
+        let colors = [];
+        if (type === 'burn') {
+            colors = ['#ff4500', '#ff7f50', '#ff4757', '#ffa502'];
+        } else if (type === 'poison') {
+            colors = ['#2ecc71', '#8e44ad', '#9b59b6', '#2ed573'];
+        } else if (type === 'paralyze') {
+            colors = ['#ffff50', '#ffffff', '#eccc68'];
+        } else {
+            colors = ['#ffffff'];
+        }
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        p.style.left = x + 'px';
+        p.style.top = y + 'px';
+        p.style.backgroundColor = color;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.boxShadow = `0 0 8px ${color}`;
+        p.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+        
+        const tx = (Math.random() - 0.5) * 60;
+        const ty = -(Math.random() * 80 + 30);
+        p.style.setProperty('--x', `${tx}px`);
+        p.style.setProperty('--y', `${ty}px`);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 850);
+    }
+}
+
+
 function triggerShieldScan(playerId) {
     const cardBody = document.querySelector(`#${playerId}-card .card-body`);
     if (!cardBody) return;
@@ -90,18 +209,18 @@ function createProjectile(fromId, toId, effectType, hitCount = 1) {
     const toEl = document.getElementById(toId);
     if (!fromEl || !toEl) return;
 
-    const fromRect = fromEl.getBoundingClientRect();
-    const toRect = toEl.getBoundingClientRect();
+    const startCenter = getCardImageCenter(fromId);
+    const targetCenter = getCardImageCenter(toId);
 
     const projectileCount = hitCount;
     const isMulti = hitCount > 1;
 
     for (let i = 0; i < projectileCount; i++) {
         setTimeout(() => {
-            const startX = fromRect.left + fromRect.width / 2 + (Math.random() * 40 - 20);
-            const startY = fromRect.top + fromRect.height / 2 + (Math.random() * 40 - 20);
-            const targetX = toRect.left + toRect.width / 2;
-            const targetY = toRect.top + toRect.height / 2;
+            const startX = startCenter.x + (Math.random() * 40 - 20);
+            const startY = startCenter.y + (Math.random() * 40 - 20);
+            const targetX = targetCenter.x;
+            const targetY = targetCenter.y;
 
             const proj = document.createElement('div');
             proj.className = 'projectile';

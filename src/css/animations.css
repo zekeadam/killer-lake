@@ -111,3 +111,163 @@
     100% { opacity: 0; }
 }
 
+/* --- LEBEGŐ HARCI SZÖVEG (FLOATING COMBAT TEXT) --- */
+.floating-text {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10003;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 2.2rem;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 1), 0 4px 6px rgba(0, 0, 0, 1);
+    animation-fill-mode: forwards;
+}
+
+.floating-text.dmg {
+    color: #ff4757;
+    animation: float-dmg 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.floating-text.crit {
+    color: #ffa502;
+    font-size: 3.2rem;
+    text-shadow: 0 0 15px rgba(255, 165, 2, 0.9), 0 0 5px #fff, 0 4px 10px rgba(0, 0, 0, 1);
+    animation: float-crit 1.0s cubic-bezier(0.175, 0.885, 0.32, 1.5) forwards;
+}
+
+.floating-text.heal {
+    color: #2ecc71;
+    animation: float-up-fade 0.8s ease-out forwards;
+}
+
+.floating-text.shield {
+    color: #3498db;
+    animation: float-up-fade 0.8s ease-out forwards;
+}
+
+.floating-text.status {
+    font-size: 1.8rem;
+    animation: float-status 0.9s ease-out forwards;
+}
+
+.floating-text.miss {
+    color: #a4b0be;
+    font-size: 1.8rem;
+    animation: float-miss 0.7s ease-out forwards;
+}
+
+@keyframes float-dmg {
+    0% { transform: scale(0.3) translateY(20px) rotate(5deg); opacity: 0; }
+    30% { transform: scale(1.1) translateY(-20px) rotate(-5deg); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: scale(0.8) translateY(-60px) rotate(-10deg); opacity: 0; }
+}
+
+@keyframes float-crit {
+    0% { transform: scale(0.2) translateY(30px) rotate(-10deg); opacity: 0; }
+    25% { transform: scale(1.4) translateY(-30px) rotate(10deg); opacity: 1; }
+    40% { transform: scale(1.2) translateY(-20px) rotate(5deg); }
+    80% { opacity: 1; }
+    100% { transform: scale(0.9) translateY(-85px) rotate(-5deg); opacity: 0; }
+}
+
+@keyframes float-up-fade {
+    0% { transform: scale(0.5) translateY(10px); opacity: 0; }
+    20% { transform: scale(1) translateY(-10px); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: scale(0.9) translateY(-50px); opacity: 0; }
+}
+
+@keyframes float-status {
+    0% { transform: scale(0.5) translateY(10px) translateX(0); opacity: 0; }
+    20% { transform: scale(1) translateY(-10px) translateX(5px); opacity: 1; }
+    40% { transform: translateY(-25px) translateX(-5px); }
+    60% { transform: translateY(-40px) translateX(5px); }
+    100% { transform: scale(0.8) translateY(-60px); opacity: 0; }
+}
+
+@keyframes float-miss {
+    0% { transform: scale(0.8) translateY(10px) rotate(0deg); opacity: 0; }
+    30% { transform: scale(1) translateY(-15px) rotate(-10deg); opacity: 1; }
+    100% { transform: scale(0.9) translateY(-30px) rotate(-15deg); opacity: 0; }
+}
+
+/* --- KÉPERNYŐ-RÁZKÓDÁS VÁLTOZATOK --- */
+.screen-shake-subtle {
+    animation: shake-subtle 0.2s cubic-bezier(.36,.07,.19,.97) both;
+    transition: none !important;
+}
+
+.screen-shake-heavy {
+    animation: shake-heavy 0.45s cubic-bezier(.36,.07,.19,.97) both;
+    transition: none !important;
+}
+
+.screen-shake-shield-break {
+    animation: shake-shield 0.3s cubic-bezier(.36,.07,.19,.97) both;
+    transition: none !important;
+}
+
+@keyframes shake-subtle {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-3px, 3px); }
+    50% { transform: translate(3px, -3px); }
+    75% { transform: translate(-1.5px, -1.5px); }
+}
+
+@keyframes shake-heavy {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-12px, 9px) rotate(-1.5deg); }
+    20% { transform: translate(12px, -9px) rotate(1.5deg); }
+    30% { transform: translate(-9px, -6px) rotate(-0.5deg); }
+    40% { transform: translate(9px, 6px) rotate(0.5deg); }
+    50% { transform: translate(-6px, 4px); }
+    60% { transform: translate(6px, -4px); }
+    70% { transform: translate(-4px, -1.5px); }
+    80% { transform: translate(4px, 1.5px); }
+    90% { transform: translate(-1.5px, 1.5px); }
+}
+
+@keyframes shake-shield {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(-8px, 0); }
+    40% { transform: translate(8px, 0); }
+    60% { transform: translate(-4px, 0); }
+    80% { transform: translate(4px, 0); }
+}
+
+/* --- HALADÓ RÉSZECSKE EFFEKTEK --- */
+.particle.blood {
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    animation: particle-blood-fall 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes particle-blood-fall {
+    0% { transform: translate(0, 0) scale(1) rotate(-45deg); opacity: 1; }
+    50% { opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0) rotate(135deg); opacity: 0; }
+}
+
+.particle.shield-shard {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    animation: particle-shard-fly 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes particle-shard-fly {
+    0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; filter: brightness(1.5); }
+    100% { transform: translate(var(--x), var(--y)) scale(0.2) rotate(720deg); opacity: 0; }
+}
+
+.particle.status-spark {
+    border-radius: 20%;
+    animation: particle-spark-rise 0.7s ease-out forwards;
+}
+
+@keyframes particle-spark-rise {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { transform: translate(var(--x), var(--y)) scale(0) rotate(180deg); opacity: 0; }
+}
+
+
