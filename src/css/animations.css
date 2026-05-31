@@ -269,5 +269,24 @@
     50% { opacity: 0.8; }
     100% { transform: translate(var(--x), var(--y)) scale(0) rotate(180deg); opacity: 0; }
 }
+/* --- LÁTVÁNYOS KÁRTYA HALÁL EFFEKT --- */
+.card.anim-death {
+    z-index: 100 !important;
+    transition: none !important;
+    animation: cardCollapse 1.5s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important;
+}
 
+.card.anim-death .card-body {
+    transition: none !important;
+}
 
+.card.anim-death .attacks {
+    transition: none !important;
+}
+
+@keyframes cardCollapse {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    15% { transform: scale(1.08) rotate(4deg); opacity: 1; }
+    40% { transform: scale(0.9) rotate(-5deg) translateY(-15px); opacity: 0.9; }
+    100% { transform: scale(0) rotate(-20deg) translateY(180px); opacity: 0; }
+}

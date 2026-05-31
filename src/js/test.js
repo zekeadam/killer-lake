@@ -89,6 +89,12 @@ function startPvEMode() {
 function runAITestMove() {
     if (gameState.gameOver) return;
 
+    // Szigorú lezárás ellenőrzés: ha animáció vagy K.O. van folyamatban, várjunk 100ms-ot és próbáljuk újra
+    if (isActionLocked) {
+        setTimeout(runAITestMove, 100);
+        return;
+    }
+
     // Ellenőrizzük, hogy az ai.js betöltött-e
     if (typeof getAIMove !== 'function') {
         console.error("AI logika (getAIMove) nem található! Ellenőrizd az ai.js-t.");

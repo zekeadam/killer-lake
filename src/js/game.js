@@ -117,6 +117,42 @@ function checkWin() {
         return true;
     }
     return false;
+}function handleCardKO(playerId, oppId, onComplete) {
+    const pState = gameState[playerId];
+    const pCard = pState.team[pState.activeIndex];
+    
+    if (pCard && pCard.hp <= 0) {
+        isActionLocked = true; // Biztonsági lezárás az animáció idejére
+        
+        playDeathSound(pCard);
+        logMessage(`> ${pCard.name} elájult (K.O.)!`, "crit");
+        spawnFloatingText(`${playerId}-card`, "K.O.", "crit");
+        
+        // Halál animáció elindítása
+        triggerAnimation(`${playerId}-card`, 'anim-death', 1500);
+        
+        setTimeout(() => {
+            pState.activeIndex++;
+            updateUI();
+            
+            if (pState.activeIndex < 5) {
+                const nextCard = pState.team[pState.activeIndex];
+                logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
+                triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+                
+                setTimeout(() => {
+                    const centerNext = getCardImageCenter(playerId);
+                    spawnParticles(centerNext.x, centerNext.y, "#2ecc71", 30, 100);
+                }, 200);
+            }
+            
+            // Csak az animáció végén engedjük tovább a futást
+            onComplete();
+        }, 1500);
+    } else {
+        // Ha nincs K.O., azonnal mehet tovább
+        onComplete();
+    }
 }
 
 function handleVictoryButtonClick() {
@@ -338,20 +374,7 @@ function applyMove(playerId, data) {
             }
 
             if (oppCard.hp <= 0) {
-                playDeathSound(oppCard);
-                logMessage(`> ${oppCard.name} elájult (K.O.)!`, "crit");
-                spawnFloatingText(`${oppId}-card`, "K.O.", "crit");
-                oppState.activeIndex++;
-                if (oppState.activeIndex < 5) {
-                    const nextCard = oppState.team[oppState.activeIndex];
-                    logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
-                    triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
-                    
-                    setTimeout(() => {
-                        const center = getCardImageCenter(oppId);
-                        spawnParticles(center.x, center.y, "#2ecc71", 30, 100);
-                    }, 200);
-                }
+                // A célpont elájult, de a halál animációt a handleCardKO kezeli később
             } else if (hitsLanded > 0) {
                 if (move.effect === "paralyze" || move.effect === "burn" || move.effect === "poison" || move.effect === "mark") {
                     const center = getCardImageCenter(oppId);
@@ -412,26 +435,13 @@ function applyMove(playerId, data) {
             spawnFloatingText(`${playerId}-card`, "⚔️ VISSZATÁMADÁS", "status");
         }
 
-        // Ha a visszatámadás (Counter) miatt az aktuális támadó meghalt
-        if (attackerCard.hp <= 0) {
-            playDeathSound(attackerCard);
-            logMessage(`> ${attackerCard.name} belehalt a visszatámadásba (K.O.)!`, "crit");
-            spawnFloatingText(`${playerId}-card`, "K.O.", "crit");
-            attackerState.activeIndex++;
-            if (attackerState.activeIndex < 5) {
-                const nextCard = attackerState.team[attackerState.activeIndex];
-                logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
-                triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
-                
-                setTimeout(() => {
-                    const center = getCardImageCenter(playerId);
-                    spawnParticles(center.x, center.y, "#2ecc71", 30, 100);
-                }, 200);
-            }
-        }
-
-        if (checkWin()) return;
-        endTurnPhase(playerId);
+        // Halál (K.O.) ellenőrzések és a kör lezárása sorrendben lefutó callbackekkel
+        handleCardKO(oppId, playerId, () => {
+            handleCardKO(playerId, oppId, () => {
+                if (checkWin()) return;
+                endTurnPhase(playerId);
+            });
+        });
     }, 450 + (move.hits || 1) * 70); // Időzítés igazítása az ütésszámhoz
 }
 
@@ -455,27 +465,20 @@ function endTurnPhase(currentPlayerId) {
 
         if (pCard.poisonTurns === 0) pCard.poisonStacks = 0;
         
-        if (pCard.hp <= 0) {
-            playDeathSound(pCard);
-            logMessage(`> ${pCard.name} belehalt a méregbe (K.O.)!`, "crit");
-            spawnFloatingText(`${currentPlayerId}-card`, "K.O.", "crit");
-            pState.activeIndex++;
-            if (pState.activeIndex < 5) {
-                pCard = pState.team[pState.activeIndex];
-                logMessage(`> <b>${pCard.name}</b> lép a pályára!`, "log-system");
-                triggerAnimation(`${currentPlayerId}-card`, 'anim-heal', 600);
-                
-                setTimeout(() => {
-                    const centerNext = getCardImageCenter(currentPlayerId);
-                    spawnParticles(centerNext.x, centerNext.y, "#2ecc71", 30, 100);
-                }, 200);
-            }
-        } else if (pCard.poisonTurns === 0) {
-            logMessage(`> ${pCard.name} szervezete legyőzte a mérget.`);
-        }
-        if (checkWin()) return;
+        handleCardKO(currentPlayerId, oppId, () => {
+            if (checkWin()) return;
+            processBurnTick(currentPlayerId);
+        });
+    } else {
+        processBurnTick(currentPlayerId);
     }
-    
+}
+
+function processBurnTick(currentPlayerId) {
+    const pState = gameState[currentPlayerId];
+    let pCard = pState.team[pState.activeIndex];
+    const oppId = currentPlayerId === 'p1' ? 'p2' : 'p1';
+
     if (pCard && pCard.burnTurns > 0) {
         const center = getCardImageCenter(currentPlayerId);
         if (pCard.shields > 0) {
@@ -488,6 +491,10 @@ function endTurnPhase(currentPlayerId) {
             spawnFloatingText(`${currentPlayerId}-card`, "🛡️ BLOCKED", "shield");
             spawnShieldShatterParticles(center.x, center.y, 10);
             triggerAnimation('container', 'screen-shake-shield-break', 300);
+            
+            if (pCard.burnTurns === 0) pCard.burnStacks = 0;
+            
+            handleNextTurnSwitch(currentPlayerId);
         } else {
             const bDmg = pCard.burnStacks * 20;
             pCard.hp -= bDmg;
@@ -500,32 +507,21 @@ function endTurnPhase(currentPlayerId) {
             spawnFloatingText(`${currentPlayerId}-card`, `🔥 -${bDmg}`, "status");
             spawnStatusParticles(center.x, center.y, 'burn', 12);
             triggerAnimation('container', 'screen-shake-subtle', 200);
-        }
-        
-        if (pCard.hp <= 0) {
-            playDeathSound(pCard);
-            logMessage(`> ${pCard.name} elégett és elájult (K.O.)!`, "crit");
-            spawnFloatingText(`${currentPlayerId}-card`, "K.O.", "crit");
-            pState.activeIndex++;
-            if (pState.activeIndex < 5) {
-                pCard = pState.team[pState.activeIndex];
-                logMessage(`> <b>${pCard.name}</b> lép a pályára!`, "log-system");
-                triggerAnimation(`${currentPlayerId}-card`, 'anim-heal', 600);
-                
-                setTimeout(() => {
-                    const centerNext = getCardImageCenter(currentPlayerId);
-                    spawnParticles(centerNext.x, centerNext.y, "#2ecc71", 30, 100);
-                }, 200);
-            }
-        } else if (pCard.burnTurns === 0) {
-            logMessage(`> ${pCard.name} tüze kialudt.`);
-        }
-        
-        if (pCard.burnTurns === 0) pCard.burnStacks = 0;
-        
-        if (checkWin()) return;
-    }
+            
+            if (pCard.burnTurns === 0) pCard.burnStacks = 0;
 
+            handleCardKO(currentPlayerId, oppId, () => {
+                if (checkWin()) return;
+                handleNextTurnSwitch(currentPlayerId);
+            });
+        }
+    } else {
+        handleNextTurnSwitch(currentPlayerId);
+    }
+}
+
+function handleNextTurnSwitch(currentPlayerId) {
+    const oppId = currentPlayerId === 'p1' ? 'p2' : 'p1';
     const nextPState = gameState[oppId];
     const nextPCard = nextPState.team[nextPState.activeIndex];
 
@@ -688,24 +684,9 @@ function applyItem(playerId, data) {
         spawnFloatingText(`${oppId}-card`, "KITARTÁS!", "status");
     }
     
-    if (oppCard.hp <= 0) {
-        playDeathSound(oppCard);
-        logMessage(`> ${oppCard.name} elájult az itemtől (K.O.)!`, "crit");
-        spawnFloatingText(`${oppId}-card`, "K.O.", "crit");
-        oppState.activeIndex++;
-        if (oppState.activeIndex < 5) {
-            const nextCard = oppState.team[oppState.activeIndex];
-            logMessage(`> <b>${nextCard.name}</b> lép a pályára!`, "log-system");
-            triggerAnimation(`${oppId}-card`, 'anim-heal', 600);
-            
-            setTimeout(() => {
-                const centerNext = getCardImageCenter(oppId);
-                spawnParticles(centerNext.x, centerNext.y, "#2ecc71", 30, 100);
-            }, 200);
-        }
-    }
-
-    if (checkWin()) return;
-    isActionLocked = false; // Item kijátszása után újra lehet kattintani (mivel az item nem fejezi be a kört)
-    updateUI();
+    handleCardKO(oppId, playerId, () => {
+        if (checkWin()) return;
+        isActionLocked = false; // Item kijátszása után újra lehet kattintani
+        updateUI();
+    });
 }

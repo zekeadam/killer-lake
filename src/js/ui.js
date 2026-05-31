@@ -80,12 +80,31 @@ function getCardImageCenter(playerId) {
     const cleanId = playerId.endsWith('-card') ? playerId : `${playerId}-card`;
     const cardEl = document.getElementById(cleanId);
     if (!cardEl) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    
     const img = cardEl.querySelector('.card-image');
-    const rect = (img && img.style.display !== 'none' && img.offsetWidth > 0) ? img.getBoundingClientRect() : cardEl.getBoundingClientRect();
-    return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-    };
+    let rect = null;
+    if (img && img.style.display !== 'none' && img.offsetWidth > 0) {
+        rect = img.getBoundingClientRect();
+    } else {
+        rect = cardEl.getBoundingClientRect();
+    }
+    
+    let x = rect.left + rect.width / 2;
+    let y = rect.top + rect.height / 2;
+    
+    // Biztonsági ellenőrzés ha a koordináták érvénytelenek (pl. 0 vagy NaN)
+    if (isNaN(x) || x <= 0 || isNaN(y) || y <= 0) {
+        const cardRect = cardEl.getBoundingClientRect();
+        x = cardRect.left + cardRect.width / 2;
+        y = cardRect.top + cardRect.height / 2;
+        
+        if (isNaN(x) || x <= 0) {
+            x = window.innerWidth / 2;
+            y = window.innerHeight / 2;
+        }
+    }
+    
+    return { x, y };
 }
 
 function spawnFloatingText(elementId, text, type, isCrit = false) {
@@ -193,6 +212,9 @@ function spawnStatusParticles(x, y, type, count = 12) {
         setTimeout(() => p.remove(), 850);
     }
 }
+
+
+
 
 
 function triggerShieldScan(playerId) {
