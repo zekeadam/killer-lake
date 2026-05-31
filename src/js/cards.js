@@ -573,5 +573,71 @@ const cardDatabase = [
             { name: "Szilánk Vihar", type: "dmg", dmg: 30, hits: 2, cost: 3, accuracy: 0.8 },
             { name: "Gyógyító Fény", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 }
         ]
+    },
+    {
+        id: "card_50",
+        name: "Pusztító Gólem",
+        image: "assets/card/50.png",
+        maxHp: 150,
+        attacks: [
+            { name: "Szikla Dobás", type: "dmg", dmg: 40, hits: 1, cost: 1, accuracy: 0.9 },
+            { name: "Páncéltörő Zúzás", type: "dmg", dmg: 60, hits: 1, cost: 2, effect: "pierce", accuracy: 0.8 },
+            { name: "Földrengés", type: "dmg", dmg: 100, hits: 1, cost: 3, accuracy: 0.7 },
+            { name: "Megingathatatlan", type: "shield", cost: 2, accuracy: 1.0 }
+        ]
+    },
+    {
+        id: "card_51",
+        name: "Időmágus",
+        image: "assets/card/51.png",
+        maxHp: 90,
+        attacks: [
+            { name: "Időhurok", type: "dmg", dmg: 20, hits: 1, cost: 1, effect: "paralyze", accuracy: 0.9 },
+            { name: "Időlopás", type: "dmg", dmg: 30, hits: 1, cost: 2, effect: "ap_steal", accuracy: 0.9 },
+            { name: "Regeneráló Tranz", type: "heal", healAmount: 50, cost: 2, effect: "cleanse", accuracy: 1.0 },
+            { name: "Jövőbelátás", type: "shield", cost: 1, effect: "counter", accuracy: 1.0 }
+        ]
+    },
+    {
+        id: "card_52",
+        name: "Káosz Démon",
+        image: "assets/card/52.png",
+        maxHp: 70,
+        attacks: [
+            { name: "Káosz Láng", type: "dmg", dmg: 30, hits: 1, cost: 2, effect: "burn", accuracy: 0.9 },
+            { name: "Démoni Méreg", type: "dmg", dmg: 30, hits: 1, cost: 2, effect: "poison", accuracy: 0.9 },
+            { name: "Átok", type: "dmg", dmg: 10, hits: 1, cost: 1, effect: "mark", accuracy: 1.0 },
+            { name: "Lélekszívás", type: "dmg", dmg: 60, hits: 1, cost: 3, effect: "lifesteal", accuracy: 0.8 }
+        ]
+    },
+    {
+        id: "card_53",
+        name: "Vérszerződés",
+        image: "assets/card/53.png",
+        type: "item",
+        description: "Azonnal elszív 40 Életerőt az ellenféltől.",
+        action: { type: "drain", amount: 40 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_54",
+        name: "Időzített Bomba",
+        image: "assets/card/54.png",
+        type: "item",
+        description: "Hatalmas robbanás: 80 sebzést mér az ellenfélre.",
+        action: { type: "dmg", dmg: 80 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_55",
+        name: "EMP Gránát",
+        image: "assets/card/55.png",
+        type: "item",
+        description: "Eléget 3 AP-t az ellenféltől.",
+        action: { type: "ap_drain", amount: 3 },
+        maxHp: 50,
+        attacks: []
     }
 ];

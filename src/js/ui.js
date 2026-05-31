@@ -594,7 +594,9 @@ function updateUI() {
 
     if (!gameState.gameOver) {
         const turnPrefix = gameState.activePlayer === myRole ? "A Te köröd" : "Az ellenfél köre";
-        const activeName = gameState[gameState.activePlayer].team[gameState[gameState.activePlayer].activeIndex].name;
+        const activeState = gameState[gameState.activePlayer];
+        const activeCard = (activeState && activeState.activeIndex < 5) ? activeState.team[activeState.activeIndex] : null;
+        const activeName = activeCard ? activeCard.name : "Vége";
         document.getElementById('turn-indicator').innerText = `${turnPrefix} (${activeName})`;
     }
 }
