@@ -205,7 +205,7 @@
 }
 
 /* Symmetrical status badges on the inner sides */
-#p2-card .status-badge {
+#p2-card .status-badge:not(.badge-shield) {
     left: -20px !important;
     right: auto !important;
 }
@@ -460,15 +460,22 @@
 
 .badge-shield { 
     background-color: transparent; 
-    position: absolute; bottom: 22px; /* A kártyatesten belülre helyezve, 8px-szel a 14px-es HP bar felett (eredeti: -22px) */
-    left: 50%; transform: translateX(-50%);
+    position: absolute; 
+    bottom: 0 !important; 
+    height: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    left: 50% !important; 
+    transform: translateX(-50%) !important;
     padding: 0; border-radius: 0;
     min-width: unset; gap: 3px;
     box-shadow: none;
     border: none;
-    font-size: 2.5rem;
-    filter: drop-shadow(0 0 15px rgba(52, 152, 219, 0.8));
-    z-index: 30;
+    font-size: 2.75rem !important; /* 2.5-szer nagyobb méret az epikus pajzs-megjelenésért (eredeti: 1.1rem) */
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px rgba(52, 152, 219, 0.9)) !important; /* Még látványosabb kékesfehér ragyogás */
+    z-index: 30 !important; /* A HP bar felett jelenjen meg */
+    overflow: visible !important; /* Engedi, hogy a nagy pajzs ikonok kinyúljanak a 14px-es konténerből */
 }
 
 /* KÉPESSÉG RÁCS */
