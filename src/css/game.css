@@ -208,15 +208,15 @@
 
 /* Symmetrical status badges on the inner sides */
 #p2-card .status-badge:not(.badge-shield) {
-    left: -20px !important;
+    left: -45px !important;
     right: auto !important;
 }
-#p2-card .badge-para { top: 60px !important; }
-#p2-card .badge-immune { top: 60px !important; }
-#p2-card .badge-burn { top: 110px !important; }
-#p2-card .badge-poison { top: 160px !important; }
-#p2-card .badge-mark { top: 210px !important; }
-#p2-card .badge-counter { top: 260px !important; }
+#p2-card .badge-para { top: 40px !important; }
+#p2-card .badge-immune { top: 40px !important; }
+#p2-card .badge-burn { top: 132px !important; }
+#p2-card .badge-poison { top: 224px !important; }
+#p2-card .badge-mark { top: 316px !important; }
+#p2-card .badge-counter { top: 408px !important; }
 
 /* ITEM ÉS SUPPORTER KÁRTYÁK */
 .item-container {
@@ -435,50 +435,119 @@
 
 .status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30 !important; display: block; margin-top: 0; }
 .status-badge { 
-    color: #000; 
-    font-weight: bold; 
-    font-size: 1.2rem; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); 
-    border: 2px solid rgba(255,255,255,0.8); 
-    pointer-events: auto;
-    display: none; /* Alapértelmezésben rejtve, a JS váltja 'flex'-re */
-    align-items: center;
-    justify-content: center;
-    z-index: 30;
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    position: absolute !important;
+    right: -45px !important;
+    display: none; /* JS toggles to flex */
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
+    z-index: 30 !important;
+    box-sizing: border-box !important;
+    background: rgba(10, 10, 20, 0.75) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.6) !important;
+    transition: transform 0.2s ease, filter 0.2s ease !important;
+    will-change: transform, filter;
 }
 
-/* A korábbi [style*="..."] szelektorokat eltávolítottuk a stabilitás érdekében */
-
-.badge-para, .badge-immune, .badge-burn, .badge-poison, .badge-mark, .badge-counter { 
-    min-width: 38px; width: auto; height: 38px; padding: 0 8px; box-sizing: border-box;
-    border-radius: 20px; position: absolute; right: -20px; 
-    white-space: nowrap; font-size: 1.1rem;
+.status-badge:hover {
+    transform: scale(1.15) !important;
+    z-index: 31 !important;
 }
-.badge-para { background-color: #f1c40f; top: 60px; }
-.badge-immune { background-color: #3498db; color: white; top: 60px; } /* Ugyanott, mert para és immune egyszerre nem lehet */
-.badge-burn { background-color: #e74c3c; color: white; top: 110px; }
-.badge-poison { background-color: #9b59b6; color: white; top: 160px; }
-.badge-mark { background-color: #e67e22; color: white; top: 210px; }
-.badge-counter { background-color: #95a5a6; color: black; top: 260px; }
 
-.badge-shield { 
-    background-color: transparent; 
-    position: absolute; 
-    bottom: 0 !important; 
-    height: 14px !important;
+.status-img-icon {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    border-radius: 50% !important;
+    padding: 8px !important; /* Slightly more padding for 76px circle */
+    box-sizing: border-box !important;
+}
+
+.status-stack {
+    position: absolute !important;
+    bottom: 0px !important;
+    right: 0px !important;
+    background: #e74c3c !important;
+    color: white !important;
+    font-size: 0.9rem !important;
+    font-weight: 900 !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+    border: 1.5px solid rgba(255,255,255,0.5) !important;
+    z-index: 5 !important;
+}
+
+.badge-para { 
+    top: 40px !important;
+    filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.6)) !important; /* Larger glow for 76px */
+    border-color: rgba(241, 196, 15, 0.45) !important;
+}
+.badge-immune { 
+    top: 40px !important;
+    filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.6)) !important;
+    border-color: rgba(52, 152, 219, 0.45) !important;
+}
+.badge-burn { 
+    top: 132px !important;
+    filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.6)) !important;
+    border-color: rgba(231, 76, 60, 0.45) !important;
+}
+.badge-poison { 
+    top: 224px !important;
+    filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6)) !important;
+    border-color: rgba(46, 204, 113, 0.45) !important;
+}
+.badge-mark { 
+    top: 316px !important;
+    filter: drop-shadow(0 0 8px rgba(230, 126, 34, 0.6)) !important;
+    border-color: rgba(230, 126, 34, 0.45) !important;
+}
+.badge-counter { 
+    top: 408px !important;
+    filter: drop-shadow(0 0 8px rgba(149, 165, 166, 0.6)) !important;
+    border-color: rgba(149, 165, 166, 0.45) !important;
+}
+
+.badge-shield { 
+    background-color: transparent !important; 
+    background: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: absolute !important; 
+    bottom: 0 !important; 
     left: 50% !important; 
+    right: auto !important;
     transform: translateX(-50%) !important;
-    padding: 0; border-radius: 0;
-    min-width: unset; gap: 3px;
-    box-shadow: none;
-    border: none;
-    font-size: 2.75rem !important; /* 2.5-szer nagyobb méret az epikus pajzs-megjelenésért (eredeti: 1.1rem) */
-    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px rgba(52, 152, 219, 0.9)) !important; /* Még látványosabb kékesfehér ragyogás */
-    z-index: 30 !important; /* A HP bar felett jelenjen meg */
-    overflow: visible !important; /* Engedi, hogy a nagy pajzs ikonok kinyúljanak a 14px-es konténerből */
+    width: auto !important;
+    height: 14px !important;
+    min-width: unset !important;
+    padding: 0 !important; 
+    border-radius: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    box-shadow: none !important;
+    border: none !important;
+    font-size: 2.75rem !important;
+    filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 18px rgba(52, 152, 219, 0.9)) !important;
+    z-index: 30 !important;
+    overflow: visible !important;
+    transition: none !important;
+    will-change: auto !important;
 }
 
 /* KÉPESSÉG RÁCS */

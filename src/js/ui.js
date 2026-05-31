@@ -368,15 +368,25 @@ function updateUI() {
         return el;
     }
 
-        // Flex használata a block helyett, hogy a CSS-ben lévő igazítások működjenek
-        document.getElementById(`${player}-para`).style.display = activeCard.isParalyzed ? 'flex' : 'none';
-        const immuneBadge = ensureBadge(player, 'immune', '🛡️⚡');
-        if (immuneBadge) immuneBadge.style.display = activeCard.paraImmune ? 'flex' : 'none';
+        const paraBadge = document.getElementById(`${player}-para`);
+        if (paraBadge) {
+            paraBadge.style.display = activeCard.isParalyzed ? 'flex' : 'none';
+            paraBadge.innerHTML = `<img src="assets/status/paralyze.png" class="status-img-icon">`;
+        }
+
+        const immuneBadge = ensureBadge(player, 'immune', '');
+        if (immuneBadge) {
+            immuneBadge.style.display = activeCard.paraImmune ? 'flex' : 'none';
+            immuneBadge.innerHTML = `<img src="assets/status/immune.png" class="status-img-icon">`;
+        }
 
         const burnBadge = document.getElementById(`${player}-burn`);
         if (burnBadge) {
             burnBadge.style.display = activeCard.burnTurns > 0 ? 'flex' : 'none';
-            burnBadge.innerHTML = activeCard.burnStacks > 1 ? `🔥x${activeCard.burnStacks}` : `🔥`;
+            burnBadge.innerHTML = `
+                <img src="assets/status/burn.png" class="status-img-icon">
+                ${activeCard.burnStacks > 1 ? `<div class="status-stack">${activeCard.burnStacks}</div>` : ''}
+            `;
         }
         
         const shieldBadge = document.getElementById(`${player}-shield`);
@@ -387,15 +397,24 @@ function updateUI() {
             shieldBadge.style.display = 'none';
         }
 
-    const poisonBadge = ensureBadge(player, 'poison', '☠️');
-    if (poisonBadge) {
-        poisonBadge.style.display = activeCard.poisonTurns > 0 ? 'flex' : 'none';
-        poisonBadge.innerHTML = activeCard.poisonStacks > 1 ? `☠️x${activeCard.poisonStacks}` : `☠️`;
-    }
-    const markBadge = ensureBadge(player, 'mark', '🎯');
-    if (markBadge) markBadge.style.display = activeCard.isMarked ? 'flex' : 'none';
-    const counterBadge = ensureBadge(player, 'counter', '⚔️');
-    if (counterBadge) counterBadge.style.display = activeCard.hasCounter ? 'flex' : 'none';
+        const poisonBadge = ensureBadge(player, 'poison', '');
+        if (poisonBadge) {
+            poisonBadge.style.display = activeCard.poisonTurns > 0 ? 'flex' : 'none';
+            poisonBadge.innerHTML = `
+                <img src="assets/status/poison.png" class="status-img-icon">
+                ${activeCard.poisonStacks > 1 ? `<div class="status-stack">${activeCard.poisonStacks}</div>` : ''}
+            `;
+        }
+        const markBadge = ensureBadge(player, 'mark', '');
+        if (markBadge) {
+            markBadge.style.display = activeCard.isMarked ? 'flex' : 'none';
+            markBadge.innerHTML = `<img src="assets/status/mark.png" class="status-img-icon">`;
+        }
+        const counterBadge = ensureBadge(player, 'counter', '');
+        if (counterBadge) {
+            counterBadge.style.display = activeCard.hasCounter ? 'flex' : 'none';
+            counterBadge.innerHTML = `<img src="assets/status/counter.png" class="status-img-icon">`;
+        }
 
         cardElem.classList.toggle('status-shield', activeCard.shields > 0);
         cardElem.classList.toggle('status-burn', activeCard.burnTurns > 0);

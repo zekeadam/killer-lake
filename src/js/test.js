@@ -1,51 +1,55 @@
 // --- 5. TEST MÓD (AI vs AI) ---
 
-// Test gomb létrehozása és injektálása
-const testBtn = document.createElement('button');
-testBtn.innerText = 'Test';
-testBtn.className = 'test-btn';
-testBtn.onclick = () => {
+// Ellenőrzés: helyi (local) környezetben futunk-e
+const isLocalhost = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1' || 
+                    window.location.protocol === 'file:';
+
+if (isLocalhost) {
+    // Debug menü létrehozása és elhelyezése a jobb felső sarokba alapértelmezetten
     const menu = document.createElement('div');
+    menu.id = 'debug-menu-panel';
     menu.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        background: rgba(10, 10, 20, 0.6); padding: 30px; border-radius: 20px;
-        border: 2px solid #e94560; z-index: 10001; display: flex; flex-direction: column;
-        gap: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.9); backdrop-filter: blur(10px);
-        min-width: 250px;
+        position: fixed; top: 15px; right: 15px;
+        background: rgba(10, 10, 20, 0.75); padding: 15px; border-radius: 14px;
+        border: 1px solid rgba(233, 69, 96, 0.5); z-index: 9999; display: flex; flex-direction: column;
+        gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px); min-width: 200px;
     `;
 
     const title = document.createElement('div');
     title.innerText = "DEBUG MENÜ";
-    title.style.cssText = "color: #f1c40f; font-weight: bold; text-align: center; margin-bottom: 10px; letter-spacing: 2px;";
+    title.style.cssText = "color: #f1c40f; font-weight: bold; text-align: center; margin-bottom: 5px; font-size: 0.8rem; letter-spacing: 2px;";
     menu.appendChild(title);
 
     const btnAI = document.createElement('button');
     btnAI.innerText = "🤖 AI vs AI SZIMULÁCIÓ";
-    btnAI.style.cssText = "padding: 12px; background: #e94560; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
-    btnAI.onclick = () => { menu.remove(); startTestMode(); };
+    btnAI.style.cssText = "padding: 8px 12px; background: #e94560; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; transition: background 0.2s;";
+    btnAI.onmouseover = () => btnAI.style.background = '#ff4d6d';
+    btnAI.onmouseout = () => btnAI.style.background = '#e94560';
+    btnAI.onclick = () => { startTestMode(); };
     menu.appendChild(btnAI);
 
     const btnTable = document.createElement('button');
     btnTable.innerText = "📊 KÁRTYA TÁBLÁZAT";
-    btnTable.style.cssText = "padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
-    btnTable.onclick = () => { menu.remove(); window.location.href = 'pages/cards.html'; };
+    btnTable.style.cssText = "padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; transition: background 0.2s;";
+    btnTable.onmouseover = () => btnTable.style.background = '#4fa9e3';
+    btnTable.onmouseout = () => btnTable.style.background = '#3498db';
+    btnTable.onclick = () => { window.location.href = 'pages/cards.html'; };
     menu.appendChild(btnTable);
 
     const btnSim = document.createElement('button');
     btnSim.innerText = "📊 BATCH AI SZIMULÁCIÓ";
-    btnSim.style.cssText = "padding: 12px; background: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;";
-    btnSim.onclick = () => { menu.remove(); window.open('pages/simulate.html', '_blank'); };
+    btnSim.style.cssText = "padding: 8px 12px; background: #9b59b6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; transition: background 0.2s;";
+    btnSim.onmouseover = () => btnSim.style.background = '#af72ca';
+    btnSim.onmouseout = () => btnSim.style.background = '#9b59b6';
+    btnSim.onclick = () => { window.open('pages/simulate.html', '_blank'); };
     menu.appendChild(btnSim);
 
-    const btnClose = document.createElement('button');
-    btnClose.innerText = "BEZÁRÁS";
-    btnClose.style.cssText = "padding: 8px; background: transparent; color: #555; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-top: 10px;";
-    btnClose.onclick = () => menu.remove();
-    menu.appendChild(btnClose);
+
 
     document.body.appendChild(menu);
-};
-document.body.appendChild(testBtn);
+}
 
 function startTestMode() {
     isTestMode = true;
