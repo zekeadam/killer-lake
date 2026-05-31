@@ -537,15 +537,42 @@ function updateUI() {
                 hitText = `🛡️+${action.amount}`;
                 effectText = "🛡️ PAJZS";
             } else if (action.type === "status") {
-                icon = "🔥";
-                dmgText = "🔥 ÉGÉS";
-                hitText = "☣️ STÁTUSZ";
-                effectText = "🔥 ÉGÉS";
+                if (action.effect === "burn") {
+                    icon = "🔥";
+                    dmgText = "🔥 ÉGÉS";
+                    hitText = "☣️ STÁTUSZ";
+                    effectText = "🔥 ÉGÉS";
+                } else if (action.effect === "poison") {
+                    icon = "☠️";
+                    dmgText = "☠️ MÉREG";
+                    hitText = "☣️ STÁTUSZ";
+                    effectText = "☠️ MÉREG";
+                } else if (action.effect === "mark") {
+                    icon = "🎯";
+                    dmgText = "🎯 JELÖLÉS";
+                    hitText = "☣️ STÁTUSZ";
+                    effectText = "🎯 JELÖL";
+                }
             } else if (action.type === "ap_drain") {
                 icon = "⚡";
                 dmgText = `⚡-${action.amount} AP`;
                 hitText = "⚡ ELVONÁS";
                 effectText = "⚡ DRAIN";
+            } else if (action.type === "cleanse") {
+                icon = "✨";
+                dmgText = "✨ TISZTÍT";
+                hitText = "✨ TISZTÍT";
+                effectText = "✨ TISZTÍTÁS";
+            } else if (action.type === "ap_gain") {
+                icon = "⚡";
+                dmgText = `⚡+${action.amount} AP`;
+                hitText = "⚡ ENERGIA";
+                effectText = "⚡ AP +";
+            } else if (action.type === "drain") {
+                icon = "🦇";
+                dmgText = `💥${action.amount} HP`;
+                hitText = "🦇 SZÍVÁS";
+                effectText = "🦇 ELSZÍVÁS";
             }
 
             btn.innerHTML = `

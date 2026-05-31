@@ -445,5 +445,85 @@ const cardDatabase = [
             { name: "Kétfutásos Terv", type: "shield", cost: 1, accuracy: 1.0 },
             { name: "Kannás Utántöltés", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 }
         ]
+    },
+    {
+        id: "card_38",
+        name: "Tisztító Elixír",
+        image: "assets/card/38.png",
+        type: "item",
+        description: "Eltávolítja az összes negatív státuszt a saját aktív karakterről.",
+        action: { type: "cleanse" },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_39",
+        name: "Koffein Sokk",
+        image: "assets/card/39.png",
+        type: "item",
+        description: "Azonnal ad +2 AP-t a kijátszónak.",
+        action: { type: "ap_gain", amount: 2 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_40",
+        name: "Vámpír Denevér",
+        image: "assets/card/40.png",
+        type: "supporter",
+        description: "Elszív 30 HP-t az ellenféltől az aktív karakternek.",
+        action: { type: "drain", amount: 30 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_41",
+        name: "Mérgesgáz Gránát",
+        image: "assets/card/41.png",
+        type: "supporter",
+        description: "Megmérgezi az ellenfelet (2 stack méreg státusz).",
+        action: { type: "status", effect: "poison", amount: 2 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_42",
+        name: "Célkereszt Lézer",
+        image: "assets/card/42.png",
+        type: "item",
+        description: "Megjelöli az ellenfelet (Mark státusz).",
+        action: { type: "status", effect: "mark" },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_43",
+        name: "Szúnyograj",
+        image: "assets/card/43.png",
+        type: "supporter",
+        description: "Megcsípi az ellenfelet (fix 40 sebzés).",
+        action: { type: "dmg", dmg: 40 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_44",
+        name: "Gyógyfű Csomag",
+        image: "assets/card/44.png",
+        type: "item",
+        description: "Azonnal visszatölt 30 Életerőt az aktív karakternek.",
+        action: { type: "heal", healAmount: 30 },
+        maxHp: 50,
+        attacks: []
+    },
+    {
+        id: "card_45",
+        name: "Kozmikus Pajzs",
+        image: "assets/card/45.png",
+        type: "item",
+        description: "Azonnal ad 1 Pajzsot az aktív karakternek.",
+        action: { type: "shield", amount: 1 },
+        maxHp: 50,
+        attacks: []
     }
 ];

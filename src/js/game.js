@@ -668,12 +668,88 @@ function applyItem(playerId, data) {
                 spawnFloatingText(`${oppId}-card`, `🔥 ÉGÉS x${oppCard.burnStacks}`, "status");
                 spawnStatusParticles(center.x, center.y, 'burn', 15);
             }
+        } else if (action.effect === 'poison') {
+            if (oppCard.shields > 0) {
+                oppCard.shields--;
+                logMessage(`> ${oppCard.name} pajzsa kivédte a mérgezést!`, "log-shield");
+                playSound('shield_break');
+                triggerShieldScan(oppId);
+                
+                spawnFloatingText(`${oppId}-card`, "🛡️ BLOCKED", "shield");
+                spawnShieldShatterParticles(center.x, center.y, 12);
+                triggerAnimation('container', 'screen-shake-shield-break', 300);
+            } else {
+                oppCard.poisonStacks = Math.min(3, (oppCard.poisonStacks || 0) + (action.amount || 1));
+                oppCard.poisonTurns = 3;
+                logMessage(`> ${oppCard.name} megmérgeződött! (Szint: ${oppCard.poisonStacks})`, "status-effect");
+                
+                spawnFloatingText(`${oppId}-card`, `☠️ MÉREG x${oppCard.poisonStacks}`, "status");
+                spawnStatusParticles(center.x, center.y, 'poison', 15);
+            }
+        } else if (action.effect === 'mark') {
+            oppCard.isMarked = true;
+            logMessage(`> ${oppCard.name} megjelölve! (Mark státusz)`, "status-effect");
+            spawnFloatingText(`${oppId}-card`, "🎯 MEGJELÖLVE", "status");
         }
     } else if (action.type === 'ap_drain') {
         oppState.ap = Math.max(0, oppState.ap - action.amount);
         logMessage(`> ${cardData.name} elszívott ${action.amount} AP-t!`, "status-effect");
         
         spawnFloatingText(`${oppId}-card`, `⚡ -${action.amount} AP`, "status");
+    } else if (action.type === 'cleanse') {
+        myCard.burnTurns = 0;
+        myCard.burnStacks = 0;
+        myCard.poisonTurns = 0;
+        myCard.poisonStacks = 0;
+        myCard.isParalyzed = false;
+        myCard.isMarked = false;
+        logMessage(`> ${myCard.name} megtisztult a negatív státuszoktól!`, "log-heal");
+        triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+        playSound('heal');
+        
+        spawnFloatingText(`${playerId}-card`, "TISZTÍTÁS", "heal");
+        const center = getCardImageCenter(playerId);
+        spawnParticles(center.x, center.y, "#2ecc71", 20, 100);
+    } else if (action.type === 'ap_gain') {
+        pState.ap = Math.min(10, pState.ap + action.amount);
+        logMessage(`> Extra energia: +${action.amount} AP-t kaptál!`, "log-ap");
+        playSound('charge');
+        triggerAnimation(`${playerId}-card`, 'anim-charge', 600);
+        
+        spawnFloatingText(`${playerId}-card`, `+${action.amount} AP`, "status");
+        const center = getCardImageCenter(playerId);
+        spawnParticles(center.x, center.y, "#f1c40f", 20, 100);
+    } else if (action.type === 'drain') {
+        let dmgToApply = action.amount;
+        const centerOpp = getCardImageCenter(oppId);
+        const centerMy = getCardImageCenter(playerId);
+        if (oppCard.shields > 0) {
+            oppCard.shields--;
+            dmgToApply = 0;
+            logMessage(`> ${oppCard.name} pajzsa elnyelte a lopást!`, "log-shield");
+            playSound('shield_break');
+            triggerShieldScan(oppId);
+            
+            spawnFloatingText(`${oppId}-card`, "🛡️ BLOCKED", "shield");
+            spawnShieldShatterParticles(centerOpp.x, centerOpp.y, 12);
+            triggerAnimation('container', 'screen-shake-shield-break', 300);
+        } else {
+            oppCard.hp -= dmgToApply;
+            if (battleStats && battleStats[playerId]) battleStats[playerId].damageDealt += dmgToApply;
+            const actualHeal = Math.min(myCard.maxHp - myCard.hp, dmgToApply);
+            myCard.hp += actualHeal;
+            if (battleStats && battleStats[playerId]) battleStats[playerId].healingDone += actualHeal;
+            logMessage(`> Életszívás: ${myCard.name} elszívott ${dmgToApply} HP-t és visszatöltött ${actualHeal} HP-t!`, "log-heal");
+            playSound('damage_normal');
+            
+            spawnFloatingText(`${oppId}-card`, `-${dmgToApply}`, "dmg");
+            spawnFloatingText(`${playerId}-card`, `+${actualHeal}`, "heal");
+            spawnBloodParticles(centerOpp.x, centerOpp.y, 10);
+            spawnParticles(centerMy.x, centerMy.y, "#2ecc71", 15, 80);
+            triggerAnimation(`${playerId}-card`, 'anim-heal', 600);
+            triggerAnimation('container', 'screen-shake-subtle', 200);
+        }
+        triggerAnimation(`${oppId}-card`, 'anim-damage', 400);
     }
 
     pState.items.splice(data.itemIndex, 1);
