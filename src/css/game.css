@@ -105,7 +105,8 @@
 
 .roster-dot {
     width: 58px; height: 58px; border-radius: 50%; background-color: #333; 
-    border: 2px solid #111; transition: all 0.3s;
+    border: 2px solid #111; transition: transform 0.3s, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    will-change: transform;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     position: relative;
     overflow: hidden;
@@ -153,7 +154,8 @@
     justify-content: center !important;
     width: clamp(320px, 33vw, 634px) !important;
     height: auto; min-height: clamp(420px, 55vh, 792px) !important; box-sizing: border-box;
-    transition: transform 0.2s ease, filter 0.3s;
+    transition: transform 0.2s ease, filter 0.3s, box-shadow 0.3s;
+    will-change: transform;
     position: relative; z-index: 1;
     overflow: visible; /* Engedi, hogy a körök kilógjanak a sarkokon */
 }
@@ -341,6 +343,7 @@
     height: 100%; 
     background-color: #2ecc71; 
     transition: width 0.4s ease-in-out, background-color 0.4s; 
+    will-change: width, background-color;
     box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3) !important;
 }
 
@@ -506,10 +509,11 @@
     background: linear-gradient(180deg, rgba(20, 35, 65, 0.6) 0%, rgba(10, 15, 30, 0.75) 100%) !important; 
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
-    color: white; border: none !important; border-radius: 12px !important; 
+    color: white; border: none !important; border-radius: 32px 12px 12px 32px !important; 
     cursor: pointer; font-weight: 800; font-size: 0.70rem !important; 
     display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 12px !important;
-    line-height: 1.2; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    line-height: 1.2; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s, background 0.2s; 
+    will-change: transform, filter;
     box-sizing: border-box !important; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     box-shadow: none !important;
     text-transform: uppercase;
@@ -522,8 +526,8 @@
             drop-shadow(0 -1px 0 rgba(42, 74, 122, 0.75)) !important;
 }
 .spell-icon {
-    width: 80px !important;
-    height: 80px !important;
+    width: 68px !important;
+    height: 68px !important;
     border-radius: 50% !important;
     border: none !important;
     /* Darker glassmorphism background framing the transparent spell artwork */
@@ -533,11 +537,12 @@
     object-fit: cover !important;
     flex-shrink: 0 !important;
     box-shadow: none !important;
-    transition: all 0.2s ease !important;
+    transition: transform 0.2s ease, filter 0.2s ease, background 0.2s ease !important;
+    will-change: transform, filter;
     margin-left: -8px !important;
     position: relative !important;
     z-index: 5 !important;
-    padding: 6px !important;
+    padding: 0px !important;
     box-sizing: border-box !important;
 }
 .attacks button:hover:not(:disabled) .spell-icon {
@@ -555,9 +560,24 @@
     min-width: 0 !important;
 }
 .btn-title { width: 100% !important; text-align: left; font-size: 0.75rem !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding-bottom: 1px !important; margin-bottom: 1px !important; display: flex; align-items: center; overflow: hidden; justify-content: flex-start; }
-.btn-row { display: flex; justify-content: space-between; width: 100%; font-size: 0.65rem !important; color: #4cc9f0; font-weight: 700; margin-bottom: 0; gap: 0; }
-.btn-row span { flex: 1; text-align: left; }
-.btn-row span:last-child { text-align: right; }
+.btn-row { 
+    display: flex !important; 
+    justify-content: space-between !important; 
+    width: 100% !important; 
+    font-size: 0.65rem !important; 
+    color: #4cc9f0; 
+    font-weight: 700; 
+    margin-bottom: 0; 
+    gap: 8px !important; 
+}
+.btn-row span { 
+    flex: none !important; 
+    text-align: left !important; 
+    white-space: nowrap !important; 
+}
+.btn-row span:last-child { 
+    text-align: right !important; 
+}
 .btn-eff { color: #f1c40f !important; font-style: italic; }
 
 .attacks button:hover:not(:disabled) { 
@@ -629,6 +649,7 @@
     flex-direction: row-reverse !important;
     padding: 0 0 0 12px !important;
     justify-content: flex-end !important;
+    border-radius: 12px 32px 32px 12px !important;
 }
 
 #p2-card .attacks .spell-icon {
@@ -637,26 +658,7 @@
     margin-right: -8px !important;
 }
 
-#p2-card .btn-text-content {
-    text-align: right !important;
-}
 
-#p2-card .btn-title {
-    justify-content: flex-end !important;
-    text-align: right !important;
-}
-
-#p2-card .btn-row {
-    flex-direction: row-reverse !important;
-}
-
-#p2-card .btn-row span {
-    text-align: right !important;
-}
-
-#p2-card .btn-row span:last-child {
-    text-align: left !important;
-}
 
 /* LOG */
 #log-container { 

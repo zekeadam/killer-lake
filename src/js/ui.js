@@ -261,18 +261,23 @@ function createProjectile(fromId, toId, effectType, hitCount = 1) {
             document.body.appendChild(proj);
             void proj.offsetWidth; // Kényszerített újrarajzolás a kezdőpozíció rögzítéséhez
 
-            const trailInterval = setInterval(() => {
+            let trailActive = true;
+            const spawnTrail = () => {
+                if (!trailActive) return;
                 const r = proj.getBoundingClientRect();
-                if (r.top === 0 && r.left === 0) return;
-                spawnParticles(r.left + 25, r.top + 25, color, isMulti ? 2 : 6, isMulti ? 15 : 35);
-            }, 25);
+                if (r.top !== 0 || r.left !== 0) {
+                    spawnParticles(r.left + 25, r.top + 25, color, isMulti ? 1 : 3, isMulti ? 15 : 35);
+                }
+                requestAnimationFrame(spawnTrail);
+            };
+            requestAnimationFrame(spawnTrail);
 
             setTimeout(() => {
                 proj.style.transform = `translate(${targetX - startX}px, ${targetY - startY}px) rotate(${360 + Math.random() * 360}deg)`;
             }, 20);
 
             setTimeout(() => {
-                clearInterval(trailInterval);
+                trailActive = false;
                 if (i === projectileCount - 1) { // Csak az utolsó robbanjon nagyot
                     screenFlash(color);
                     createImpactEffect(targetX, targetY, color, isMulti);

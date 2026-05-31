@@ -48,6 +48,7 @@
     transition: transform 0.45s linear;
     transform: translate(0, 0) rotate(0deg);
     filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.5));
+    will-change: transform;
 }
 
 /* --- RÉSZECSKE ÉS BECSAPÓDÁS --- */
@@ -57,6 +58,7 @@
     z-index: 9998;
     border-radius: 50%;
     animation: particle-fly 0.6s ease-out forwards;
+    will-change: transform, opacity;
 }
 
 @keyframes particle-fly {
@@ -74,6 +76,7 @@
     pointer-events: none;
     transform: translate(-50%, -50%) scale(0);
     animation: impact-ripple 0.4s ease-out forwards;
+    will-change: transform, opacity;
 }
 
 @keyframes impact-ripple {
@@ -91,6 +94,7 @@
     z-index: 26;
     pointer-events: none;
     animation: shield-scan 0.7s ease-out forwards;
+    will-change: background-position, opacity;
 }
 @keyframes shield-scan {
     0% { background-position: 0 100%; opacity: 0; }
@@ -105,6 +109,7 @@
     z-index: 10002;
     opacity: 0;
     animation: flash-anim 0.2s ease-out;
+    will-change: opacity;
 }
 @keyframes flash-anim {
     0% { opacity: 0.5; }
@@ -121,6 +126,7 @@
     font-size: 2.2rem;
     text-shadow: 0 0 8px rgba(0, 0, 0, 1), 0 4px 6px rgba(0, 0, 0, 1);
     animation-fill-mode: forwards;
+    will-change: transform, opacity;
 }
 
 .floating-text.dmg {
