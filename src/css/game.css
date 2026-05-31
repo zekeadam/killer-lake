@@ -206,17 +206,7 @@
     margin: 0 !important;
 }
 
-/* Symmetrical status badges on the inner sides */
-#p2-card .status-badge:not(.badge-shield) {
-    left: -36px !important;
-    right: auto !important;
-}
-#p2-card .badge-para { top: 45px !important; }
-#p2-card .badge-immune { top: 45px !important; }
-#p2-card .badge-burn { top: 133px !important; }
-#p2-card .badge-poison { top: 221px !important; }
-#p2-card .badge-mark { top: 309px !important; }
-#p2-card .badge-counter { top: 397px !important; }
+/* Symmetrical status badges are positioned dynamically on the inner/outer sides via flex status-container */
 
 /* ITEM ÉS SUPPORTER KÁRTYÁK */
 .item-container {
@@ -433,7 +423,36 @@
     margin: 0 0 14px 0 !important; 
 }
 
-.status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30 !important; display: block; margin-top: 0; }
+.status-container { 
+    position: absolute !important; 
+    top: 90px !important; /* HP/AP kijelzők alatt kezdődik */
+    width: 72px !important; 
+    pointer-events: none !important; 
+    z-index: 30 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    gap: 12px !important; 
+    margin-top: 0 !important; 
+}
+
+#p1-card .status-container {
+    right: -36px !important;
+    left: auto !important;
+    align-items: center !important;
+}
+
+#p2-card .status-container {
+    left: -36px !important;
+    right: auto !important;
+    align-items: center !important;
+}
+
+.status-container .status-badge {
+    position: relative !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+}
 .status-badge { 
     width: 72px !important;
     height: 72px !important;
