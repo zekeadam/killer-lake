@@ -301,6 +301,19 @@ function updateRoster(player) {
     });
 }
 
+function getSpellIconPath(move) {
+    if (!move) return 'assets/spell/strike.png';
+    if (move.type === 'shield') return 'assets/spell/shield.png';
+    if (move.type === 'heal') return 'assets/spell/heal.png';
+    if (move.effect === 'counter') return 'assets/spell/counter.png';
+    if (move.effect === 'lifesteal') return 'assets/spell/lifesteal.png';
+    if (move.effect === 'mark') return 'assets/spell/mark.png';
+    if (move.effect === 'poison') return 'assets/spell/poison.png';
+    if (move.effect === 'paralyze') return 'assets/spell/paralyze.png';
+    if (move.effect === 'burn') return 'assets/spell/burn.png';
+    return 'assets/spell/strike.png';
+}
+
 function updateUI() {
     ['p1', 'p2'].forEach(player => {
         const pState = gameState[player];
@@ -395,7 +408,14 @@ function updateUI() {
         let attackBtnIdx = 0;
         buttons.forEach((btn) => {
             if (btn.classList.contains('charge-btn')) {
-                btn.innerHTML = `🔋 ENERGIA TÖLTÉS (+1 AP)`;
+                btn.innerHTML = `
+                    <img src="assets/spell/charge.png" class="spell-icon">
+                    <div class="btn-text-content" style="align-items: center !important;">
+                        <div class="btn-title" style="border-bottom: none !important; margin: 0 !important; padding: 0 !important; justify-content: center !important; text-align: center !important; width: 100% !important;">
+                            🔋 ENERGIA TÖLTÉS (+1 AP)
+                        </div>
+                    </div>
+                `;
                 btn.disabled = (!isMyTurn || gameState.gameOver);
                 btn.onclick = () => executeMove(player, 'charge');
             } else {
@@ -438,11 +458,19 @@ function updateUI() {
                     icon = "🛡️";
                 }
 
-            btn.innerHTML = `<div class="btn-title"><span class="truncate-text">${icon} ${move.name}</span></div><div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div><div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>`;
-            setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), move.name);
+                const spellIcon = getSpellIconPath(move);
+                btn.innerHTML = `
+                    <img src="${spellIcon}" class="spell-icon">
+                    <div class="btn-text-content">
+                        <div class="btn-title"><span class="truncate-text">${icon} ${move.name}</span></div>
+                        <div class="btn-row"><span>${dmgText}</span><span>${hitText}</span></div>
+                        <div class="btn-row"><span>⚡${move.cost} AP</span><span class="btn-eff">${effectText}</span></div>
+                    </div>
+                `;
+                setTooltipIfOverflows(btn, btn.querySelector('.truncate-text'), move.name);
 
-            const isShieldFull = move.type === "shield" && activeCard.shields >= 2;
-            btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver || isShieldFull);
+                const isShieldFull = move.type === "shield" && activeCard.shields >= 2;
+                btn.disabled = (!isMyTurn || pState.ap < move.cost || gameState.gameOver || isShieldFull);
                 btn.onclick = () => executeMove(player, currentAttackIdx);
                 attackBtnIdx++;
             }
