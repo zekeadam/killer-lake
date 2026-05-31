@@ -525,5 +525,53 @@ const cardDatabase = [
         action: { type: "shield", amount: 1 },
         maxHp: 50,
         attacks: []
+    },
+    {
+        id: "card_46",
+        name: "Toxikus Mutáns",
+        image: "assets/card/46.png",
+        maxHp: 100,
+        attacks: [
+            { name: "Savas Nyál", type: "dmg", dmg: 30, hits: 1, cost: 1, effect: "poison", accuracy: 0.9 },
+            { name: "Mérgező Felhő", type: "dmg", dmg: 20, hits: 3, cost: 3, effect: "poison", accuracy: 0.8 },
+            { name: "Tisztító Regeneráció", type: "heal", healAmount: 40, cost: 2, effect: "cleanse", accuracy: 1.0 },
+            { name: "Savas Pajzs", type: "shield", cost: 1, accuracy: 1.0 }
+        ]
+    },
+    {
+        id: "card_47",
+        name: "Árnyék Orgyilkos",
+        image: "assets/card/47.png",
+        maxHp: 80,
+        attacks: [
+            { name: "Célkereszt", type: "dmg", dmg: 10, hits: 1, cost: 1, effect: "mark", accuracy: 0.9 },
+            { name: "Kivégzés", type: "dmg", dmg: 120, hits: 1, cost: 3, accuracy: 0.7 },
+            { name: "Páncéltörő Tőr", type: "dmg", dmg: 50, hits: 1, cost: 2, effect: "pierce", accuracy: 0.8 },
+            { name: "Elrejtőzés", type: "shield", cost: 1, accuracy: 1.0 }
+        ]
+    },
+    {
+        id: "card_48",
+        name: "Energia Vámpír",
+        image: "assets/card/48.png",
+        maxHp: 90,
+        attacks: [
+            { name: "Életerő Szívás", type: "dmg", dmg: 40, hits: 1, cost: 2, effect: "lifesteal", accuracy: 0.9 },
+            { name: "AP Elszívás", type: "dmg", dmg: 20, hits: 1, cost: 2, effect: "ap_steal", accuracy: 0.9 },
+            { name: "Energia Pajzs", type: "shield", cost: 1, accuracy: 1.0 },
+            { name: "Túltöltés", type: "heal", healAmount: 30, cost: 1, accuracy: 1.0 }
+        ]
+    },
+    {
+        id: "card_49",
+        name: "Tükör Lovag",
+        image: "assets/card/49.png",
+        maxHp: 110,
+        attacks: [
+            { name: "Tükrözés", type: "shield", cost: 1, effect: "counter", accuracy: 1.0 },
+            { name: "Fénytörő Csapás", type: "dmg", dmg: 60, hits: 1, cost: 2, effect: "paralyze", accuracy: 0.8 },
+            { name: "Szilánk Vihar", type: "dmg", dmg: 30, hits: 2, cost: 3, accuracy: 0.8 },
+            { name: "Gyógyító Fény", type: "heal", healAmount: 50, cost: 2, accuracy: 1.0 }
+        ]
     }
 ];

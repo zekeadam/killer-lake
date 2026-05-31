@@ -464,21 +464,23 @@ function updateUI() {
                     hitText = `🎯${hits}x | 🎲${acc}%`;
                     if (move.effect === "burn") { effectText = "🔥 ÉGÉS"; icon = "🔥"; }
                     else if (move.effect === "paralyze") { effectText = "⚡ BÉNÍT"; icon = "⚡"; }
-                else if (move.effect === "poison") { effectText = "☠️ MÉREG"; icon = "☠️"; }
-                else if (move.effect === "mark") { effectText = "🎯 JELÖL"; icon = "🎯"; }
-                else if (move.effect === "lifesteal") { effectText = "🦇 VÁMPÍR"; icon = "🦇"; }
-                else if (move.effect === "counter") { effectText = "⚔️ COUNTER"; icon = "⚔️"; }
+                    else if (move.effect === "poison") { effectText = "☠️ MÉREG"; icon = "☠️"; }
+                    else if (move.effect === "mark") { effectText = "🎯 JELÖL"; icon = "🎯"; }
+                    else if (move.effect === "lifesteal") { effectText = "🦇 VÁMPÍR"; icon = "🦇"; }
+                    else if (move.effect === "counter") { effectText = "⚔️ COUNTER"; icon = "⚔️"; }
+                    else if (move.effect === "pierce") { effectText = "🗡️ PIERCE"; icon = "🗡️"; }
+                    else if (move.effect === "ap_steal") { effectText = "⚡ AP LOPÁS"; icon = "⚡"; }
                 
                 if (move.synergy === "mark") { effectText += " (🎯+50%)"; }
                 } else if (move.type === "heal") {
                     dmgText = `💚+${move.healAmount} HP`;
                     hitText = "🧪 GYÓGYUL";
-                    effectText = "🧪 REGEN";
+                    effectText = move.effect === "cleanse" ? "🌿 CLEANSE" : "🧪 REGEN";
                     icon = "🧪";
                 } else if (move.type === "shield") {
                     dmgText = "🛡️ VÉD";
                     hitText = "🛡️ AKTÍV";
-                    effectText = "🛡️ PAJZS";
+                    effectText = move.effect === "counter" ? "⚔️ COUNTER" : "🛡️ PAJZS";
                     icon = "🛡️";
                 }
 

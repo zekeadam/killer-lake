@@ -305,7 +305,7 @@ function applyMove(playerId, data) {
 
             for (let i = 0; i < hitCount; i++) {
                 if (oppCard.hp <= 0) break;
-                if (oppCard.shields > 0) {
+                if (oppCard.shields > 0 && move.effect !== "pierce") {
                     oppCard.shields--;
                     shieldsBroken++;
                     
@@ -373,6 +373,16 @@ function applyMove(playerId, data) {
                 spawnParticles(center.x, center.y, "#2ecc71", 15, 80);
             }
 
+            if (move.effect === 'ap_steal' && hitsLanded > 0) {
+                if (oppState.ap > 0) {
+                    oppState.ap -= 1;
+                    attackerState.ap = Math.min(10, attackerState.ap + 1);
+                    logMessage(`> ⚡ AP Elszívás: ${attackerCard.name} ellopott 1 AP-t!`, "status-effect");
+                    spawnFloatingText(`${oppId}-card`, "-1 AP", "miss");
+                    spawnFloatingText(`${playerId}-card`, "+1 AP", "heal");
+                }
+            }
+
             if (oppCard.hp <= 0) {
                 // A célpont elájult, de a halál animációt a handleCardKO kezeli később
             } else if (hitsLanded > 0) {
@@ -418,6 +428,15 @@ function applyMove(playerId, data) {
             logMessage(`> ${attackerCard.name} visszatöltött ${actualHeal} Életerőt!`, "log-heal");
             
             spawnFloatingText(`${playerId}-card`, `+${actualHeal}`, "heal");
+            
+            if (move.effect === "cleanse") {
+                attackerCard.burnTurns = 0; attackerCard.burnStacks = 0;
+                attackerCard.poisonTurns = 0; attackerCard.poisonStacks = 0;
+                attackerCard.isParalyzed = false;
+                attackerCard.isMarked = false;
+                logMessage(`> 🌿 Tisztulás! ${attackerCard.name} minden negatív hatástól megszabadult.`, "log-heal");
+                spawnFloatingText(`${playerId}-card`, "🌿 MEGTISZTULT", "heal");
+            }
         } else if (move.type === "shield") {
             attackerCard.shields = Math.min(2, attackerCard.shields + 1);
             triggerShieldScan(playerId);
@@ -427,9 +446,15 @@ function applyMove(playerId, data) {
             logMessage(`> ${attackerCard.name} felhúzott egy pajzsot.`, "log-shield");
             
             spawnFloatingText(`${playerId}-card`, "+🛡️ Pajzs", "shield");
+            
+            if (move.effect === "counter") {
+                attackerCard.hasCounter = true;
+                logMessage(`> ${attackerCard.name} Visszatámadó (Counter) állásba lépett a pajzzsal!`, "status-effect");
+                spawnFloatingText(`${playerId}-card`, "⚔️ VISSZATÁMADÁS", "status");
+            }
         }
         
-        if (move.effect === "counter") {
+        if (move.effect === "counter" && move.type !== "shield") {
             attackerCard.hasCounter = true;
             logMessage(`> ${attackerCard.name} Visszatámadó (Counter) állásba lépett!`, "status-effect");
             spawnFloatingText(`${playerId}-card`, "⚔️ VISSZATÁMADÁS", "status");
