@@ -208,15 +208,15 @@
 
 /* Symmetrical status badges on the inner sides */
 #p2-card .status-badge:not(.badge-shield) {
-    left: -45px !important;
+    left: -36px !important;
     right: auto !important;
 }
-#p2-card .badge-para { top: 40px !important; }
-#p2-card .badge-immune { top: 40px !important; }
-#p2-card .badge-burn { top: 132px !important; }
-#p2-card .badge-poison { top: 224px !important; }
-#p2-card .badge-mark { top: 316px !important; }
-#p2-card .badge-counter { top: 408px !important; }
+#p2-card .badge-para { top: 45px !important; }
+#p2-card .badge-immune { top: 45px !important; }
+#p2-card .badge-burn { top: 133px !important; }
+#p2-card .badge-poison { top: 221px !important; }
+#p2-card .badge-mark { top: 309px !important; }
+#p2-card .badge-counter { top: 397px !important; }
 
 /* ITEM ÉS SUPPORTER KÁRTYÁK */
 .item-container {
@@ -435,24 +435,27 @@
 
 .status-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30 !important; display: block; margin-top: 0; }
 .status-badge { 
-    width: 76px !important;
-    height: 76px !important;
-    min-width: 76px !important;
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
     border-radius: 50% !important;
     padding: 0 !important;
     position: absolute !important;
-    right: -45px !important;
+    right: -36px !important;
     display: none; /* JS toggles to flex */
     align-items: center !important;
     justify-content: center !important;
     pointer-events: auto !important;
     z-index: 30 !important;
     box-sizing: border-box !important;
-    background: rgba(10, 10, 20, 0.75) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.6) !important;
+    /* High fidelity glassmorphism effect */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    border-left: 1.5px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), inset 0 0 8px rgba(255, 255, 255, 0.05) !important;
     transition: transform 0.2s ease, filter 0.2s ease !important;
     will-change: transform, filter;
 }
@@ -467,7 +470,7 @@
     height: 100% !important;
     object-fit: contain !important;
     border-radius: 50% !important;
-    padding: 8px !important; /* Slightly more padding for 76px circle */
+    padding: 0px !important; /* Maximized artwork size inside 72px circle */
     box-sizing: border-box !important;
 }
 
@@ -477,47 +480,47 @@
     right: 0px !important;
     background: #e74c3c !important;
     color: white !important;
-    font-size: 0.9rem !important;
+    font-size: 0.85rem !important;
     font-weight: 900 !important;
-    width: 24px !important;
-    height: 24px !important;
+    width: 22px !important;
+    height: 22px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
-    border: 1.5px solid rgba(255,255,255,0.5) !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
     z-index: 5 !important;
 }
 
 .badge-para { 
-    top: 40px !important;
-    filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.6)) !important; /* Larger glow for 76px */
+    top: 45px !important;
+    filter: drop-shadow(0 0 6px rgba(241, 196, 15, 0.6)) !important;
     border-color: rgba(241, 196, 15, 0.45) !important;
 }
 .badge-immune { 
-    top: 40px !important;
-    filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.6)) !important;
+    top: 45px !important;
+    filter: drop-shadow(0 0 6px rgba(52, 152, 219, 0.6)) !important;
     border-color: rgba(52, 152, 219, 0.45) !important;
 }
 .badge-burn { 
-    top: 132px !important;
-    filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.6)) !important;
+    top: 133px !important;
+    filter: drop-shadow(0 0 6px rgba(231, 76, 60, 0.6)) !important;
     border-color: rgba(231, 76, 60, 0.45) !important;
 }
 .badge-poison { 
-    top: 224px !important;
-    filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6)) !important;
+    top: 221px !important;
+    filter: drop-shadow(0 0 6px rgba(46, 204, 113, 0.6)) !important;
     border-color: rgba(46, 204, 113, 0.45) !important;
 }
 .badge-mark { 
-    top: 316px !important;
-    filter: drop-shadow(0 0 8px rgba(230, 126, 34, 0.6)) !important;
+    top: 309px !important;
+    filter: drop-shadow(0 0 6px rgba(230, 126, 34, 0.6)) !important;
     border-color: rgba(230, 126, 34, 0.45) !important;
 }
 .badge-counter { 
-    top: 408px !important;
-    filter: drop-shadow(0 0 8px rgba(149, 165, 166, 0.6)) !important;
+    top: 397px !important;
+    filter: drop-shadow(0 0 6px rgba(149, 165, 166, 0.6)) !important;
     border-color: rgba(149, 165, 166, 0.45) !important;
 }
 
